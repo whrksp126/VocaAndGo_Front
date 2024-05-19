@@ -1,0 +1,119 @@
+.container{
+  display: flex;
+  width: 100%;
+  padding: 16px;
+}
+header {
+
+}
+header .container{
+  justify-content: space-between;
+  padding-top: 20px;
+  padding-bottom: 14px;
+}
+header .container h2{
+  font-weight: 500;
+  color: #000;
+}
+header .container h2 strong{
+  color: #FF8DD4;
+}
+header .container h2 span{
+
+}
+header .container .btns{
+  display: flex;
+  gap: 10px;
+  color: #FF8DD4;
+  font-size: 20px;
+}
+header .container .btns button{
+
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: #ccc;
+  border-top: 1px solid #DDDDDD;
+}
+footer nav{
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+footer nav ul{
+  display: flex;
+}
+footer nav ul li{
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  flex: 1;
+  margin: 0 auto;
+}
+footer nav ul li.active{
+  color: #FF8DD4;
+}
+footer nav ul li i{
+  font-size: 24px;
+}
+footer nav ul li span{
+  font-size: 10px;
+  font-weight: 700;
+}
+
+main {}
+main .container {}
+main .container ul {
+  display: flex;
+  flex-flow: column;
+  gap: 15px;
+  width: 100%;
+}
+main .container ul li {
+  display: flex;
+  flex-flow: column;
+  gap: 15px;
+  padding: 20px;
+  background: var(--card-background);
+  border-radius: 12px;
+}
+main .container ul li .top{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+main .container ul li .top h3{
+  font-weight: 700;
+}
+main .container ul li .top span{
+  color: #999999;
+  font-size: 10px;
+}
+main .container ul li .progress_bar{
+  width: 100%;
+  height: 16px;
+  border-radius: 50px;
+  background: var(--card-background);
+  overflow: hidden;
+}
+main .container ul li .progress_bar .cur_bar{
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: var(--progress-width);
+  height: 100%;
+  background: var(--card-color);
+  border-radius: 50px;
+}
+main .container ul li .progress_bar .cur_bar span{
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  transform: translate(0, -50%);
+}

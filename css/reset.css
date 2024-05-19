@@ -1,0 +1,230 @@
+*{
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  letter-spacing: -0.03em;
+}
+* {
+  user-select: none;
+}
+*, :after, :before {
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+:root {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  cursor: default;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  tab-size: 4
+}
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+html {
+  scroll-behavior:smooth;
+}
+html, body {
+  height: 100%;
+}
+body {
+  font-family: 'Pretendard Variable';
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+a, button {
+  line-height: 1;
+}
+dl, dt, dd, ol, ul, li{
+  list-style: none;
+}
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+canvas {
+  /* touch-action: none;  */
+}
+button {
+  background: none;
+  border: 0;
+  outline: none;
+  cursor: pointer;
+}
+a {
+  text-decoration: none;
+  cursor: pointer
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+input[type=range] {
+	width:70%;
+	-webkit-appearance: none;
+	background: transparent;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+input[type=range]::-ms-track {
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb { 
+  -webkit-appearance: none;
+  background: var(--brand-secondary-color);
+  cursor: pointer;
+  /* border: 1px solid #000000;  */
+  height: 15px; 
+  width: 15px;   
+  margin-top: -6px; 
+  box-shadow: 1px 1px 1px #00000080, 0px 0px 1px #0d0d0d80;
+  border-radius: 50%;
+}
+
+input[type=range]::-webkit-slider-runnable-track { 
+  width: 100%; 
+  height: 3px; 
+  cursor: pointer; 
+  background: var(--brand-secondary-opacity-color); 
+  border-radius: 10px; 
+} 
+
+input[type=range]:focus::-webkit-slider-runnable-track { 
+  background: var(--brand-secondary-opacity-color);
+}
+
+textarea {
+  resize: none;
+}
+
+/* 드래그 시 컬러 */
+::selection {
+  color: #fff;
+  background-color: #826fff99;
+} 
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/notoSansKR/NotoSansKR-Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/notoSansKR/NotoSansKR-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/notoSansKR/NotoSansKR-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/notoSansKR/NotoSansKR-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/notoSansKR/NotoSansKR-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/notoSansKR/NotoSansKR-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard/Pretendard-Thin.ttf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard/Pretendard-ExtraLight.ttf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard/Pretendard-Light.ttf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard/Pretendard-Regular.ttf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard/Pretendard-Medium.ttf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard/Pretendard-SemiBold.ttf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard/Pretendard-Bold.ttf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard/Pretendard-ExtraBold.ttf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard/Pretendard-Black.ttf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+}
