@@ -1,4 +1,10 @@
-
+// 로컬 스토리지에 저장된 모든 데이터를 전역 변수 객체에 저장
+const localStorageData = {};
+for (let i = 0; i < localStorage.length; i++) {
+  const key = localStorage.key(i);
+  const value = localStorage.getItem(key);
+  localStorageData[key] = JSON.parse(value);
+}
 
 // 단어장 추가 버튼 클릭 시
 const clickAddVocabularyBook = (event) => {
@@ -61,3 +67,51 @@ const clickDeleteVocabularyBook = (event) => {
   modal.bottom.innerHTML = modalBottomHtml(btns);
   setTimeout(()=>modal.container.classList.add('active'),300)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const setUserNameHtml = () => {
+  const _name = document.querySelector('header .container h2 strong');
+  _name.innerHTML = `${localStorageData.user_data.name}`
+}
+const setVocabularyListHtml = () => {
+  const _ul = document.querySelector('main .container ul');
+  const liHtml = localStorageData.vocabulary_list.map((vocabulary)=>{
+    const progress = (vocabulary.success_count / vocabulary.total_count) * 100;
+    return `
+      <li 
+        data-id="${vocabulary.id}"
+        onclick="window.location.href='/html/vocabulary.html?vocabulary_id=${vocabulary.id}'"
+        style="--card-color: ${vocabulary.main_color}; --card-background: ${vocabulary.background_color}; --progress-color: ${vocabulary.main_color}4d; --progress-width:${progress}%;"
+        >
+        <div class="top">
+          <h3>${vocabulary.name}</h3>
+          <span>${vocabulary.success_count}/${vocabulary.total_count}</span>
+        </div>
+        <div class="progress_bar">
+          <div class="cur_bar">
+            <span>${progress}%</span>
+          </div>
+        </div>
+      </li>
+    `
+  }).join('');
+  _ul.innerHTML = liHtml;
+}
+const setInitHtml = () => {
+  setUserNameHtml();
+  setVocabularyListHtml();
+}
+setInitHtml();

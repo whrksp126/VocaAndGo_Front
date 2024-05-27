@@ -166,19 +166,25 @@ footer nav ul li span{
   font-weight: 400;
 }
 
-.input_text{
+.input_text,
+.selete_box{
   position: relative;
   display: flex;
   flex-flow: column;
   gap: 8px;
-  
 }
-.input_text label{
-  font-size: 14;
+.input_text label,
+.selete_box label{
+  font-size: 14px;
   font-weight: 700;
   color: #111111;
 }
-.input_text input{
+.input_text label strong,
+.selete_box label strong{
+  color: #FF8DD4;
+}
+.input_text input,
+.selete_box select{
   border: 1px solid #CCCCCC;
   border-radius: 8px;
   height: 45px;
@@ -194,4 +200,14 @@ footer nav ul li span{
 .input_text.warning span{
   display: block;
   color: red;
+}
+
+.selete_box select{
+  -webkit-appearance: none;  /* Chrome, Safari에서 기본 화살표 제거 */
+  -moz-appearance: none;     /* Firefox에서 기본 화살표 제거 */
+  appearance: none;          /* 표준 속성 */
+  background-image: none;    /* 배경 이미지 제거 (화살표 포함 가능성) */
+}
+.selete_box select[disabled]{
+  background: #F5F5F5;
 }

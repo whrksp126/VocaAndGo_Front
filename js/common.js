@@ -1,3 +1,15 @@
+// URL에서 파라미터 
+const getValueFromURL = (paramName) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  // const paramValue = String(urlParams.get(paramName));
+  const paramValue = urlParams.get(paramName);
+  if (paramValue) {
+    return paramValue;
+  } else {
+    return false;
+  }
+}
+
 // 타겟의 부모요소 중 특정 부모가 있는지 찾아서 리턴함
 const findParentTarget = (targetEl, parent) => {
   return targetEl.closest(parent);

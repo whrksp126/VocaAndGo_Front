@@ -1,0 +1,118 @@
+header .container .btns .delete_select_btn {
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--card-color);
+  border-radius: 6px;
+  color: var(--card-color);
+  font-size: 13px;
+  font-weight: 700;
+}
+main {}
+main .container {}
+main .container ul {
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+}
+main .container ul li{
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-flow: column;
+  gap: 10px;
+  padding: 20px;
+  background: var(--card-background);
+  border-radius: 12px;
+  width: 100%;
+}
+main .container ul li .top{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+main .container ul li .top .left{
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+main .container ul li .top .left .word{
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+}
+main .container ul li .top .left .favorites{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: #FFA4E1;
+  color: #fff;
+  font-size: 7px;
+}
+main .container ul li .top .right {
+  font-size: 18px;
+  color: var(--card-color);
+}
+main .container ul li .top .right .btns{
+  display: flex;
+  gap: 8px;
+}
+main .container ul li .top .right .btns button{
+  display: block;
+}
+main .container ul li .top .right .btns button.delete_btn{
+  color: red;
+}
+main .container ul li .top .right .btns button.edit_btn,
+main .container ul li .top .right .btns button.delete_btn{
+  display: none;
+}
+main .container ul li .bottom{}
+main .container ul li .bottom .meaning{
+  font-size: 12px;
+  font-weight: 400;
+  color: #111;
+}
+main .container ul li .input_checkbox{
+  position: absolute;
+  top: 22px;
+  left: 20px;
+  display: block;
+  font-size: 20px;
+  color: var(--card-color);
+}
+main .container ul li .input_checkbox input[type="checkbox"]{
+  display: none;
+}
+main .container ul li .input_checkbox i{
+  display: none;
+}
+[data-page="vocabulary_edit"] main .container ul li{
+  padding-left: 45px;
+}
+[data-page="vocabulary_edit"] main .container ul li .input_checkbox{
+  display: block;
+}
+[data-page="vocabulary_edit"] main .container ul li .top .right .btns button.sound_btn{
+  display: none;
+}
+[data-page="vocabulary_edit"] main .container ul li .top .right .btns button.edit_btn,
+[data-page="vocabulary_edit"] main .container ul li .top .right .btns button.delete_btn{
+  display: block;
+}
+[data-page="vocabulary_edit"] main .container ul li .input_checkbox input[type="checkbox"]:checked + label .ph-check-square{
+  display: block;
+}
+[data-page="vocabulary_edit"] main .container ul li .input_checkbox input[type="checkbox"]:not(:checked) + label .ph-square{
+  display: block;
+}
+.modal.add_word .modal_content .modal_middle ul {
+  display: flex;
+  flex-flow: column;
+  gap: 15px;
+}
