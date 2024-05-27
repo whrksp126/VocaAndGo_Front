@@ -10,17 +10,13 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="/js/html.js"></script>
 </head> 
-<body data-page="vocabulary_list">
+<body data-page="vocabulary_list_edit" class="react">
   <div id="app">
     <header>
       <div class="container">
-        <h2>
-          <strong>용궁 공주</strong><span>의 단어장</span>
-        </h2>
-        <div class="btns">
-          <button onclick="window.location.href='/html/vocabulary_list_edit.html'"><i class="ph ph-pencil-simple"></i></button>
-          <button onclick="clickAddVocabularyBook(event)"><i class="ph ph-plus"></i></button>
-        </div>
+        <button class="back_btn" onclick="window.location.href='/html/vocabulary_list.html'"><i class="ph ph-caret-left"></i></button>
+        <h2>단어장 목록 편집</h2>
+        <div class="btns"></div>
       </div>
     </header>
     <main>
@@ -31,10 +27,9 @@
               <h3>토익 준비용 🔥</h3>
               <span>100/500</span>
             </div>
-            <div class="progress_bar">
-              <div class="cur_bar">
-                <span>20%</span>
-              </div>
+            <div class="btns">
+              <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
+              <button onclick="clickDeleteVocabularyBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
             </div>
           </li>
           <li style="--card-color: #CD8DFF; --card-background: #F6EFFF; --progress-color: #CD8DFF4d; --progress-width:50%;">
@@ -42,10 +37,9 @@
               <h3>고등 수능 영단어 👀</h3>
               <span>100/500</span>
             </div>
-            <div class="progress_bar">
-              <div class="cur_bar">
-                <span>50%</span>
-              </div>
+            <div class="btns">
+              <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
+              <button onclick="clickDeleteVocabularyBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
             </div>
           </li>
           <li style="--card-color: #74D5FF; --card-background: #EAF6FF; --progress-color: #74D5FF4d; --progress-width:75%;">
@@ -53,10 +47,9 @@
               <h3>30일 완성 TEPS 👍</h3>
               <span>200/300</span>
             </div>
-            <div class="progress_bar">
-              <div class="cur_bar">
-                <span>75%</span>
-              </div>
+            <div class="btns">
+              <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
+              <button onclick="clickDeleteVocabularyBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
             </div>
           </li>
           <li style="--card-color: #42F98B; --card-background: #E2FFE8; --progress-color: #42F98B4d; --progress-width:75%;">
@@ -64,33 +57,14 @@
               <h3>기적의 말하기 영단어 🗣️</h3>
               <span>375/500</span>
             </div>
-            <div class="progress_bar">
-              <div class="cur_bar">
-                <span>75%</span>
-              </div>
+            <div class="btns">
+              <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
+              <button onclick="clickDeleteVocabularyBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
             </div>
           </li>
         </ul>
       </div>
     </main>
-    <footer>
-      <nav>
-        <ul>
-          <li class="active">
-            <i class="ph-fill ph-notepad"></i>
-            <span>단어장</span>
-          </li>
-          <li>
-            <i class="ph-fill ph-notepad"></i>
-            <span>테스트</span>
-          </li>
-          <li onclick="window.location.href='/html/mypage.html'">
-            <i class="ph-fill ph-user"></i>
-            <span>마이페이지</span>
-          </li>
-        </ul>
-      </nav>
-    </footer>
   </div>
   <script src="/js/common.js"></script>
   <script src="/js/vocabulary_list.js"></script>

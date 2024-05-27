@@ -1,0 +1,52 @@
+header {
+  border-bottom: 1px solid #ddd;
+}
+header .container h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+}
+
+main {}
+main ul{
+  width: 100%;
+}
+main ul li{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+}
+main ul li .left{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+main ul li .left i{
+  font-size: 20px;
+  color: #FF8DD4;
+}
+main ul li .left i.ph-duotone.ph-user-circle:before{
+  opacity: 1;
+}
+main ul li .left span{
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+}
+main ul li .right{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+main ul li .right span{
+  font-size: 12px;
+  font-weight: 400;
+  color: #999;
+}
+main ul li .right i{
+  font-size: 20px;
+  color: #111;
+}
+

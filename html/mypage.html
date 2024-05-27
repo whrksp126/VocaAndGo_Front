@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VocaAndGo</title>
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/mypage.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="/js/html.js"></script>
+</head> 
+<body data-page="mypage">
+  <div id="app">
+    <header>
+      <div class="container">
+        <h2>마이페이지</h2>
+      </div>
+    </header>
+    <main>
+      <ul> 
+        <li onclick="window.location.href='/html/account.html'">
+          <div class="left">
+            <i class="ph-duotone ph-user-circle"></i>
+            <span>계정</span>
+          </div>
+          <div class="right">
+            <span>hyeji1022@gmail.com</span>
+            <i class="ph ph-caret-right"></i>
+          </div>
+        </li>
+        <li onclick="window.location.href='/html/theme.html'">
+          <div class="left">
+            <i class="ph-fill ph-sun-dim"></i>
+            <span>테마</span>
+          </div>
+          <div class="right">
+            <span>라이트</span>
+            <i class="ph ph-caret-right"></i>
+          </div>
+        </li>
+      </ul>
+    </main>
+    <footer>
+      <nav>
+        <ul>
+          <li onclick="window.location.href='/html/vocabulary_list.html'">
+            <i class="ph-fill ph-notepad"></i>
+            <span>단어장</span>
+          </li>
+          <li>
+            <i class="ph-fill ph-notepad"></i>
+            <span>테스트</span>
+          </li>
+          <li class="active">
+            <i class="ph-fill ph-user"></i>
+            <span>마이페이지</span>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </div>
+  <script src="/js/common.js"></script>
+  <script src="/js/mypage.js"></script>
+</body>
+</html>

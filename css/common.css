@@ -1,0 +1,197 @@
+.container{
+  display: flex;
+  width: 100%;
+  padding: 16px;
+}
+header {
+
+}
+header .container{
+  position: relative;
+  justify-content: space-between;
+  padding-top: 20px;
+  padding-bottom: 14px;
+}
+header .container .back_btn{
+  color: #ccc;
+  font-size: 24px;
+}
+header .container h2{
+  font-weight: 500;
+  color: #000;
+}
+header .container h2 strong{
+  color: #FF8DD4;
+}
+header .container h2 span{
+
+}
+header .container .btns{
+  display: flex;
+  gap: 10px;
+  color: #FF8DD4;
+  font-size: 20px;
+}
+header .container .btns button{
+
+}
+
+.react header .container h2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+}
+
+
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: #ccc;
+  border-top: 1px solid #DDDDDD;
+}
+footer nav{
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+footer nav ul{
+  display: flex;
+}
+footer nav ul li{
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  flex: 1;
+  margin: 0 auto;
+}
+footer nav ul li.active{
+  color: #FF8DD4;
+}
+footer nav ul li i{
+  font-size: 24px;
+}
+footer nav ul li span{
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+  background: #00000000;
+  transition: all .3s;
+}
+.modal.active {
+  background: #00000080;
+}
+
+.modal .modal_content{
+  display: flex;
+  flex-flow: column;
+  gap: 30px;
+  padding: 20px;
+  background: #fff;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  transform: translate(0px, 100%);
+  transition: all .3s;
+}
+.modal.active .modal_content{
+  transform: translate(0px, 0%);
+}
+.modal .modal_content .modal_top{
+  text-align: center;
+  color: #111111;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.modal .modal_content .modal_middle{
+
+}
+.modal .modal_content .modal_bottom{
+  color: #fff;
+}
+.modal .modal_content .modal_bottom .buttons{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  height: 45px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.modal .modal_content .modal_bottom .buttons button{
+  flex: 1;
+  height: 100%;
+  border-radius: 8px;
+}
+.modal .modal_content .modal_bottom .buttons button.gray{
+  background: #CCCCCC;
+}
+.modal .modal_content .modal_bottom .buttons button.pink{
+  background: #FF8DD4;
+}
+
+.modal.confirm .modal_content .modal_top{
+  display: none;
+}
+.modal.confirm .modal_content .modal_middle{
+  display: flex;
+  flex-flow: column;
+  gap: 15px;
+  margin-top: 20px;
+  text-align: center;
+  color: #111;
+}
+.modal.confirm .modal_content .modal_middle h3{
+  font-size: 18px;
+  font-weight: 700;
+}
+.modal.confirm .modal_content .modal_middle span{
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.input_text{
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  gap: 8px;
+  
+}
+.input_text label{
+  font-size: 14;
+  font-weight: 700;
+  color: #111111;
+}
+.input_text input{
+  border: 1px solid #CCCCCC;
+  border-radius: 8px;
+  height: 45px;
+  padding: 0 15px;
+  transition: all .3s;
+}
+.input_text span{
+  display: none;
+}
+.input_text.warning input{
+  border-color: red;
+}
+.input_text.warning span{
+  display: block;
+  color: red;
+}
