@@ -48,3 +48,42 @@ const modalBottomHtml = (btns=null) => {
     `:``}
   `
 }
+
+
+// 단어장 생성 및 추가 모달 미들 HTML
+const setVocabularyBookHtml = ({name, color}) =>{
+  const COLOR_LIST = [
+    {main: "FF8DD4", background: "FFEFFA"},
+    {main: "CD8DFF", background: "F6EFFF"},
+    {main: "74D5FF", background: "EAF6FF"},
+    {main: "42F98B", background: "E2FFE8"},
+    {main: "F9BB42", background: "FFF6DF"}
+  ]
+  const html = `
+    <ul>
+      <li>
+        <div class="input_text">
+          <label>단어장 이름</label>
+          <input class="vocabulary_name" value="${name}">
+          <span></span>
+        </div>
+      </li>
+      <li>
+        <div class="input_color">
+          <label>색상</label>
+          <ul class="vocabulary_color">
+            ${COLOR_LIST.map(({main, background})=>{ return `
+            <li 
+              data-color="${main}" 
+              data-background="${background}" 
+              class="color ${color == main ? "active" : ""}">
+              <span></span>
+            </li>`
+            }).join('')}
+          </ul>
+        </div>
+      </li>
+    </ul>
+  `;
+  return html;
+}

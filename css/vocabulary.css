@@ -44,15 +44,20 @@ main .container ul li .top .left .word{
   color: #111;
 }
 main .container ul li .top .left .favorites{
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
   width: 12px;
   height: 12px;
   border-radius: 2px;
   background: #FFA4E1;
   color: #fff;
-  font-size: 7px;
+  font-size: 6px;
+}
+main .container ul li .top .left .favorites i{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 main .container ul li .top .right {
   font-size: 18px;

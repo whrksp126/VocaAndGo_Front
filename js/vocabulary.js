@@ -9,6 +9,8 @@ for (let i = 0; i < localStorage.length; i++) {
 
 // 단어장 추가 버튼 클릭 시
 const clickAddWord = (event) => {
+  const ID = getValueFromURL("vocabulary_id");
+  
   const modal = openDefaultModal();
   modal.container.classList.add('add_word')
   modal.top.innerHTML = modalTopHtml(`단어 추가`);
@@ -18,8 +20,9 @@ const clickAddWord = (event) => {
         <div class="selete_box">
           <label>단어장</label>
           <select name="단어장" id="" disabled>
-            <option value="토익 준비용 🔥" >토익 준비용 🔥</option>
-            <option value="">Orange</option>
+          ${localStorageData.vocabulary_list.map((data)=>{return `
+            <option value="${data.id}" ${data.id == ID ? "selected" : ""}>${data.name}</option>
+          `}).join('')}
           </select>
         </div>
       </li>
@@ -55,7 +58,7 @@ const clickAddWord = (event) => {
   `;
   const btns = [
     {class:"close gray", text: "취소", fun: ""},
-    {class:"pink", text: "추가", fun: ""}
+    {class:"pink", text: "추가", fun: `onclick="clickModalsetWordBtn(event)"`}
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
   setTimeout(()=>modal.container.classList.add('active'),300)
@@ -73,6 +76,12 @@ const clickGoBackVocabularyPage = (event) => {
   window.location.href = `/html/vocabulary.html?vocabulary_id=${id}`;
 }
 
+// 단어 설정 모달에서 저장 클릭 시
+const clickModalsetWordBtn = (event) => {
+  console.log('clickModalsetWordBtn')
+  // TODO : 단어 저장, 수정, 삭제 기능 구현
+}
+
 // 단어장 명 세팅
 const setVocabularyNameHtml = (id) => {
   const name = localStorageData.vocabulary_list.find(vocabulary=>vocabulary.id == id).name;
@@ -81,13 +90,12 @@ const setVocabularyNameHtml = (id) => {
 }
 // 단어 리스트 세팅
 const setVocabularyHtml = (id) => {
-  const word_list_data = localStorageData[`vocabulary_${id}`];
-  
+  const word_list_data = localStorageData[id];
+  if(word_list_data.length == 0)return;
   const bodyStyle = document.querySelector('body').style;
-  bodyStyle.setProperty('--card-color', word_list_data.color);
-  bodyStyle.setProperty('--card-background', word_list_data.background_color);
-  bodyStyle.setProperty('--progress-color', `${word_list_data.color}4d`); // 색상 코드에 투명도 추가
-
+  bodyStyle.setProperty('--card-color', word_list_data.colors.main);
+  bodyStyle.setProperty('--card-background', word_list_data.colors.background);
+  bodyStyle.setProperty('--progress-color', `${word_list_data.colors.main}4d`); // 색상 코드에 투명도 추가
   const word_list_html = word_list_data.list.map((word)=>{
     return `
       <li >
@@ -121,7 +129,6 @@ const setVocabularyHtml = (id) => {
 }
 const setInitHtml = () => {
   const id = getValueFromURL("vocabulary_id");
-  // const page = document.querySelector('body').dataset.page;
   setVocabularyNameHtml(id);
   setVocabularyHtml(id);
 }

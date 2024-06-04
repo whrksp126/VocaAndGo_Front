@@ -4,22 +4,18 @@ const user_data = {
 }
 
 const vocabulary_list = [
-  {
-    id : 1,
-    name : "토익 준비용 🔥",
-    main_color : "#FF8DD4",
-    background_color : "#FFEFFA",
-    success_count : 2,
-    total_count : 2,
-  },
-  {
-    id : 2,
-    name : "고등 수능 영단어 👀",
-    main_color : "#CD8DFF",
-    background_color : "#F6EFFF",
-    success_count : 2,
-    total_count : 4,
-  },
+  // {
+  //   id : "11328930-2c3e-41e0-8977-080fe551f301",
+  //   name : "토익 준비용 🔥",
+  //   colors : {
+  //     main : "FF8DD4",
+  //     background : "FFEFFA"
+  //   },
+  //   counts : {
+  //     total : 0,
+  //     correct : 0
+  //   }
+  // }
 ]
 
 const elementary_vocabulary = {
@@ -99,6 +95,9 @@ const elementary_vocabulary = {
   ]
 }
 
-localStorage.setItem('user_data', JSON.stringify(user_data));
-localStorage.setItem('vocabulary_list', JSON.stringify(vocabulary_list));
-localStorage.setItem('vocabulary_1', JSON.stringify(elementary_vocabulary));
+if(!localStorage.getItem('user_data')){
+  localStorage.setItem('user_data', JSON.stringify(user_data));
+}
+if(!localStorage.getItem('vocabulary_list')){
+  localStorage.setItem('vocabulary_list', JSON.stringify(vocabulary_list));
+}

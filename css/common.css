@@ -122,6 +122,11 @@ footer nav ul li span{
 .modal .modal_content .modal_middle{
 
 }
+.modal .modal_content .modal_middle > ul{
+  display: flex;
+  flex-flow: column;
+  gap: 30px;
+}
 .modal .modal_content .modal_bottom{
   color: #fff;
 }
@@ -157,6 +162,7 @@ footer nav ul li span{
   text-align: center;
   color: #111;
 }
+
 .modal.confirm .modal_content .modal_middle h3{
   font-size: 18px;
   font-weight: 700;
@@ -165,7 +171,6 @@ footer nav ul li span{
   font-size: 14px;
   font-weight: 400;
 }
-
 .input_text,
 .selete_box{
   position: relative;
@@ -201,6 +206,73 @@ footer nav ul li span{
   display: block;
   color: red;
 }
+.input_color {
+  display: flex;
+  flex-flow: column;
+  gap: 8px;
+}
+.input_color ul {
+  display:flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.input_color ul li{
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border: 1.5px dashed #00000000;
+  border-radius: 50%;
+  transition: all .3s;
+}
+.input_color ul li span{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #FF8DD4;
+  transform: translate(-50%, -50%);
+}
+.input_color ul li[data-color="FF8DD4"].active{
+  border: 1.5px dashed #FF8DD4;
+  background: #FFEFFA;
+}
+.input_color ul li[data-color="FF8DD4"] span{
+  background: #FF8DD4;
+}
+.input_color ul li[data-color="CD8DFF"].active{
+  border: 1.5px dashed #CD8DFF;
+  background: #F6EFFF;
+}
+.input_color ul li[data-color="CD8DFF"] span{
+  background: #CD8DFF;
+}
+
+.input_color ul li[data-color="74D5FF"].active{
+  border: 1.5px dashed #74D5FF;
+  background: #EAF6FF;
+}
+.input_color ul li[data-color="74D5FF"] span{
+  background: #74D5FF;
+}
+
+.input_color ul li[data-color="42F98B"].active{
+  border: 1.5px dashed #42F98B;
+  background: #E2FFE8;
+}
+.input_color ul li[data-color="42F98B"] span{
+  background: #42F98B;
+}
+
+.input_color ul li[data-color="F9BB42"].active{
+  border: 1.5px dashed #F9BB42;
+  background: #FFF6DF;
+}
+.input_color ul li[data-color="F9BB42"] span{
+  background: #F9BB42;
+}
+
 
 .selete_box select{
   -webkit-appearance: none;  /* Chrome, Safari에서 기본 화살표 제거 */
