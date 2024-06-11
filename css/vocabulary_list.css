@@ -1,4 +1,8 @@
-main {}
+main {
+  height: calc(100vh - var(--header-height) - var(--footer-height));
+  overflow: auto;
+}
+
 main .container {}
 main .container ul {
   display: flex;
@@ -55,6 +59,10 @@ main .container ul li .progress_bar .cur_bar span.right {
   right: -24px;
 }
 
+[data-page="vocabulary_list_edit"] main {
+  height: calc(100vh - var(--header-height));
+  overflow: auto;
+}
 [data-page="vocabulary_list_edit"] main .container ul li {
   flex-flow: initial;
   align-items: flex-start;

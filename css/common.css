@@ -1,10 +1,14 @@
+:root{
+  --footer-height : 71px;
+  --header-height : 58px;
+}
 .container{
   display: flex;
   width: 100%;
   padding: 16px;
 }
 header {
-
+  height: var(--header-height);
 }
 header .container{
   position: relative;
@@ -36,6 +40,7 @@ header .container .btns button{
 
 }
 
+
 .react header .container h2 {
   position: absolute;
   top: 50%;
@@ -53,8 +58,10 @@ footer {
   bottom: 0;
   left: 0;
   width: 100%;
+  height: var(--footer-height);
   color: #ccc;
   border-top: 1px solid #DDDDDD;
+  background: #fff;
 }
 footer nav{
   padding-top: 10px;

@@ -87,3 +87,48 @@ const setVocabularyBookHtml = ({name, color}) =>{
   `;
   return html;
 }
+
+const setWordModalHtml = ({id, word, meaning, example, explanation}) => {
+  return `
+    <ul>
+      <li>
+        <div class="selete_box">
+          <label>단어장</label>
+          <select name="단어장" id="" disabled>
+          ${localStorageData.vocabulary_list.map((data)=>{return `
+            <option value="${data.id}" ${data.id == id ? "selected" : ""}>${data.name}</option>
+          `}).join('')}
+          </select>
+        </div>
+      </li>
+      <li>
+        <div class="input_text">
+          <label>단어<strong>*</strong></label>
+          <input class="word" value="${word}">
+          <span></span>
+        </div>
+      </li>
+      <li>
+        <div class="input_text">
+          <label>의미<strong>*</strong></label>
+          <input class="meaning" value="${meaning}">
+          <span></span>
+        </div>
+      </li>
+      <li>
+        <div class="input_text">
+          <label>예문</label>
+          <input class="example" value="${example}">
+          <span></span>
+        </div>
+      </li>
+      <li>
+        <div class="input_text">
+          <label>설명</label>
+          <input class="explanation" value="${explanation}">
+          <span></span>
+        </div>
+      </li>
+    </ul>
+  `
+}
