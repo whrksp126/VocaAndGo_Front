@@ -74,8 +74,10 @@ const clickGoBackVocabularyPage = (event) => {
 
 // 단어 설정 모달에서 저장 클릭 시
 const clickModalsetWordBtn = (event) => {
-  const VOCABULARY_ID = getValueFromURL("vocabulary_id");
+  const PREV_VOCABULARY_ID = getValueFromURL("vocabulary_id");
   const _modal = findParentTarget(event.target, '.modal');
+  
+  const VOCABULARY_ID = _modal.querySelector('.vocabulary').value;
   const ID = _modal.dataset.id || crypto.randomUUID();
   const WORD = _modal.querySelector('input.word').value;
   const MEANING = _modal.querySelector('input.meaning').value;
@@ -90,17 +92,28 @@ const clickModalsetWordBtn = (event) => {
     explanation : EXPLANATION,
   }
   if(_modal.dataset.id){
-    const INDEX = localStorageData[VOCABULARY_ID].findIndex((data)=> data.id == ID)
-    localStorageData[VOCABULARY_ID][INDEX] = DATA;
+    if(PREV_VOCABULARY_ID == VOCABULARY_ID){
+      const INDEX = localStorageData[VOCABULARY_ID].findIndex((data)=> data.id == ID)
+      localStorageData[VOCABULARY_ID][INDEX] = DATA;
+    }else{
+      const INDEX = localStorageData[PREV_VOCABULARY_ID].findIndex((data)=> data.id == ID);
+      localStorageData[PREV_VOCABULARY_ID].splice(INDEX, 1);
+      const PREV_LIST_INDEX = localStorageData.vocabulary_list.findIndex(item => item.id == PREV_VOCABULARY_ID);
+      localStorageData.vocabulary_list[PREV_LIST_INDEX].counts.total = localStorageData[PREV_VOCABULARY_ID].length;
+      localStorageData[VOCABULARY_ID].push(DATA);
+      const LIST_INDEX = localStorageData.vocabulary_list.findIndex(item => item.id == VOCABULARY_ID);
+      localStorageData.vocabulary_list[LIST_INDEX].counts.total = localStorageData[VOCABULARY_ID].length;
+      setLocalStorageData(PREV_VOCABULARY_ID, localStorageData[PREV_VOCABULARY_ID]);
+    }
   }else{
     localStorageData[VOCABULARY_ID].push(DATA);
     const LIST_INDEX = localStorageData.vocabulary_list.findIndex(item => item.id == VOCABULARY_ID);
     localStorageData.vocabulary_list[LIST_INDEX].counts.total = localStorageData[VOCABULARY_ID].length;
-    setLocalStorageData('vocabulary_list', localStorageData.vocabulary_list);
   }
+  setLocalStorageData('vocabulary_list', localStorageData.vocabulary_list);
   setLocalStorageData(VOCABULARY_ID, localStorageData[VOCABULARY_ID]);
   _modal.click();
-  setVocabularyHtml(VOCABULARY_ID);
+  setVocabularyHtml(PREV_VOCABULARY_ID);
   // TODO : 단어 저장, 수정, 삭제 기능 구현
 }
 // 단어 삭제 모달에서 삭제 클릭 시

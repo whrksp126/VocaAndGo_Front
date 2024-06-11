@@ -94,7 +94,7 @@ const setWordModalHtml = ({id, word, meaning, example, explanation}) => {
       <li>
         <div class="selete_box">
           <label>단어장</label>
-          <select name="단어장" id="" disabled>
+          <select name="단어장" class="vocabulary" id="" ${word != "" ? "" : "disabled"}>
           ${localStorageData.vocabulary_list.map((data)=>{return `
             <option value="${data.id}" ${data.id == id ? "selected" : ""}>${data.name}</option>
           `}).join('')}
