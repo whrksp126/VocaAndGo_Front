@@ -42,3 +42,10 @@
 .background .buttons .google_btn span{
 
 }
+.background .buttons .non_members {
+  font-size: 12px;
+  color: #111;
+  display: block;
+  text-align: center;
+  margin-top: 8px;
+}
