@@ -28,9 +28,6 @@ body {
   --111-color : #fff;
   --fff-color : #111;
 }
-#app{
-  overscroll-behavior: contain; /* 스크롤 바운스 방지 */
-}
 .container{
   display: flex;
   width: 100%;
