@@ -3,7 +3,11 @@ const localStorageData = {};
 for (let i = 0; i < localStorage.length; i++) {
   const key = localStorage.key(i);
   const value = localStorage.getItem(key);
-  localStorageData[key] = JSON.parse(value);
+  try {
+    localStorageData[key] = JSON.parse(value);
+  } catch (e) {
+    localStorageData[key] = value;
+  }
 }
 
 

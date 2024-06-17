@@ -6,11 +6,13 @@
   <title>VocaAndGo</title>
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/common.css">
+  <script src="/js/initStyle.js"></script>
+
   <link rel="stylesheet" href="/css/mypage.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="/js/html.js"></script>
 </head> 
-<body data-page="mypage" class="react">
+<body data-page="account" class="react">
   <div id="app">
     <header>
       <div class="container">
@@ -19,16 +21,24 @@
       </div>
     </header>
     <main>
-      <ul> 
-        <li onclick="window.location.href='/html/account.html'">
-          <div class="left">
-            <i class="ph-duotone ph-user-circle"></i>
-            <span>계정</span>
+      <ul class="login_box"> 
+        <li>
+          <h2>로그인 방식</h2>
+          <div>
+            <img src="/images/google_logo.png" alt="" class="google_logo"><span>Google 로그인</span>
           </div>
-          <div class="right">
+        </li>
+        <li>
+          <h2>계정 이메일</h2>
+          <div>
             <span>hyeji1022@gmail.com</span>
-            <i class="ph ph-caret-right"></i>
           </div>
+        </li>
+      </ul>
+      <ul class="logout_box">
+        <li onclick="clickLogOut(event)">
+          <h2>로그아웃</h2>
+          <i class="ph ph-sign-out"></i>
         </li>
       </ul>
     </main>

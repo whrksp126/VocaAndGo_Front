@@ -3,7 +3,11 @@ const localStorageData = {};
 for (let i = 0; i < localStorage.length; i++) {
   const key = localStorage.key(i);
   const value = localStorage.getItem(key);
-  localStorageData[key] = JSON.parse(value);
+  try {
+    localStorageData[key] = JSON.parse(value);
+  } catch (e) {
+    localStorageData[key] = value;
+  }
 }
 
 
@@ -131,6 +135,38 @@ const clickModalDeleteWordBook = (event) => {
   setVocabularyHtml(VOCABULARY_ID);
 }
 
+// 선택 삭제 버튼 클릭 시
+const clickDeleteSelectBtn = (event) => {
+  const modal = openDefaultModal();
+  modal.container.classList.add('confirm');
+  modal.middle.innerHTML = `
+    <h3>선택한 단어를 정말 삭제하시겠어요?</h3>
+    <span>삭제 후에는 복구가 불가능해요 😢</span>
+  `;
+  const btns = [
+    {class:"close gray", text: "취소", fun: ""},
+    {class:"pink", text: "삭제", fun: `onclick="clickModalDeleteSelectWordBook(event)"`}
+  ]
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  setTimeout(()=>modal.container.classList.add('active'),300)
+}
+
+// 선택 단어 삭제 모달에서 삭제 클릭 시
+const clickModalDeleteSelectWordBook = (event) => {
+  const VOCABULARY_ID = getValueFromURL("vocabulary_id");
+  const __selectWord = document.querySelectorAll('main .container ul li .input_checkbox input[type="checkbox"]:checked');
+  __selectWord.forEach((_selectWord)=>{
+    const INDEX = localStorageData[VOCABULARY_ID].findIndex((data)=> data.id == _selectWord.id);
+    localStorageData[VOCABULARY_ID].splice(INDEX, 1);
+  })
+  const LIST_INDEX = localStorageData.vocabulary_list.findIndex(item => item.id == VOCABULARY_ID);
+  localStorageData.vocabulary_list[LIST_INDEX].counts.total = localStorageData[VOCABULARY_ID].length;
+  setLocalStorageData('vocabulary_list', localStorageData.vocabulary_list);
+  setLocalStorageData(VOCABULARY_ID, localStorageData[VOCABULARY_ID]);
+  const _modal = findParentTarget(event.target, '.modal');
+  _modal.click();
+  setVocabularyHtml(VOCABULARY_ID);
+}
 
 // 단어장 명 세팅
 const setVocabularyNameHtml = (id) => {

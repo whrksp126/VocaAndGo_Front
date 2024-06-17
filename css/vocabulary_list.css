@@ -24,6 +24,7 @@ main .container ul li .top{
   justify-content: space-between;
 }
 main .container ul li .top h3{
+  color: #111;
   font-weight: 700;
 }
 main .container ul li .top span{

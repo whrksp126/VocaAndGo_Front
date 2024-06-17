@@ -1,6 +1,25 @@
-:root{
+:root {
   --footer-height : 71px;
   --header-height : 58px;
+
+  --000-color : #000;
+  --111-color : #111;
+  --fff-color : #fff;
+}
+body {
+  background-color: var(--fff-color);
+  color: var(--111-color);
+}
+
+[data-theme="light"] {
+  --000-color : #000;
+  --111-color : #111;
+  --fff-color : #fff;
+}
+[data-theme="dark"] {
+  --000-color : #000;
+  --111-color : #fff;
+  --fff-color : #111;
 }
 .container{
   display: flex;
@@ -22,7 +41,7 @@ header .container .back_btn{
 }
 header .container h2{
   font-weight: 500;
-  color: #000;
+  color: var(--111-color);
 }
 header .container h2 strong{
   color: #FF8DD4;
@@ -48,7 +67,7 @@ header .container .btns button{
   transform: translate(-50%, -50%);
   font-size: 18px;
   font-weight: 700;
-  color: #111;
+  color: var(--111-color);
 }
 
 
@@ -61,7 +80,7 @@ footer {
   height: var(--footer-height);
   color: #ccc;
   border-top: 1px solid #DDDDDD;
-  background: #fff;
+  background: var(--fff-color);
 }
 footer nav{
   padding-top: 10px;
@@ -110,7 +129,7 @@ footer nav ul li span{
   flex-flow: column;
   gap: 30px;
   padding: 20px;
-  background: #fff;
+  background: var(--fff-color);
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   transform: translate(0px, 100%);
@@ -121,7 +140,7 @@ footer nav ul li span{
 }
 .modal .modal_content .modal_top{
   text-align: center;
-  color: #111111;
+  color: var(--111-color);
   font-size: 18px;
   font-weight: 700;
 }
@@ -167,7 +186,7 @@ footer nav ul li span{
   gap: 15px;
   margin-top: 20px;
   text-align: center;
-  color: #111;
+  color: var(--111-color);
 }
 
 .modal.confirm .modal_content .modal_middle h3{
@@ -189,7 +208,7 @@ footer nav ul li span{
 .selete_box label{
   font-size: 14px;
   font-weight: 700;
-  color: #111111;
+  color: var(--111-color);
 }
 .input_text label strong,
 .selete_box label strong{
