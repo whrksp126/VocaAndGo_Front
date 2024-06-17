@@ -6,10 +6,17 @@
   --111-color : #111;
   --fff-color : #fff;
 }
+html {
+  /* 모바일 환경에서 확대/축소 기능 제한 */
+  /* pointerMove 이벤트 끊김 현상 해결 */
+  /* touch-action: none;  */
+}
 body {
   background-color: var(--fff-color);
   color: var(--111-color);
+  overflow: hidden; /* 스크롤을 제한하여 사용자가 페이지를 확대/축소할 수 없도록 함 */
 }
+
 
 [data-theme="light"] {
   --000-color : #000;
