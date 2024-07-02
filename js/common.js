@@ -122,3 +122,16 @@ const clickSaveVocabulary = (event, callback) => {
   callback();
   _modal.click();
 }
+
+// 앱에서 개발자 로고 확인용
+const createTestViewLog = () => {
+  const _body = document.querySelector('body');
+  const html = `<div id="logEl"></div>`
+  _body.insertAdjacentHTML('beforeend', html)
+}
+const writeTestAppLog = (html) => {
+  const _logEl = document.querySelector('#logEl');
+  _logEl.insertAdjacentHTML('afterbegin', html)
+}
+
+createTestViewLog()
