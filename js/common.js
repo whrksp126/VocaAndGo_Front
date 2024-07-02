@@ -34,7 +34,7 @@ const openDefaultModal = (isBackClose=true) => {
   const _modal_bottom = document.querySelector('.modal_bottom');  
   _modal.addEventListener('click', event => clickHandler(event, isBackClose));
   window.addEventListener('popstate', onPopStateHandler);
-  
+  window.openModal = true;
   return { 
     container : _modal, 
     content: _modal_content, 
@@ -64,6 +64,7 @@ const removeModal = () => {
   history.replaceState({modalOpen:false}, '', '');
   const _modal = document.querySelector('.modal');
   if(_modal) _modal.remove();
+  window.openModal = false;
 }
 
 // 모달 배경 클릭 시 닫기(이벤트 제거)
