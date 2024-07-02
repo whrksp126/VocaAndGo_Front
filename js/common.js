@@ -133,5 +133,5 @@ const writeTestAppLog = (html) => {
   const _logEl = document.querySelector('#logEl');
   _logEl.insertAdjacentHTML('afterbegin', html)
 }
-
 createTestViewLog()
+writeTestAppLog(`<div>모바일 확인</div>`);

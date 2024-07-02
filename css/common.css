@@ -316,3 +316,17 @@ footer nav ul li span{
 .selete_box select[disabled]{
   background: #F5F5F5;
 }
+
+
+#logEl {
+  position: fixed;
+  top: 50px;
+  right: 50px;
+  max-width: 80%;
+  max-height: 50%;
+  width: auto;
+  height: auto;
+  background: #ccc;
+  color: #111;
+  overflow: scroll;
+}
