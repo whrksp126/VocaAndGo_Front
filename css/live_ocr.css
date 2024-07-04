@@ -1,0 +1,17 @@
+#video-container {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: auto;
+}
+video, canvas {
+  width: 100%;
+  height: auto;
+}
+#photo-container {
+  width: 100%;  
+  max-width: 1000px;  
+  margin: auto;  
+  overflow: hidden;  
+  position: relative;
+}
