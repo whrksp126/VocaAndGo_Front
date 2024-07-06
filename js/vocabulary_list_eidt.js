@@ -1,16 +1,3 @@
-// 로컬 스토리지에 저장된 모든 데이터를 전역 변수 객체에 저장
-const localStorageData = {};
-for (let i = 0; i < localStorage.length; i++) {
-  const key = localStorage.key(i);
-  const value = localStorage.getItem(key);
-  try {
-    localStorageData[key] = JSON.parse(value);
-  } catch (e) {
-    localStorageData[key] = value;
-  }
-}
-
-
 // 단어장 삭제 클릭 시
 const clickDeleteVocabularyBook = (event) => {
   const ID = findParentTarget(event.target, 'li').dataset.id;
@@ -32,22 +19,19 @@ const clickDeleteVocabularyBook = (event) => {
 // 단어장 삭제 모달에서 삭제 버튼 클릭 시
 const clickModalDeleteVocabularyBook = (event) => {
   const _modal = findParentTarget(event.target, '.modal');
-  const ID = _modal.dataset.id
-  const NEW_VOCABULARY_LIST = localStorageData.vocabulary_list.filter(item => item.id !== ID);
-  localStorageData.vocabulary_list = NEW_VOCABULARY_LIST;
-  setLocalStorageData('vocabulary_list', localStorageData.vocabulary_list);
-  localStorage.removeItem(ID);
+  const id = Number(_modal.dataset.id);
+  deleteIndexedDbNotebook(id)
   _modal.click();
   setEditVocabularyListHtml();
 }
 
 // 단어장 수정 클릭 시
-const clickEditVocabularyBook = (event, data={name:"", color:"FF8DD4"}) => {
-  const ID = findParentTarget(event.target, 'li').dataset.id;
-  const VOCABULARY = localStorageData.vocabulary_list.find((item)=>item.id == ID);
-  const DATA = {name: VOCABULARY.name,color: VOCABULARY.colors.main};
+const clickEditVocabularyBook = async (event, data={name:"", color:"FF8DD4"}) => {
+  const id = Number(findParentTarget(event.target, 'li').dataset.id);
+  const noteBook = await getIndexedDbNotebookById(id);
+  const DATA = {name: noteBook.name,color: noteBook.color.main};
   const modal = openDefaultModal();
-  modal.container.dataset.id = ID;
+  modal.container.dataset.id = id;
   modal.top.innerHTML = modalTopHtml(`단어장 수정`);
   modal.middle.innerHTML = setVocabularyBookHtml(DATA);
   const btns = [
@@ -63,26 +47,34 @@ const clickEditVocabularyBook = (event, data={name:"", color:"FF8DD4"}) => {
 
 
 // 단어장 에디터 리스트에서 리스트 HTML 세팅
-const setEditVocabularyListHtml = () => {
+const setEditVocabularyListHtml = async () => {
   const _ul = document.querySelector('main .container ul');
-  if(!localStorageData.vocabulary_list) return;
-  const liHtml = localStorageData.vocabulary_list.map((vocabulary) => {
-    return `
-      <li 
-        data-id="${vocabulary.id}"
-        style="--card-color: #${vocabulary.colors.main}; --card-background: #${vocabulary.colors.background}; --progress-color: #${vocabulary.colors.main}4d; ">
-        <div class="top">
-          <h3>${vocabulary.name}</h3>
-          <span>${vocabulary.counts.correct}/${vocabulary.counts.total}</span>
-        </div>
-        <div class="btns">
-          <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
-          <button onclick="clickDeleteVocabularyBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
-        </div>
-      </li>
-    `
-  }).join('');
-  _ul.innerHTML = liHtml;
+  _ul.innerHTML = ``;
+  const noteBooks = await getIndexedDbNotebooks();
+  if(noteBooks.length > 0){
+    for(let noteBook of noteBooks){
+      const words = await getIndexedDbWordsByNotebookId(noteBook.id);
+      const totalWords = words.length;
+      const learnedCount = words.reduce((count, word) => {return word.status === "learned" ? count + 1 : count}, 0);
+      const html = `
+        <li 
+          data-id="${noteBook.id}"
+          style="--card-color: #${noteBook.color.main}; --card-background: #${noteBook.color.background}; --progress-color: #${noteBook.color.main}4d; ">
+          <div class="top">
+            <h3>${noteBook.name}</h3>
+            <span>${learnedCount}/${totalWords}</span>
+          </div>
+          <div class="btns">
+            <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
+            <button onclick="clickDeleteVocabularyBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
+          </div>
+        </li>
+      `
+      _ul.insertAdjacentHTML('beforeend', html);
+    }
+  }else{
+    console.log('단어장 추가 유도 UI');
+  }
 }
 const setInitHtml = () => {
   setEditVocabularyListHtml();

@@ -53,11 +53,11 @@ const modalBottomHtml = (btns=null) => {
 // 단어장 생성 및 추가 모달 미들 HTML
 const setVocabularyBookHtml = ({name, color}) =>{
   const COLOR_LIST = [
-    {main: "FF8DD4", background: "FFEFFA"},
-    {main: "CD8DFF", background: "F6EFFF"},
-    {main: "74D5FF", background: "EAF6FF"},
-    {main: "42F98B", background: "E2FFE8"},
-    {main: "F9BB42", background: "FFF6DF"}
+    {main: "FF8DD4", background : "FFEFFA"},
+    {main: "CD8DFF", background : "F6EFFF"},
+    {main: "74D5FF", background : "EAF6FF"},
+    {main: "42F98B", background : "E2FFE8"},
+    {main: "FFBD3C", background : "FFF6DF"}
   ]
   const html = `
     <ul>
@@ -72,12 +72,15 @@ const setVocabularyBookHtml = ({name, color}) =>{
         <div class="input_color">
           <label>색상</label>
           <ul class="vocabulary_color">
-            ${COLOR_LIST.map(({main, background})=>{ return `
+            ${COLOR_LIST.map(({main, background})=>{ 
+              return `
             <li 
+              style="--main-color: #${main};"
               data-color="${main}" 
               data-background="${background}" 
-              class="color ${color == main ? "active" : ""}">
-              <span></span>
+              class="color ${color.toUpperCase() == main.toUpperCase() ? "active" : ""}">
+              <i class="ph-bold ph-check"></i>
+              
             </li>`
             }).join('')}
           </ul>
@@ -88,15 +91,16 @@ const setVocabularyBookHtml = ({name, color}) =>{
   return html;
 }
 
-const setWordModalHtml = ({id, word, meaning, example, explanation}) => {
+const setWordModalHtml = async ({id, word, meaning, example, description}) => {
+  const noteBooks = await getIndexedDbNotebooks();
   return `
     <ul>
       <li>
         <div class="selete_box">
           <label>단어장</label>
           <select name="단어장" class="vocabulary" id="" ${word != "" ? "" : "disabled"}>
-          ${localStorageData.vocabulary_list.map((data)=>{return `
-            <option value="${data.id}" ${data.id == id ? "selected" : ""}>${data.name}</option>
+          ${noteBooks.map((data)=>{ return `
+            <option value="${data.id}" ${Number(data.id) == Number(id) ? "selected" : ""}>${data.name}</option>
           `}).join('')}
           </select>
         </div>
@@ -127,7 +131,7 @@ const setWordModalHtml = ({id, word, meaning, example, explanation}) => {
       <li>
         <div class="input_text">
           <label>설명</label>
-          <input class="explanation" value="${explanation}">
+          <input class="explanation" value="${description}">
           <span class="message"></span>
         </div>
       </li>

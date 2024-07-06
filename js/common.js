@@ -143,25 +143,25 @@ const addEventClickColor = () => {
 }
 
 // 신규 단어장 추가 버튼 클릭 시
-const clickSaveVocabulary = (event, callback) => {
+const clickSaveVocabulary = async (event, callback) => {
   const _modal = findParentTarget(event.target, '.modal');
   const VOCABULARY_NAME = document.querySelector('.vocabulary_name').value;
   const _colorLi = document.querySelector('.vocabulary_color li.active');
   const ID = _modal.dataset.id || crypto.randomUUID();
+  const createdAt = new Date().toISOString();
   const data = {
-    id : ID,
-    name : VOCABULARY_NAME,
-    colors : {main : _colorLi.dataset.color,background : _colorLi.dataset.background},
-    counts : {total : 0,correct : 0}
+    name: VOCABULARY_NAME, 
+    color: {main : _colorLi.dataset.color,background : _colorLi.dataset.background}, 
+    createdAt: createdAt, 
+    updatedAt: createdAt, 
+    status: "active"
   }
   if(_modal.dataset.id){
+    const result = await updateIndexedDbNotebook(Number(_modal.dataset.id), data.name, data.color, data.updatedAt, data.status);
     localStorageData.vocabulary_list = localStorageData.vocabulary_list.map(item => item.id === ID ? data : item);
   }else{
-    localStorageData.vocabulary_list.push(data);
+    const result = await addIndexedDbNotebook(data.name, data.color, data.createdAt, data.updatedAt, data.status);
   }
-  setLocalStorageData('vocabulary_list', localStorageData.vocabulary_list);
-  const VOCABULARY_LIST = JSON.parse(localStorage.getItem(ID)) || [];
-  setLocalStorageData(ID, VOCABULARY_LIST);
   callback();
   _modal.click();
 }

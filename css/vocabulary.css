@@ -49,7 +49,7 @@ main .container ul li .top .left .favorites{
   width: 12px;
   height: 12px;
   border-radius: 2px;
-  background: #FFA4E1;
+  background: var(--card-color);
   color: #fff;
   font-size: 6px;
 }
