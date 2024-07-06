@@ -1,3 +1,5 @@
+// 검색 시 사용할 전역 리스트 변수
+let SEARCH_LIST = [];
 // 로컬 스토리지에 저장된 모든 데이터를 전역 변수 객체에 저장
 const localStorageData = {};
 for (let i = 0; i < localStorage.length; i++) {
@@ -215,10 +217,67 @@ const setVocabularyHtml = (id) => {
   }).join('');
   document.querySelector('main .container ul').innerHTML = word_list_html;
 }
+
+// 단어 입력 시
+const onInputWord = async (event) => {
+  const word = event.target.value.trim();
+  const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
+  if(word.length < 2) {
+    _searchList.classList.remove('active'); 
+    return
+  };
+  await getSearchWordData(word);
+  _searchList.classList.toggle('active', SEARCH_LIST.length > 0);
+  const regex = new RegExp(`(${word})`, 'gi');
+  const highlightText = (text, regex, keyword) => text.split(regex).map(part =>
+    part.toLowerCase() === keyword.toLowerCase() ? `<strong>${part}</strong>` : `<span>${part}</span>`
+  ).join('');
+  _searchList.innerHTML = '';  
+  SEARCH_LIST.forEach(({ word: dataWord, meanings }, index) => {
+    const search_word_html = highlightText(dataWord, regex, word);
+    const search_meaning_html = meanings.join(', ');
+    _searchList.insertAdjacentHTML('beforeend', `
+      <li onclick="clickSelectSearchedWord(event)" data-index="${index}">
+        <div class="search_word">${search_word_html}</div>
+        <div class="search_meaning">${search_meaning_html}</div>
+      </li>
+    `);
+  });
+  
+
+}
+
+// 단어 검색 요청 
+const getSearchWordData = async (word) => {
+  const url = `http://127.0.0.1:5000/search/search_word`;
+  const method = 'GET';
+  const data = {word : word};
+  const result = await fetchDataAsync(url, method, data);
+  if(result.code != 200){ console.error('검색 에러')}
+  SEARCH_LIST = result.data
+  return;
+}
+
+// 검색된 단어 선택 시 
+const clickSelectSearchedWord = (event) => {
+  const data = SEARCH_LIST[Number(findParentTarget(event.target, 'li').dataset.index)];
+  const _wordInput = document.querySelector('.input_text .word');
+  const _meaningInput = document.querySelector('.input_text .meaning');
+  const _exampleInput = document.querySelector('.input_text .example');
+  const _explanationInput = document.querySelector('.input_text .explanation');
+  _wordInput.value = data.word;
+  _meaningInput.value = data.meanings.join(', ');
+  SEARCH_LIST = [];
+  const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
+  _searchList.classList.remove('active'); 
+}
+
 const setInitHtml = () => {
   const id = getValueFromURL("vocabulary_id");
   setVocabularyNameHtml(id);
   setVocabularyHtml(id);
 }
+
+
 setInitHtml();
 

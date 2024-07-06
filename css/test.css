@@ -1,0 +1,5 @@
+header .container h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--111-color);
+}

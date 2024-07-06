@@ -101,32 +101,34 @@ const setWordModalHtml = ({id, word, meaning, example, explanation}) => {
           </select>
         </div>
       </li>
-      <li>
+      <li class="">
         <div class="input_text">
           <label>단어<strong>*</strong></label>
-          <input class="word" value="${word}">
-          <span></span>
+          <input class="word" value="${word}" oninput="onInputWord(event)">
+          <ul class="search_list"></ul>
+          <span class="message"></span>
         </div>
       </li>
       <li>
         <div class="input_text">
           <label>의미<strong>*</strong></label>
           <input class="meaning" value="${meaning}">
-          <span></span>
+          <ul class="search_list"></ul>
+          <span class="message"></span>
         </div>
       </li>
       <li>
         <div class="input_text">
           <label>예문</label>
           <input class="example" value="${example}">
-          <span></span>
+          <span class="message"></span>
         </div>
       </li>
       <li>
         <div class="input_text">
           <label>설명</label>
           <input class="explanation" value="${explanation}">
-          <span></span>
+          <span class="message"></span>
         </div>
       </li>
     </ul>

@@ -116,7 +116,10 @@ main .container ul li .input_checkbox i{
 [data-page="vocabulary_edit"] main .container ul li .input_checkbox input[type="checkbox"]:not(:checked) + label .ph-square{
   display: block;
 }
-.modal.add_word .modal_content .modal_middle ul {
+.modal.add_word .modal_content .modal_middle {
+  
+}
+.modal.add_word .modal_content .modal_middle > ul {
   display: flex;
   flex-flow: column;
   gap: 15px;

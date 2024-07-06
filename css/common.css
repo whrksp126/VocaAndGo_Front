@@ -132,9 +132,12 @@ footer nav ul li span{
 }
 
 .modal .modal_content{
+  position: relative;
   display: flex;
   flex-flow: column;
   gap: 30px;
+  max-height: calc(100vh - 50px);
+  height: auto;
   padding: 20px;
   background: var(--fff-color);
   border-top-left-radius: 12px;
@@ -144,6 +147,7 @@ footer nav ul li span{
 }
 .modal.active .modal_content{
   transform: translate(0px, 0%);
+  padding-bottom: 95px;
 }
 .modal .modal_content .modal_top{
   text-align: center;
@@ -153,7 +157,8 @@ footer nav ul li span{
 }
 
 .modal .modal_content .modal_middle{
-
+  max-height: calc(100vh - 20px - 27px - 30px - 45px - 20px);
+  overflow: auto;
 }
 .modal .modal_content .modal_middle > ul{
   display: flex;
@@ -161,6 +166,12 @@ footer nav ul li span{
   gap: 30px;
 }
 .modal .modal_content .modal_bottom{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  background: #fff;
   color: #fff;
 }
 .modal .modal_content .modal_bottom .buttons{
@@ -229,8 +240,44 @@ footer nav ul li span{
   padding: 0 15px;
   transition: all .3s;
 }
-.input_text span{
+.input_text > .message{
   display: none;
+}
+.input_text .search_list {
+  display: none;
+  /* display: flex; */
+  flex-flow: column;
+  /* gap: 10px; */
+  max-height: 215px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: #FFEFFA;
+  overflow: auto;
+}
+.input_text .search_list li{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 37px;
+  
+}
+.input_text .search_list li:not(:last-child){
+  border-bottom: 1px solid #DDDDDD;
+}
+.input_text .search_list li .search_word{
+  font-weight: 700;
+  font-size: 14px;
+}
+.input_text .search_list li .search_word strong{
+  color: #FF8DD4;
+}
+.input_text .search_list li .search_meaning{
+  flex: 1;
+  font-size: 11px;
+}
+.input_text .search_list.active{
+  display: flex;
 }
 .input_text.warning input{
   border-color: red;
