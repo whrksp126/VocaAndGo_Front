@@ -92,6 +92,7 @@ const clickModalsetWordBtn = async (event) => {
     const result = await updateIndexedDbWord(data.id, data.notebookId, data.word, data.meaning, data.example, data.description, createdAt, data.status);
   }else{
     const result = await addIndexedDbWord(data.notebookId, data.word, data.meaning, data.example, data.description, createdAt, createdAt, data.status);
+  }
   _modal.click();
   setVocabularyHtml(PREV_VOCABULARY_ID);
   // TODO : 단어 저장, 수정, 삭제 기능 구현
@@ -214,17 +215,36 @@ const onInputWord = async (event) => {
       </li>
     `);
   });
-  
-
+}
+// 의미 입력 시
+const onInputMeaning = async (event) => {
+  const word = event.target.value.trim();
+  const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
+  if(word.length < 2) {
+    _searchList.classList.remove('active'); 
+    return
+  };
+  await getSearchMeaningData(word)
 }
 
 // 단어 검색 요청 
 const getSearchWordData = async (word) => {
-  const url = `http://127.0.0.1:5000/search/search_word`;
+  const url = `http://127.0.0.1:5000/search/search_word_en`;
   const method = 'GET';
   const data = {word : word};
   const result = await fetchDataAsync(url, method, data);
   if(result.code != 200){ console.error('검색 에러')}
+  SEARCH_LIST = result.data
+  return;
+}
+// 의미 검색 요청
+const getSearchMeaningData = async (word) => {
+  const url = `http://127.0.0.1:5000/search/search_word_ko`;
+  const method = 'GET';
+  const data = {word : word};
+  const result = await fetchDataAsync(url, method, data);
+  if(result.code != 200){ console.error('검색 에러')}
+  console.log(result)
   SEARCH_LIST = result.data
   return;
 }
@@ -251,4 +271,3 @@ const setInitHtml = () => {
 
 
 setInitHtml();
-

@@ -116,7 +116,7 @@ const setWordModalHtml = async ({id, word, meaning, example, description}) => {
       <li>
         <div class="input_text">
           <label>의미<strong>*</strong></label>
-          <input class="meaning" value="${meaning}">
+          <input class="meaning" value="${meaning}" oninput="onInputMeaning(event)">
           <ul class="search_list"></ul>
           <span class="message"></span>
         </div>
