@@ -1,5 +1,103 @@
+header .container {
+  justify-content: center;
+}
 header .container h2 {
   font-size: 18px;
   font-weight: 700;
   color: var(--111-color);
+}
+.selete_vocabulary{
+  display: flex;
+  flex-flow: column;
+  gap: 20px;
+  width: 100%;
+}
+.selete_vocabulary li {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  gap: 30px;
+  padding: 40px 30px 30px;
+  border-radius: 12px;
+  
+  background: #FFEFFA;
+  color: #111;
+  overflow: hidden;
+  z-index: 1; 
+}
+.selete_vocabulary li.each{
+  border: 1px solid #FF8DD4;
+}
+.selete_vocabulary li::before {
+
+}
+
+.selete_vocabulary li .top {
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+}
+.selete_vocabulary li .top h3{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.selete_vocabulary li .top h3 div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: #FF8DD4;
+  font-size: 12px;
+  color: #fff;
+}
+.selete_vocabulary li .top h3 span{
+  font-size: 22px;
+}
+.selete_vocabulary li .top p {
+  font-size: 13px;
+  text-align: center;
+}
+.selete_vocabulary li button {
+  width: 100%;
+  height: 45px;
+  color: #fff;
+  border-radius: 8px;
+  background: #FF8DD4;
+  font-size: 16px;
+  font-weight: 700;
+
+}
+
+.selete_vocabulary li.all{
+  background: linear-gradient(90deg, #FFEFFA 0%, #F6EFFF 50%, #EAF6FF 100%);
+}
+.selete_vocabulary li.all::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  padding: 1px; 
+  z-index: -1; 
+  background: linear-gradient(90deg, #FF8DD4 0%, #CD8DFF 50%, #74D5FF 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+}
+.selete_vocabulary li.all .top h3 div{
+  font-size: 10px;
+  background: linear-gradient(90deg, #FF8DD4 0%, #CD8DFF 50%, #74D5FF 100%);
+}
+.selete_vocabulary li.all button {
+  background: linear-gradient(90deg, #FF8DD4 0%, #CD8DFF 50%, #74D5FF 100%);
+
 }

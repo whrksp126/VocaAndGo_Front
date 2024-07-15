@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>VocaAndGo</title>
+
+  <!-- OS 함수 -->
+  <script src="/js/osFunction.js"></script>
+  <!-- 로그인 확인 -->
+  <script src="/js/loginSession.js"></script>
+
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <script src="/js/initStyle.js"></script>
+  <link rel="stylesheet" href="/css/card_test.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="/js/html.js"></script>
+  <script src="/js/dummy.js"></script>
+
+</head> 
+<body data-page="test_type" class="react">
+  <div id="app">
+    <header>
+      <div class="container">
+        <button class="back_btn" onclick="window.location.href=`/html/test.html`"><i class="ph ph-caret-left"></i></button>
+        <h2>전체 단어장 테스트</h2>
+      </div>
+    </header>
+    <main>
+      <div class="container">
+        <div class="cards">
+          <div class="card">
+            <span class="word">vehicle</span>
+            <div class="bottom">
+              <button class="star"><i class="ph-fill ph-star"></i></button>
+              <div class="page">
+                <span class="cur">1</span>
+                <span>/</span>
+                <span class="total">10</span>
+              </div>
+              <button class="speaker"><i class="ph-fill ph-speaker-high"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="btns">
+        <button class="x_btn"><i class="ph-bold ph-x"></i></button>
+        <button class="o_btn"><i class="ph-bold ph-circle"></i></button>
+      </div>
+    </main>
+  </div>
+  <script src="/js/common.js"></script>
+  <script src="/js/card_test.js"></script>
+</body>
+</html>

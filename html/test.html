@@ -20,7 +20,7 @@
   <script src="/js/dummy.js"></script>
 
 </head> 
-<body data-page="vocabulary_list">
+<body data-page="test">
   <div id="app">
     <header>
       <div class="container">
@@ -28,7 +28,30 @@
       </div>
     </header>
     <main>
-      <div class="container"><ul></ul></div>
+      <div class="container">
+        <ul class="selete_vocabulary">
+          <li class="all">
+            <div class="top">
+              <h3>
+                <div>All</div>
+                <span>전체 단어장</span>
+              </h3>
+              <p>나의 전체 단어장에 있는 단어들을<br>랜덤으로 학습해요!</p>
+            </div>
+            <button onclick="window.location.href=`/html/test_type.html?vocabulary=all`">시작하기</button>
+          </li>
+          <li class="each">
+            <div class="top">
+              <h3>
+                <div><i class="ph-bold ph-check"></i></div>
+                <span>선택 단어장</span>
+              </h3>
+              <p>원하는 단어장에 있는 단어들을<br>랜덤으로 학습해요!</p>
+            </div>
+            <button onclick="window.location.href=`/html/test_type.html?vocabulary=each`">시작하기</button>
+          </li>
+        </ul>
+      </div>
     </main>
     <footer>
       <nav>

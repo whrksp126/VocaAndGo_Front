@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>VocaAndGo</title>
+
+  <!-- OS 함수 -->
+  <script src="/js/osFunction.js"></script>
+  <!-- 로그인 확인 -->
+  <script src="/js/loginSession.js"></script>
+
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <script src="/js/initStyle.js"></script>
+  <link rel="stylesheet" href="/css/test_type.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="/js/html.js"></script>
+  <script src="/js/dummy.js"></script>
+
+</head> 
+<body data-page="test_type" class="react">
+  <div id="app">
+    <header>
+      <div class="container">
+        <button class="back_btn" onclick="window.location.href=`/html/test.html`"><i class="ph ph-caret-left"></i></button>
+        <h2>테스트 유형 선택</h2>
+      </div>
+    </header>
+    <main>
+      <div class="slide_box">
+        <ul class="test_type_list">
+          <button class="slid_btn left">
+            <i class="ph ph-caret-left"></i>
+          </button>
+          <button class="slid_btn right">
+            <i class="ph ph-caret-right"></i>
+          </button>
+          <li class="card" onclick="clickCardTest(event)">
+            <i class="ph-fill ph-cards"></i>
+            <span>단어 카드</span>
+          </li>
+        </ul>
+      </div>
+    </main>
+  </div>
+  <script src="/js/common.js"></script>
+  <script src="/js/test_type.js"></script>
+</body>
+</html>

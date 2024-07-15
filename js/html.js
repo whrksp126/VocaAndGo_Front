@@ -138,3 +138,52 @@ const setWordModalHtml = async ({id, word, meaning, example, description}) => {
     </ul>
   `
 }
+// 테스트 설정 HTML 
+const setTextSetupHtml = () => {
+  return `
+    <ul class="">
+      <li data-type="test_types" class="test_types">
+        <h4>문제 유형</h4>
+        <div class="radio_btns">
+          <button class="active">
+            <i class="ph-bold ph-check"></i>
+            <span>단어</span>
+          </button>
+          <button>
+            <i class="ph-bold ph-check"></i>
+            <span>의미</span>
+          </button>
+          <button>
+            <i class="ph-bold ph-check"></i>
+            <span>교차</span>
+          </button>
+          <button>
+            <i class="ph-bold ph-check"></i>
+            <span>랜덤</span>
+          </button>
+        </div>
+      </li>
+      <li data-type="word_types" class="word_types">
+        <h4>단어 유형</h4>
+        <div class="radio_btns">
+          <button class="active">
+            <i class="ph-bold ph-check"></i>
+            <span>전체</span>
+          </button>
+          <button>
+            <i class="ph-bold ph-check"></i>
+            <span>헷갈리는 단어만</span>
+          </button>
+        </div>
+      </li>
+      <li data-type="problem_nums" class="problem_nums">
+        <h4>문제 개수</h4>
+        <div class="btns">
+          <button data-type="minus" class=""><i class="ph ph-minus"></i></button>
+          <input type="number" value="10" min="5" max="30">
+          <button data-type="plus" class="active"><i class="ph ph-plus"></i></button>
+        </div>
+      </li>
+    </ul>
+  `
+}

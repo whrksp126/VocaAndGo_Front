@@ -171,8 +171,8 @@ footer nav ul li span{
   left: 0;
   width: 100%;
   padding: 20px;
-  background: #fff;
-  color: #fff;
+  background: var(--fff-color);
+  color: var(--fff-color);
 }
 .modal .modal_content .modal_bottom .buttons{
   display: flex;
@@ -234,10 +234,11 @@ footer nav ul li span{
 }
 .input_text input,
 .selete_box select{
-  border: 1px solid #CCCCCC;
-  border-radius: 8px;
   height: 45px;
   padding: 0 15px;
+  border: 1px solid #CCCCCC;
+  border-radius: 8px;
+  background: var(--fff-color);
   transition: all .3s;
 }
 .input_text > .message{
