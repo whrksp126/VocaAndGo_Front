@@ -142,22 +142,22 @@ const setWordModalHtml = async ({id, word, meaning, example, description}) => {
 const setTextSetupHtml = () => {
   return `
     <ul class="">
-      <li data-type="test_types" class="test_types">
+      <li data-type="view_types" class="view_types">
         <h4>문제 유형</h4>
         <div class="radio_btns">
-          <button class="active">
+          <button class="active" data-type="word">
             <i class="ph-bold ph-check"></i>
             <span>단어</span>
           </button>
-          <button>
+          <button data-type="meaning">
             <i class="ph-bold ph-check"></i>
             <span>의미</span>
           </button>
-          <button>
+          <button data-type="cross">
             <i class="ph-bold ph-check"></i>
             <span>교차</span>
           </button>
-          <button>
+          <button data-type="random">
             <i class="ph-bold ph-check"></i>
             <span>랜덤</span>
           </button>
@@ -166,11 +166,11 @@ const setTextSetupHtml = () => {
       <li data-type="word_types" class="word_types">
         <h4>단어 유형</h4>
         <div class="radio_btns">
-          <button class="active">
+          <button class="active" data-type="all">
             <i class="ph-bold ph-check"></i>
             <span>전체</span>
           </button>
-          <button>
+          <button data-type="confused">
             <i class="ph-bold ph-check"></i>
             <span>헷갈리는 단어만</span>
           </button>

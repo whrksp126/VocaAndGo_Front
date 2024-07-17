@@ -29,9 +29,17 @@ async function fetchDataAsync(url, method, data, form=false){
   fetchOptions.credentials = 'include';
   try {
     const response = await fetch(newUrl, fetchOptions);
+    const contentType = response.headers.get('Content-Type');
     if (response.ok) {
-      const result = await response.json();
-      return result;
+      if (contentType.includes('application/json')) {
+        return await response.json();
+      } else if (contentType.includes('text')) {
+        return await response.text();
+      } else if (contentType.includes('audio')) {
+        return await response.blob();
+      } else {
+        throw new Error(`Unsupported content type: ${contentType}`);
+      }
     } else {
       throw new Error('문제가 발생했습니다.');
     }
@@ -175,4 +183,19 @@ const createTestViewLog = () => {
 const writeTestAppLog = (html) => {
   const _logEl = document.querySelector('#logEl');
   _logEl.insertAdjacentHTML('afterbegin', html)
+}
+
+
+// GTTS 
+const generateSpeech = async (text, language) => {
+  const url = `http://127.0.0.1:5000/tts/output`;
+  const method = 'GET';
+  const data = {text, language};
+  const result = await fetchDataAsync(url, method, data);
+  const audio_url = URL.createObjectURL(result);
+  const _audio = new Audio(audio_url); 
+  _audio.style.display = 'none'; 
+  document.body.appendChild(_audio);
+  _audio.onended = () => document.body.removeChild(_audio);
+  _audio.play(); 
 }
