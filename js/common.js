@@ -188,7 +188,7 @@ const writeTestAppLog = (html) => {
 
 // GTTS 
 const generateSpeech = async (text, language) => {
-  const url = `http://vocaandgo.ghmate.com/tts/output`;
+  const url = `https://vocaandgo.ghmate.com/tts/output`;
   const method = 'GET';
   const data = {text, language};
   const result = await fetchDataAsync(url, method, data);
