@@ -16,6 +16,7 @@ INDEXED_DB_REQUEST.onsuccess = function(event) {
 
 INDEXED_DB_REQUEST.onupgradeneeded = function(event) {
   INDEXED_DB = event.target.result;
+  console.log('데이터베이스가 처음으로 열렸습니다.')
 
   // 사용자 스토어 생성
   const userStore = INDEXED_DB.createObjectStore("users", { keyPath: "id", autoIncrement: true });
@@ -39,6 +40,12 @@ INDEXED_DB_REQUEST.onupgradeneeded = function(event) {
   // wordStore.createIndex("createdAt", "createdAt", { unique: false });
   // wordStore.createIndex("updatedAt", "updatedAt", { unique: false });
   // wordStore.createIndex("status", "status", { unique: false });
+
+  // 최근 학습 스토어 생성
+  const recentLearningStore = INDEXED_DB.createObjectStore("recentLearning");
+  recentLearningStore.put("card", "type");
+  recentLearningStore.put("before", "state");
+  recentLearningStore.put([], "test_list");
 
   // 더미 데이터 추가
   const isNewDatabase = event.oldVersion === 0;
@@ -163,13 +170,10 @@ function getIndexedDbNotebooks() {
   return new Promise((resolve, reject) => {
     const transaction = INDEXED_DB.transaction(["notebooks"], "readonly");
     const store = transaction.objectStore("notebooks");
-
     const request = store.getAll();
-
     request.onsuccess = function(event) {
       resolve(event.target.result);
     };
-
     request.onerror = function(event) {
       console.error("단어장을 가져오는 중에 오류가 발생했습니다.:", event.target.errorCode);
       reject(event.target.errorCode);
@@ -328,6 +332,86 @@ function deleteIndexedDbWord(id) {
 
     request.onerror = function(event) {
       console.error("단어 삭제 오류: ", event.target.errorCode);
+      reject(event.target.errorCode);
+    };
+  });
+}
+
+// 최근 학습 조회
+function getRecentLearningData(key) {
+  return new Promise((resolve, reject) => {
+    const transaction = INDEXED_DB.transaction(["recentLearning"], "readonly");
+    const store = transaction.objectStore("recentLearning");
+
+    const request = store.get(key);
+
+    request.onsuccess = function(event) {
+      if (event.target.result !== undefined) {
+        resolve(event.target.result);
+      } else {
+        reject("데이터가 없습니다.");
+      }
+    };
+
+    request.onerror = function(event) {
+      console.error("데이터를 가져오는 중에 오류가 발생했습니다.:", event.target.errorCode);
+      reject(event.target.errorCode);
+    };
+  });
+}
+
+// 최근 학습 추가 
+function addRecentLearningData(key, value) {
+  return new Promise((resolve, reject) => {
+    const transaction = INDEXED_DB.transaction(["recentLearning"], "readwrite");
+    const store = transaction.objectStore("recentLearning");
+
+    const request = store.put(value, key);
+
+    request.onsuccess = function(event) {
+      resolve(event.target.result);
+    };
+
+    request.onerror = function(event) {
+      console.error("데이터를 추가하는 중에 오류가 발생했습니다.:", event.target.errorCode);
+      reject(event.target.errorCode);
+    };
+  });
+}
+
+// 최근 학습 수정
+function updateRecentLearningData(key, value) {
+  return new Promise((resolve, reject) => {
+    const transaction = INDEXED_DB.transaction(["recentLearning"], "readwrite");
+    const store = transaction.objectStore("recentLearning");
+
+    const request = store.put(value, key);
+
+    request.onsuccess = function(event) {
+      resolve(event.target.result);
+    };
+
+    request.onerror = function(event) {
+      console.error("데이터를 수정하는 중에 오류가 발생했습니다.:", event.target.errorCode);
+      reject(event.target.errorCode);
+    };
+  });
+}
+
+// 최근 학습 삭제
+function deleteRecentLearningData(key) {
+  return new Promise((resolve, reject) => {
+    const transaction = INDEXED_DB.transaction(["recentLearning"], "readwrite");
+    const store = transaction.objectStore("recentLearning");
+
+    const request = store.delete(key);
+
+    request.onsuccess = function(event) {
+      resolve();
+    };
+
+    request.onerror = function(event) {
+      console.error("데이터를 삭제하는 중에 오류가 발생했습니다.:", event.target.errorCode);
       reject(event.target.errorCode);
     };
   });

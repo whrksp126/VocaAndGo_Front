@@ -22,11 +22,13 @@ body {
   --000-color : #000;
   --111-color : #111;
   --fff-color : #fff;
+  --f5-color : #f5F5F5;
 }
 [data-theme="dark"] {
   --000-color : #000;
   --111-color : #fff;
   --fff-color : #111;
+  --f5-color : #444444;
 }
 .container{
   display: flex;
@@ -324,7 +326,7 @@ footer nav ul li span{
   background-image: none;    /* 배경 이미지 제거 (화살표 포함 가능성) */
 }
 .selete_box select[disabled]{
-  background: #F5F5F5;
+  background: var(--f5-color);
 }
 
 

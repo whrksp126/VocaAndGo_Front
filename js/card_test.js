@@ -1,34 +1,10 @@
-// TODO : test_word_list를 indexed_db 최근 학습 데이터로 변경
-const TEST_WORD_LIST = [];
+let TEST_WORD_LIST = [];
 const URL_PARAMS = {
   vocabulary : getValueFromURL('vocabulary'), // all
   test_type : getValueFromURL('test_type'), // card
   view_types : getValueFromURL('view_types'), // word
   word_types : getValueFromURL('word_types'), // all
   problem_nums : getValueFromURL('problem_nums'), // 10
-}
-
-// INDEXED_DB 단어장 단어 호출
-const getVocabularyWordList = async () => {
-  const vocabulary_word_list = [];
-  if(URL_PARAMS.vocabulary == "all"){
-    const noteBooks = await getIndexedDbNotebooks();
-    for(const noteBook of noteBooks){
-      const words = await getIndexedDbWordsByNotebookId(noteBook.id)
-      vocabulary_word_list.push(...words);
-    }
-  }
-  return vocabulary_word_list;
-}
-
-// 전체 단어 리스트에서 테스트할 단어만 추출
-const setTestWrodList = (vocabulary_word_list) => {
-  let tempArray = [...vocabulary_word_list];
-  for (let i = tempArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
-  }
-  return tempArray.slice(0, Number(URL_PARAMS.problem_nums));
 }
 
 // 카드 테스트 card HTML
@@ -64,13 +40,18 @@ const setCardHtml = (word, total, cur) => {
 // 테스트 페이지 카드 세팅
 const setCardTestPage = () => {
   const _cards = document.querySelector('main .cards')
-  TEST_WORD_LIST.forEach((word, index)=>_cards.insertAdjacentHTML('afterbegin', setCardHtml(word, Number(URL_PARAMS.problem_nums), index+1)))
+  TEST_WORD_LIST.forEach((word, index)=>{
+    if(word.result == undefined){
+      _cards.insertAdjacentHTML('afterbegin', setCardHtml(word, Number(URL_PARAMS.problem_nums), index+1))
+    }
+  })
   const _first_card = document.querySelector('.cards .card:last-child');;
-  _first_card.classList.add('active');
+  _first_card?.classList.add('active');
 }
 
+
 // OX 클릭 시
-const clickGrading = (event, outcome) => {
+const clickGrading = async (event, outcome) => {
   const __card = document.querySelectorAll('.cards .card');
   const _currentCard = __card[__card.length - 1];
   if(!_currentCard) return;
@@ -81,11 +62,13 @@ const clickGrading = (event, outcome) => {
   const word_data = TEST_WORD_LIST.find(data => data.id == Number(_currentCard.dataset.id));
   word_data.result = outcome;
   if (!_nextCard) {
-    console.log(TEST_WORD_LIST)
-    _currentCard.remove()
-
+    _currentCard.remove();
+    updateRecentLearningData("state", "after");
+    updateRecentLearningData("test_list", TEST_WORD_LIST);
+    setTestResultsHtml();
   } else {
     _nextCard.classList.add('active');
+    updateRecentLearningData("test_list", TEST_WORD_LIST);
     setTimeout(() => _currentCard.remove(), 300);
     setCardTouchEvent();
   }
@@ -93,6 +76,7 @@ const clickGrading = (event, outcome) => {
 // 첫번째 카드에 터치 이벤트 적용
 const setCardTouchEvent = () => {
   const _card = document.querySelector('.cards .card.active');
+  if(!_card) return;
   const _granding = _card.querySelector('.granding');
   const screenWidth = window.innerWidth;
   let initialX = 0;
@@ -166,9 +150,81 @@ const setCardTouchEvent = () => {
   _card.addEventListener('touchcancel', endTouch); 
 }
 
+const setTestResultsHtml = () => {
+  const html = `
+    <div class="test_result_box">
+      <div class="top">
+        <div class="progress_bar"></div>
+      </div>
+      <div class="btns">
+        <button class="out_line">정답 보기</button>
+        <button onclick="clickRetest(event, true)" class="gray">테스트 다시 하기</button>
+        <button onclick="clickRetest(event, false)" class="fill">모르는 문제 다시 풀기</button>
+      </div>
+    </div>
+  `
+  document.querySelector('main').insertAdjacentHTML("beforeend", html);
+  document.querySelector('.test_result_box').classList.add('active');
+  setProGressBar()
+}
+
+// 원형 프로그래스 바 세팅
+const setProGressBar = () => {
+  const total = TEST_WORD_LIST.length;
+  const correct_num = TEST_WORD_LIST.filter(data => data.result == 'correct').length;
+  console.log(total, correct_num)
+  const _probressBar = document.querySelector('.progress_bar');
+  const bar = new ProgressBar.Circle(_probressBar, {
+    trailColor: '#FFEFFA',
+    strokeWidth: 12.5,
+    trailWidth: 12.5,
+    easing: 'easeInOut',
+    duration: 1400,
+    // text: {autoStyleContainer: false},
+    from: { color: '#FF8DD4', width: 12.5 },
+    to: { color: '#FF8DD4', width: 12.5 },
+    // 모든 애니메이션 호출에 대한 기본 단계 함수를 설정합니다.
+    step: function(state, circle) {
+      circle.path.setAttribute('stroke', state.color);
+      circle.path.setAttribute('stroke-width', state.width);
+      const value = Math.round(correct_num/total * 100);
+      circle.setText(`
+        <h2>${value + '점'}</h2>
+        <div>
+          <strong>${correct_num}</strong>
+          <span>/${total}</span>
+        </div>
+      `);
+    }
+  });
+  bar.animate(correct_num/total);  // 0.0에서 1.0 사이의 숫자
+}
+
+// 다시 풀기 클릭 시
+const clickRetest = async (event, is_all) => {
+  await updateRecentLearningData("state", "during");
+  if(!is_all) {
+    TEST_WORD_LIST = TEST_WORD_LIST.filter((data)=>data.result == 'incorrect');  
+  }
+  TEST_WORD_LIST.forEach((data)=>data.result = undefined);
+  await updateRecentLearningData("test_list", TEST_WORD_LIST);
+  location.reload();
+}
+
 const init = async () => {
-  const vocabulary_word_list = await getVocabularyWordList();
-  TEST_WORD_LIST.push(...setTestWrodList(vocabulary_word_list));
+  const state = await getRecentLearningData("state");
+  if(state == 'before') {
+    await updateRecentLearningData("state", "during");
+    TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
+  }
+  if(state == 'during'){ 
+    TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
+  }
+  if(state == 'after'){
+    const test_list = await getRecentLearningData("test_list", TEST_WORD_LIST);
+    TEST_WORD_LIST = test_list;
+    setTestResultsHtml();
+  }
   setCardTestPage(TEST_WORD_LIST);
   setCardTouchEvent();
 }

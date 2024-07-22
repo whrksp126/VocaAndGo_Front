@@ -224,7 +224,17 @@ const onInputMeaning = async (event) => {
     _searchList.classList.remove('active'); 
     return
   };
-  await getSearchMeaningData(word)
+  await getSearchMeaningData(word);
+  _searchList.classList.toggle('active', SEARCH_LIST.length > 0);
+  _searchList.innerHTML = '';  
+  SEARCH_LIST.forEach(({ word: dataWord, meaning }, index) => {
+    _searchList.insertAdjacentHTML('beforeend', `
+      <li onclick="clickSelectSearchedWord(event)" data-index="${index}">
+        <div class="search_word">${highlightWord(meaning, word)}</div>
+        <div class="search_meaning">${dataWord}</div>
+      </li>
+    `);
+  });
 }
 
 // 단어 검색 요청 
@@ -257,11 +267,68 @@ const clickSelectSearchedWord = (event) => {
   const _exampleInput = document.querySelector('.input_text .example');
   const _explanationInput = document.querySelector('.input_text .explanation');
   _wordInput.value = data.word;
-  _meaningInput.value = data.meanings.join(', ');
+  _meaningInput.value = data.meanings ? data.meanings.join(', ') : data.meaning;
   SEARCH_LIST = [];
   const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
   _searchList.classList.remove('active'); 
 }
+
+// 한글 문자를 자모로 분리하는 함수
+function splitHangul(char) {
+  const initialConsonants = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
+  const vowels = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
+  const finalConsonants = " ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ";
+
+  // 한글 유니코드 범위 내에서 처리
+  const code = char.charCodeAt(0) - 44032;
+  if (code < 0 || code > 11171) {
+      return [char]; // 한글 음절 범위 밖의 문자 처리
+  }
+
+  // 자모 분리
+  const initialConsonant = initialConsonants[Math.floor(code / 588)];
+  const vowel = vowels[Math.floor((code % 588) / 28)];
+  const finalConsonant = finalConsonants[code % 28];
+
+  // 빈 문자 제거 후 반환
+  return [initialConsonant, vowel, finalConsonant].filter(c => c !== ' ');
+}
+
+// 입력받은 단어와 키워드를 비교하여 강조 표시하는 함수
+function highlightWord(word, keyword) {
+  const splitKeyword = keyword.split('').map(splitHangul).flat();
+  const result = [];
+
+  let i = 0;
+  while (i < word.length) {
+    const remainingWord = word.slice(i);
+    const matchedLength = matchStarting(remainingWord, splitKeyword);
+
+    // 키워드와 일치하는 부분 강조
+    if (matchedLength > 0) {
+      result.push(`<strong>${word.slice(i, i + matchedLength)}</strong>`);
+      i += matchedLength;
+    } else {
+      // 일치하지 않는 부분은 그대로 유지
+      result.push(`<span>${word[i]}</span>`);
+      i += 1;
+    }
+  }
+
+  return result.join('');
+}
+
+// 단어의 시작 부분과 키워드를 비교하여 일치하는 길이를 반환하는 함수
+function matchStarting(word, splitKeyword) {
+  for (let i = 1; i <= word.length; i++) {
+    const slice = word.slice(0, i).split('').map(splitHangul).flat();
+    if (slice.slice(0, splitKeyword.length).join('') === splitKeyword.join('')) {
+      return i;
+    }
+  }
+  return 0;
+}
+
 
 const setInitHtml = () => {
   const id = getValueFromURL("vocabulary_id");
