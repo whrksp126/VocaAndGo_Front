@@ -27,7 +27,7 @@
           <img src="/images/google_logo.png" alt="">
           <span>Google 로그인</span>
         </button> -->
-        <button class="google_btn" onclick="alert('구글 로그인 준비 중~~^^')">
+        <button class="google_btn" onclick="handleGoogleLogin()">
           <img src="/images/google_logo.png" alt="">
           <span>Google 로그인</span>
         </button>
@@ -36,6 +36,14 @@
     </div>
   </div>
   <script src="/js/common.js"></script>
-
+  <script>
+    function handleGoogleLogin() {
+      if(window.ReactNativeWebView){
+        window.ReactNativeWebView.postMessage('launchGoogleAuth');
+      }else{
+        window.location.href='https:\/\/vocaandgo.ghmate.com/login/google';
+      }
+    }
+</script>
 </body>
 </html>
