@@ -1,3 +1,5 @@
+
+
 // 로그아웃 버튼 클릭 시
 const clickLogOut = (event) => {
   const modal = openDefaultModal();
@@ -44,8 +46,16 @@ function setDarkTheme() {
   document.documentElement.style.setProperty('--text-color', 'white');
   localStorage.setItem('theme', 'dark');
 }
-// 페이지 로드 시 저장된 테마 설정 적용
+
 document.addEventListener('DOMContentLoaded', function() {
+  const user_data = JSON.parse(localStorage.getItem('user'));
+  const _userEmail = document.querySelector('.user_email');
+  if(_userEmail){
+    _userEmail.innerHTML = user_data.email;
+  }
+
+
+  // 페이지 로드 시 저장된 테마 설정 적용
   if(document.querySelector('body').dataset.page == 'theme'){
     const savedTheme = localStorage.getItem('theme');
     document.querySelector('main .toggle_box').innerHTML = `

@@ -33,8 +33,9 @@ const clickAddVocabularyBook = (event, data={name:"", color:"FF8DD4"}) => {
 
 const setUserNameHtml = async () => {
   const _name = document.querySelector('header .container h2 strong');
-  const user_data = await getIndexedDbUsers();
-  _name.innerHTML = `${user_data.name}`
+  // const user_data = await getIndexedDbUsers();
+  const user_data = JSON.parse(localStorage.getItem('user'));
+  _name.innerHTML = `${user_data.name}`;
 }
 const setVocabularyListHtml = async () => {
   const _ul = document.querySelector('main .container ul');

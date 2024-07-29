@@ -55,7 +55,7 @@ INDEXED_DB_REQUEST.onupgradeneeded = function(event) {
       const userStore = userTransaction.objectStore("users");
 
       // 사용자 더미 데이터
-      userStore.add({ name: "용궁 공주", email: "heyvoca@orderandgo.com" });
+      userStore.add({ name: "열공이", email: "" });
 
       const notebookTransaction = INDEXED_DB.transaction("notebooks", "readwrite");
       const notebookStore = notebookTransaction.objectStore("notebooks");
@@ -415,4 +415,22 @@ function deleteRecentLearningData(key) {
       reject(event.target.errorCode);
     };
   });
+}
+
+
+// IndexedDB 데이터베이스 삭제 함수
+function deleteDatabase(dbName) {
+  const request = indexedDB.deleteDatabase(dbName);
+
+  request.onsuccess = () => {
+    console.log(`Database ${dbName} deleted successfully`);
+  };
+
+  request.onerror = (event) => {
+    console.error(`Error deleting database ${dbName}:`, event.target.error);
+  };
+
+  request.onblocked = () => {
+    console.log(`Delete blocked for database ${dbName}`);
+  };
 }
