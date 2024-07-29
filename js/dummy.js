@@ -94,10 +94,3 @@ const elementary_vocabulary = {
     },
   ]
 }
-
-if(!localStorage.getItem('user_data')){
-  localStorage.setItem('user_data', JSON.stringify(user_data));
-}
-if(!localStorage.getItem('vocabulary_list')){
-  localStorage.setItem('vocabulary_list', JSON.stringify(vocabulary_list));
-}

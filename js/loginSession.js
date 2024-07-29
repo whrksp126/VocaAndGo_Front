@@ -7,3 +7,13 @@ function getLastPathFromURL() {
   }
   return lastPath;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const IS_MAIN_PAGES = ['login'];
+  const curPage = getLastPathFromURL();
+  const isLoginPage = IS_MAIN_PAGES.includes(curPage);
+  const user_data = JSON.parse(localStorage.getItem('user'));
+  if(!user_data && !isLoginPage){
+    window.location.href = '/html/login.html'
+  }
+})

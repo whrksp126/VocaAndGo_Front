@@ -13,7 +13,6 @@ function is_backable() {
 function getDevicePlatform() {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   const isAppWebView = userAgent.includes('HeyVocaWebView');
-  console.log()
   if (isAppWebView) {
     if (/Android/i.test(userAgent)) {
       return 'android';
