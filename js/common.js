@@ -86,6 +86,74 @@ const openDefaultModal = (isBackClose=true) => {
   _modal.addEventListener('click', event => clickHandler(event, isBackClose));
   window.addEventListener('popstate', onPopStateHandler);
   window.openModal = true;
+  let startY;
+  let startHeight;
+  let startTime;
+  let isScrolling = false;
+
+  _modal_middle.addEventListener("scroll", () => {
+    isScrolling = true;
+  });
+  _modal_middle.addEventListener("scrollend", () => {
+    isScrolling = false;
+  });
+  _modal_content.addEventListener('touchstart', (event) => {
+    const _modalMiddle = findParentTarget(event.target, '.modal_middle');
+    if(_modalMiddle){
+
+    }
+    // 최상단 또는 최하단이 아니면 스크롤 가능
+    isScrolling = !isAtTop && !isAtBottom ? true : false;
+    const p_top = 30 + 39 + 20;
+    const p_bottom = 20;
+    const maxHeight = _modal_middle.offsetHeight + p_top + p_bottom;
+    _modal_content.style.maxHeight = `${maxHeight}px`;
+    const touch = event.touches[0];
+    startY = touch.clientY;
+    startHeight = _modal_content.offsetHeight;
+    startTime = new Date().getTime();
+    _modal_content.style.transition = 'none';
+  });
+  
+  _modal_content.addEventListener('touchmove', (event) => {
+    const _modalMiddle = findParentTarget(event.target, '.modal_middle');
+    if(_modalMiddle){
+      
+    }
+    if (isScrolling) return
+    const touch = event.touches[0];
+    const moveY = touch.clientY;
+    const distance = startY - moveY;
+    const newHeight = startHeight + distance;
+    const minHeight = 100; 
+  
+    if (newHeight > minHeight) {
+      _modal_content.style.height = `${newHeight}px`;
+    }
+  });
+  
+  _modal_content.addEventListener('touchend', (event) => {
+    _modal_content.style.transition = '';
+    const finalHeight = _modal_content.offsetHeight;
+    _modal_content.style.height = `${finalHeight}px`;
+  
+    const endTime = new Date().getTime(); 
+    const duration = endTime - startTime; 
+    const distance = event.changedTouches[0].clientY - startY; 
+    const speed = distance / duration; 
+  
+    const speedThreshold = 0.5; 
+    const distanceThreshold = 50; 
+    if (speed > speedThreshold && distance > distanceThreshold) {
+      _modal.click();
+    }
+  });
+  
+  
+  
+
+
+
   return { 
     container : _modal, 
     content: _modal_content, 

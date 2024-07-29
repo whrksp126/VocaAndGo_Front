@@ -138,6 +138,7 @@ footer nav ul li span{
   display: flex;
   flex-flow: column;
   gap: 30px;
+  min-height: 160px;
   max-height: calc(100vh - 50px);
   height: auto;
   padding: 20px;
@@ -149,7 +150,6 @@ footer nav ul li span{
 }
 .modal.active .modal_content{
   transform: translate(0px, 0%);
-  padding-bottom: 95px;
 }
 .modal .modal_content .modal_top{
   text-align: center;
@@ -160,6 +160,7 @@ footer nav ul li span{
 
 .modal .modal_content .modal_middle{
   max-height: calc(100vh - 20px - 27px - 30px - 45px - 20px);
+  padding-bottom: 75px;
   overflow: auto;
 }
 .modal .modal_content .modal_middle > ul{
@@ -175,6 +176,7 @@ footer nav ul li span{
   padding: 20px;
   background: var(--fff-color);
   color: var(--fff-color);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
 }
 .modal .modal_content .modal_bottom .buttons{
   display: flex;

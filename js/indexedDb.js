@@ -72,8 +72,8 @@ INDEXED_DB_REQUEST.onupgradeneeded = function(event) {
       const wordStore = wordTransaction.objectStore("words");
 
       // 단어 더미 데이터
-      wordStore.add({ notebookId: 1, word: "apple", meaning: "사과", example: "I ate an apple.", description: "먹는 사과", createdAt, updatedAt: createdAt, status: "not learned" });
-      wordStore.add({ notebookId: 1, word: "book", meaning: "도서", example: "I read a book.", description: "읽는 책", createdAt, updatedAt: createdAt, status: "learned" });
+      wordStore.add({ notebookId: 1, word: "apple", meaning: "사과", example: "I ate an apple.", description: "먹는 사과", createdAt, updatedAt: createdAt, status: 0 });
+      wordStore.add({ notebookId: 1, word: "book", meaning: "도서", example: "I read a book.", description: "읽는 책", createdAt, updatedAt: createdAt, status: 1 });
     };
   }
 };

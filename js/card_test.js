@@ -157,7 +157,7 @@ const setTestResultsHtml = () => {
         <div class="progress_bar"></div>
       </div>
       <div class="btns">
-        <button class="out_line">정답 보기</button>
+        <button onclick="clickShowAnswer(event)" class="out_line">정답 보기</button>
         <button onclick="clickRetest(event, true)" class="gray">테스트 다시 하기</button>
         <button onclick="clickRetest(event, false)" class="fill">모르는 문제 다시 풀기</button>
       </div>
@@ -209,6 +209,21 @@ const clickRetest = async (event, is_all) => {
   TEST_WORD_LIST.forEach((data)=>data.result = undefined);
   await updateRecentLearningData("test_list", TEST_WORD_LIST);
   location.reload();
+}
+
+// 정답 보기 클릭 시
+const clickShowAnswer = async (event) => {
+  const modal = openDefaultModal();
+  modal.container.classList.add('show_answer')
+  modal.top.innerHTML = modalTopHtml(`정답 보기`);
+  modal.middle.innerHTML = await setShowAnswerHtml();
+  
+  const btns = [
+    {class:"gray", text: "틀린 단어 마크 해제", fun: ``},
+    {class:"pink", text: "맞은 단어 마크 해제", fun: ``}
+  ]
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  setTimeout(()=>modal.container.classList.add('active'),300)
 }
 
 const init = async () => {

@@ -187,3 +187,36 @@ const setTextSetupHtml = () => {
     </ul>
   `
 }
+
+// 정답 보기 html
+const setShowAnswerHtml = async () => {
+  const test_list = await getRecentLearningData("test_list");
+  return `
+    <ul>
+      ${test_list.map((data)=>{return `
+      <li 
+        data-id="${data.id}" 
+        data-noteid="${data.notebookId}" 
+        data-result="${data.result}" 
+        class="answer_card ${data.result}"
+        >
+        <div class="left">
+          <div>
+            <i class="ph-bold ph-circle"></i>
+            <i class="ph-bold ph-x"></i>
+          </div>
+          <div class="texts">
+            <span>${data.word}</span>
+            <p>${data.meaning}</p>
+          </div>
+        </div>
+        <div class="right">
+          <img src="/images/marker_${data.status}.png">
+        </div>
+      </li>
+
+      `}).join('')}
+    </ul>
+  `
+
+}

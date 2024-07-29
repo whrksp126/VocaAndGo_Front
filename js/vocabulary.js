@@ -86,7 +86,7 @@ const clickModalsetWordBtn = async (event) => {
     meaning : MEANING,
     example : EXAMPLE,
     description : EXPLANATION,
-    status : "not learned"
+    status : 0
   }
   if(_modal.dataset.id){
     const result = await updateIndexedDbWord(data.id, data.notebookId, data.word, data.meaning, data.example, data.description, createdAt, data.status);

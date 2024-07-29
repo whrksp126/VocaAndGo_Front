@@ -190,3 +190,78 @@ main .container{
   color: #999999;
   font-size: 14px;
 }
+
+.answer_card{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #FFEFFA;
+}
+.answer_card[data-result="incorrect"]{
+  background: #F5F5F5;
+  color: #CCCCCC;
+}
+.answer_card[data-result="incorrect"] i.ph-circle{
+  display: none;
+}
+.answer_card[data-result="correct"]{
+  background: #FFEFFA;
+  color: #FF8DD4;
+}
+.answer_card[data-result="correct"] i.ph-x{
+  display: none;
+}
+.answer_card .left{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.answer_card .left i{
+  font-size: 20px;
+}
+.answer_card .left .texts{
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  color: #111;
+}
+.answer_card .left .texts span{
+  font-size: 16px;
+  font-weight: 700;
+}
+.answer_card .left .texts p{
+  font-size: 12px;
+  font-weight: 400;
+}
+.answer_card .right{
+  
+}
+.answer_card .right img{
+  width: 24px;
+}
+
+.modal.show_answer .modal_content .modal_top{
+  position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  height: 39px;
+}
+.modal.show_answer .modal_content .modal_top::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 30px;
+  height: 3px;
+  border-radius: 5;
+  background-color: #DDDDDD;
+  transform: translate(-50%,0);
+}
+.modal.show_answer .modal_content .modal_middle > ul {
+  gap: 10px;
+}
+.modal.show_answer .modal_content .modal_middle > ul li{}
