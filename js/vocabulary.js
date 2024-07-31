@@ -156,8 +156,12 @@ const setVocabularyHtml = async (id) => {
     bodyStyle.setProperty('--card-background', `#FFEFFA`);
     bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
     for(let word of words){
+      console.log(word)
       const html = `
-        <li data-id="${word.id}">
+        <li 
+          data-id="${word.id}"
+          data-status="${word.status}"
+        >
           <div class="input_checkbox">
             <input type="checkbox" id="${word.id}">
             <label for="${word.id}">
@@ -168,7 +172,9 @@ const setVocabularyHtml = async (id) => {
           <div class="top">
             <div class="left">
               <div class="word">${word.word}</div>
-              <div class="favorites"><i class="ph-fill ph-star"></i></div>
+              <button class="marker" onclick="clickMarker(event)">
+                <img src="/images/marker_${word.status}.png">
+              </button>
             </div>
             <div class="right">
               <div class="btns">

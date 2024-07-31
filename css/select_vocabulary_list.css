@@ -1,0 +1,14 @@
+header .container {
+
+}
+header .container h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--111-color);
+}
+main {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: calc(100vh - var(--header-height));
+}

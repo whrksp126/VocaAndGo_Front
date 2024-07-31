@@ -43,17 +43,15 @@ main .container ul li .top .left .word{
   font-weight: 700;
   color: #111;
 }
-main .container ul li .top .left .favorites{
+main .container ul li .top .left .marker{
   position: relative;
   display: flex;
   width: 12px;
   height: 12px;
-  border-radius: 2px;
-  background: var(--card-color);
   color: #fff;
   font-size: 6px;
 }
-main .container ul li .top .left .favorites i{
+main .container ul li .top .left .favorites img{
   position: absolute;
   top: 50%;
   left: 50%;

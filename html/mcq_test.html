@@ -15,13 +15,13 @@
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/common.css">
   <script src="/js/initStyle.js"></script>
-  <link rel="stylesheet" href="/css/card_test.css">
+  <link rel="stylesheet" href="/css/mcq_test.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="/js/html.js"></script>
   <script src="/js/dummy.js"></script>
 
 </head> 
-<body data-page="card_test" class="react">
+<body data-page="mcq_test" class="react">
   <div id="app">
     <header>
       <div class="container">
@@ -31,17 +31,48 @@
     </header>
     <main>
       <div class="container">
-        <div class="cards"></div>
+        <div class="cards">
+          <div class="card active" 
+          data-notebookId=""
+          data-id=""
+          data-meaning=""
+          data-word="vehicle"
+          data-description=""
+          data-example=""
+          data-status="0"
+        >
+          <div class="granding">
+            <i class="ph-bold ph-circle"></i>
+            <i class="ph-bold ph-x"></i>
+          </div>
+          <span class="word">vehicle</span>
+          <div class="bottom">
+            <button class="marker" onclick="clickMarker(event)">
+              <img src="/images/marker_0.png">
+            </button>
+            <div class="page">
+              <span class="cur">1</span>
+              <span>/</span>
+              <span class="total">10</span>
+            </div>
+            <button class="speaker" onclick="generateSpeech('vehicle', 'en')">
+              <i class="ph-fill ph-speaker-high"></i>
+            </button>
+          </div>
+        </div>
+        </div>
       </div>
       <div class="btns">
-        <button class="x_btn" onclick="clickGrading(event, 0)"><i class="ph-bold ph-x"></i></button>
-        <button class="o_btn" onclick="clickGrading(event, 1)"><i class="ph-bold ph-circle"></i></button>
+        <button>n. 차량, 탈것</button>
+        <button>v. 비우다, 쏟아붓다; adj. 비어 있는</button>
+        <button>n. 보도</button>
+        <button>n. 복도, 통로</button>
       </div>
     </main>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/progressbar.js/1.1.0/progressbar.min.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/test_common.js"></script>
-  <script src="/js/card_test.js"></script>
+  <script src="/js/mcq_test.js"></script>
 </body>
 </html>

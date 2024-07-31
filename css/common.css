@@ -331,6 +331,138 @@ footer nav ul li span{
   background: var(--f5-color);
 }
 
+/* *************** */
+/* 단어장 리스트 ul */
+.vocabularay_list {
+  display: flex;
+  flex-flow: column;
+  gap: 15px;
+  width: 100%;
+}
+.vocabularay_list li {
+  display: flex;
+  flex-flow: column;
+  gap: 15px;
+  padding: 20px;
+  background: var(--card-background);
+  border-radius: 12px;
+}
+.vocabularay_list li .top{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.vocabularay_list li .top h3{
+  color: #111;
+  font-weight: 700;
+}
+.vocabularay_list li .top span{
+  color: #999999;
+  font-size: 10px;
+}
+.vocabularay_list li .progress_bar{
+  width: 100%;
+  height: 16px;
+  border-radius: 50px;
+  background: var(--progress-color);
+  overflow: hidden;
+}
+.vocabularay_list li .progress_bar .cur_bar{
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: var(--progress-width);
+  height: 100%;
+  background: var(--card-color);
+  border-radius: 50px;
+}
+.vocabularay_list li .progress_bar .cur_bar span{
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  transform: translate(0, -50%);
+}
+.vocabularay_list li .progress_bar .cur_bar span.right {
+  right: -24px;
+}
+/* 단어장 리스트 ul */
+/* *************** */
+
+/* *************** */
+/* 테스트 설정 모달 */
+.modal.setup_test .modal_content .modal_middle{}
+.modal.setup_test .modal_content .modal_middle ul{}
+.modal.setup_test .modal_content .modal_middle ul li{
+  display: flex;
+  align-items: center;
+  flex-flow: column;
+  gap: 15px;
+}
+.modal.setup_test .modal_content .modal_middle ul li h4{
+  font-size: 14px;
+  font-weight: 700;
+}
+.modal.setup_test .modal_content .modal_middle ul li .radio_btns{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+.modal.setup_test .modal_content .modal_middle ul li .radio_btns button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 45px;
+  border-radius: 8px;
+  border: 1px solid #CCCCCC;
+  color: #CCCCCC;
+  font-weight: 700;
+  font-size: 16px;
+}
+.modal.setup_test .modal_content .modal_middle ul li .radio_btns button i{
+  display: none;
+  font-size: 18px;
+}
+.modal.setup_test .modal_content .modal_middle ul li .radio_btns button.active {
+  border: 1px solid #FF8DD4;
+  color: #FF8DD4;
+}
+.modal.setup_test .modal_content .modal_middle ul li .radio_btns button.active i{
+  display: block;
+}
+.modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns{
+  display: flex;
+  gap: 10px;
+}
+.modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 7.11px;
+  border: 1px solid #CCCCCC;
+  color: #CCCCCC;
+}
+.modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns input{
+  width: 100px;
+  border: none;
+  color: #FF8DD4;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  background: var(--fff-color);
+}
+.modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns button.active{
+  border: 1px solid #FF8DD4;
+  color: #FF8DD4;
+}
+/* 테스트 설정 모달 */
+/* *************** */
 
 #logEl {
   position: fixed;

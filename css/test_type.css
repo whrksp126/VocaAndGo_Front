@@ -14,28 +14,19 @@ main {
   height: calc(100vh - var(--header-height));
 }
 .slide_box{
+  position: relative;
   width: 100%;
 }
 .test_type_list {
-  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  /* justify-content: flex-start; */
+  gap: 20px;
   width: 100%;
   height: 297px;
+  z-index: 0;
+  /* padding-left: calc((100vw - 280px) / 2); */
 }
-.test_type_list .slid_btn{
-  position: absolute;
-  color: #CCCCCC;
-  font-size: 32px;
-}
-.test_type_list .slid_btn.left{
-  left: 5px;
-}
-.test_type_list .slid_btn.right{
-  right: 5px;
-}
-
 .test_type_list li {
   display: flex;
   flex-flow: column;
@@ -50,6 +41,9 @@ main {
   background: #FFEFFA;
   color: #111;
 }
+.test_type_list li.swiper-slide-active{
+
+}
 .test_type_list li i{
   font-size: 32px;
   color: #FF8DD4;
@@ -58,72 +52,20 @@ main {
   font-size: 22px;
   font-weight: 700;
 }
+.slid_btn{
+  position: absolute;
+  color: #FF8DD4;
+  font-size: 32px;
+  top: 50%;
+  transform: translate(0, -50%);
 
-.modal.setup_test .modal_content .modal_middle{}
-.modal.setup_test .modal_content .modal_middle ul{}
-.modal.setup_test .modal_content .modal_middle ul li{
-  display: flex;
-  align-items: center;
-  flex-flow: column;
-  gap: 15px;
 }
-.modal.setup_test .modal_content .modal_middle ul li h4{
-  font-size: 14px;
-  font-weight: 700;
+.slid_btn.left{
+  left: 5px;
 }
-.modal.setup_test .modal_content .modal_middle ul li .radio_btns{
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  width: 100%;
+.slid_btn.right{
+  right: 5px;
 }
-.modal.setup_test .modal_content .modal_middle ul li .radio_btns button{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  height: 45px;
-  border-radius: 8px;
-  border: 1px solid #CCCCCC;
+.swiper-button-disabled{
   color: #CCCCCC;
-  font-weight: 700;
-  font-size: 16px;
-}
-.modal.setup_test .modal_content .modal_middle ul li .radio_btns button i{
-  display: none;
-  font-size: 18px;
-}
-.modal.setup_test .modal_content .modal_middle ul li .radio_btns button.active {
-  border: 1px solid #FF8DD4;
-  color: #FF8DD4;
-}
-.modal.setup_test .modal_content .modal_middle ul li .radio_btns button.active i{
-  display: block;
-}
-.modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns{
-  display: flex;
-  gap: 10px;
-}
-.modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns button{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 7.11px;
-  border: 1px solid #CCCCCC;
-  color: #CCCCCC;
-}
-.modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns input{
-  width: 100px;
-  border: none;
-  color: #FF8DD4;
-  font-size: 24px;
-  font-weight: 700;
-  text-align: center;
-  background: var(--fff-color);
-}
-.modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns button.active{
-  border: 1px solid #FF8DD4;
-  color: #FF8DD4;
 }

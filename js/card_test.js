@@ -1,14 +1,15 @@
-let TEST_WORD_LIST = [];
-const URL_PARAMS = {
-  vocabulary : getValueFromURL('vocabulary'), // all
-  test_type : getValueFromURL('test_type'), // card
-  view_types : getValueFromURL('view_types'), // word
-  word_types : getValueFromURL('word_types'), // all
-  problem_nums : getValueFromURL('problem_nums'), // 10
-}
-
 // 카드 테스트 card HTML
 const setCardHtml = (word, total, cur) => {
+  let show_text = '';
+  let show_hint = '';
+  const view_type = URL_PARAMS.view_types;
+  let show_type = 1; // 0 : 단어, 1 : 의미;
+  if(view_type == 'word') show_type = 0;
+  if(view_type == 'meaning') show_type = 1;
+  if(view_type == 'cross') show_type = cur % 2 == 0 ? 1 : 0;
+  if(view_type == 'random') show_type = Math.random() < 0.5 ? 0 : 1;
+  show_text = show_type == 0 ? word.word : word.meaning;
+  show_hint = show_type == 0 ? word.meaning : word.word;
   return `
     <div class="card" 
       data-notebookId="${word.notebookId}"
@@ -23,15 +24,18 @@ const setCardHtml = (word, total, cur) => {
         <i class="ph-bold ph-circle"></i>
         <i class="ph-bold ph-x"></i>
       </div>
-      <span class="word">${word.word}</span>
+      <span class="word">${show_text}</span>
+      <span class="word hint">${show_hint}</span>
       <div class="bottom">
-        <button class="star"><i class="ph-fill ph-star"></i></button>
+        <button class="marker click_event" onclick="clickMarker(event)">
+          <img src="/images/marker_${word.status}.png">
+        </button>
         <div class="page">
           <span class="cur">${cur}</span>
           <span>/</span>
           <span class="total">${total}</span>
         </div>
-        <button class="speaker" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
+        <button class="speaker click_event" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
       </div>
     </div>
   `
@@ -57,7 +61,7 @@ const clickGrading = async (event, outcome) => {
   const _currentCard = __card[__card.length - 1];
   if(!_currentCard) return;
   const _nextCard = __card[__card.length - 2];
-  _currentCard.classList.add(outcome);
+  _currentCard.classList.add(outcome ? 'correct' : 'incorrect');
   _currentCard.classList.add('end');
   _currentCard.classList.remove('active');
   const word_data = TEST_WORD_LIST.find(data => data.id == Number(_currentCard.dataset.id));
@@ -87,19 +91,26 @@ const setCardTouchEvent = () => {
   let offsetY = 0;
   let startTime = 0; // 터치 시작 시간을 기록
 
+  // 클릭 시
+  const click = (event) => {
+    const _clickEvent = findParentTarget(event.target, 'click_event');
+    if(_clickEvent) return;
+    const _card = findParentTarget(event.target, '.card');
+    _card.classList.toggle('hint');
+
+  }
   // 터치 시작 이벤트 핸들러
   const startTouch = (e) => {
     initialX = e.touches[0].clientX - offsetX;
     initialY = e.touches[0].clientY - offsetY;
     startTime = Date.now(); // 터치 시작 시간 기록
-
-    _card.classList.add('move')
     _card.addEventListener('touchmove', moveTouch, { passive: false });
   };
 
   // 터치 이동 이벤트 핸들러
   const moveTouch = (e) => {
     e.preventDefault(); // 화면 스크롤 방지
+    _card.classList.add('move')
     const currentX = e.touches[0].clientX;
     const currentY = e.touches[0].clientY;
     offsetX = currentX - initialX;
@@ -147,6 +158,7 @@ const setCardTouchEvent = () => {
   };
 
   // 이벤트 리스너 추가
+  _card.addEventListener('click', click)
   _card.addEventListener('touchstart', startTouch);
   _card.addEventListener('touchend', endTouch);
   _card.addEventListener('touchcancel', endTouch); 
@@ -253,18 +265,6 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
   event.target.innerHTML = nextBtnText;
   event.target.dataset.register = isRegister == 0 ? 1 : 0;
 };
-
-// 마커 클릭 시
-const clickMarker = async (event) => {
-  const _li = findParentTarget(event.target, 'li');
-  let status = Number(_li.dataset.status) + 1;
-  if(status > 2) status = 0;
-  _li.querySelector('img').src = `/images/marker_${status}.png`;
-  _li.dataset.status = status;
-  const word_id = Number(_li.dataset.id);
-  await updateIndexedDbWord(word_id, {status : status});
-}
-
 
 
 const init = async () => {

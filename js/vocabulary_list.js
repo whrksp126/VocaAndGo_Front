@@ -37,41 +37,24 @@ const setUserNameHtml = async () => {
   const user_data = JSON.parse(localStorage.getItem('user'));
   _name.innerHTML = `${user_data.name}`;
 }
-const setVocabularyListHtml = async () => {
+// 단어장 리스트 만들기
+const setVocabularyList = async () => {
   const _ul = document.querySelector('main .container ul');
   _ul.innerHTML = ``;
   const noteBooks = await getIndexedDbNotebooks();
   if(noteBooks.length > 0){
-    for(let noteBook of noteBooks){
-      const words = await getIndexedDbWordsByNotebookId(noteBook.id);
-      const totalWords = words.length;
-      const learnedCount = words.reduce((count, word) => {return word.status === "learned" ? count + 1 : count}, 0);
-      const progress = (learnedCount / totalWords) * 100 || 0;  
-      const html = `
-        <li 
-          data-id="${noteBook.id}"
-          onclick="window.location.href='/html/vocabulary.html?vocabulary_id=${noteBook.id}'"
-          style="--card-color: #${noteBook.color.main}; --card-background: #${noteBook.color.background}; --progress-color: #${noteBook.color.main}4d; --progress-width:${progress}%;"
-          >
-          <div class="top">
-            <h3>${noteBook.name}</h3>
-            <span>${learnedCount}/${totalWords}</span>
-          </div>
-          <div class="progress_bar">
-            <div class="cur_bar">
-              <span class="${progress > 13 ? "" : "right"}">${progress}%</span>
-            </div>
-          </div>
-        </li>
-      `
-      _ul.insertAdjacentHTML('beforeend', html)
-    }
+    const html = await setVocabularyListHtml(noteBooks);
+    _ul.innerHTML = html;
   }else{
     console.log('단어장 추가 유도 UI');
   }
 }
+// 단어장 클릭 시
+const clickVocabularyItem = (event, id) => {
+  window.location.href=`/html/vocabulary.html?vocabulary_id=${id}`
+}
 const setInitHtml = () => {
   setUserNameHtml();
-  setVocabularyListHtml();
+  setVocabularyList();
 }
 setInitHtml();

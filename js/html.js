@@ -91,6 +91,7 @@ const setVocabularyBookHtml = ({name, color}) =>{
   return html;
 }
 
+// 단어 설정 모달 html
 const setWordModalHtml = async ({id, word, meaning, example, description}) => {
   const noteBooks = await getIndexedDbNotebooks();
   return `
@@ -138,6 +139,36 @@ const setWordModalHtml = async ({id, word, meaning, example, description}) => {
     </ul>
   `
 }
+
+// 단어장 리스트 html
+const setVocabularyListHtml = async (vocabulary_list) => {
+  let html = ``;
+  for(const vocabulary of vocabulary_list){
+    const words = await getIndexedDbWordsByNotebookId(vocabulary.id);
+    const totalWords = words.length;
+    const learnedCount = words.reduce((count, word) => {return word.status == 1 ? count + 1 : count}, 0);
+    const progress = (learnedCount / totalWords) * 100 || 0;  
+    html += `
+      <li 
+        data-id="${vocabulary.id}"
+        onclick="clickVocabularyItem(event,${vocabulary.id})"
+        style="--card-color: #${vocabulary.color.main}; --card-background: #${vocabulary.color.background}; --progress-color: #${vocabulary.color.main}4d; --progress-width:${progress}%;"
+        >
+        <div class="top">
+          <h3>${vocabulary.name}</h3>
+          <span>${learnedCount}/${totalWords}</span>
+        </div>
+        <div class="progress_bar">
+          <div class="cur_bar">
+            <span class="${progress > 13 ? "" : "right"}">${progress}%</span>
+          </div>
+        </div>
+      </li>
+    `
+  }
+  return html;
+}
+
 // 테스트 설정 HTML 
 const setTextSetupHtml = () => {
   return `
@@ -219,5 +250,4 @@ const setShowAnswerHtml = async () => {
       `}).join('')}
     </ul>
   `
-
 }

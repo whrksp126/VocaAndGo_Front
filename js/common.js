@@ -251,6 +251,69 @@ const writeTestAppLog = (html) => {
   _logEl.insertAdjacentHTML('afterbegin', html)
 }
 
+// 마커 클릭 시
+const clickMarker = async (event) => {
+  const _li = findParentTarget(event.target, 'li') || findParentTarget(event.target, '.card');
+  let status = Number(_li.dataset.status) + 1;
+  if(status > 2) status = 0;
+  _li.querySelector('img').src = `/images/marker_${status}.png`;
+  _li.dataset.status = status;
+  const word_id = Number(_li.dataset.id);
+  await updateIndexedDbWord(word_id, {status : status});
+}
+
+
+// 테스트 설정 모달에서 시작 클릭 시
+const clickStartTest = async (event, type, vocabulary_id=null) => {
+  const vocabulary = getValueFromURL("vocabulary");
+  const test_type = type;
+  const view_types = document.querySelector('.view_types button.active').dataset.type;
+  const word_types = document.querySelector('.word_types button.active').dataset.type;
+  const problem_nums = Number(document.querySelector('.problem_nums input[type="number"]').value);
+  let vocabulary_word_list = null;
+  let urlParams = `vocabulary=${vocabulary}&test_type=${test_type}&view_types=${view_types}&word_types=${word_types}&problem_nums=${problem_nums}`;
+  if(vocabulary == 'all'){
+    vocabulary_word_list = await getVocabularyWordList();
+  }
+  if(vocabulary == 'each'){
+    vocabulary_word_list = await getVocabularyWordList(vocabulary_id);
+    urlParams += `vocabulary_id=${vocabulary_id}`
+  }
+  if(word_types != 'all'){ // 헷갈리는 단어만 선택 시
+    vocabulary_word_list = vocabulary_word_list.filter((word)=>word.status == 2)
+  }
+  await updateRecentLearningData("type", test_type);
+  await updateRecentLearningData("state", "before");
+  await updateRecentLearningData("test_list", setTestWrodList(vocabulary_word_list, problem_nums));
+  window.location.href=`/html/${type}_test.html?${urlParams}`
+}
+
+// INDEXED_DB 단어장 단어 호출
+const getVocabularyWordList = async (vocabulary_id=null) => {
+  const vocabulary_word_list = [];
+  if(vocabulary_id == null){
+    const noteBooks = await getIndexedDbNotebooks();
+    for(const noteBook of noteBooks){
+      const words = await getIndexedDbWordsByNotebookId(noteBook.id)
+      vocabulary_word_list.push(...words);
+    }
+  }else{
+    const words = await getIndexedDbWordsByNotebookId(vocabulary_id);
+    vocabulary_word_list.push(...words);
+  }
+
+  return vocabulary_word_list;
+}
+
+// 전체 단어 리스트에서 테스트할 단어만 추출
+const setTestWrodList = (vocabulary_word_list, problem_nums) => {
+  let tempArray = [...vocabulary_word_list];
+  for (let i = tempArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
+  }
+  return tempArray.slice(0, problem_nums);
+}
 
 // GTTS 
 const generateSpeech = async (text, language) => {

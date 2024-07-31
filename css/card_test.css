@@ -75,7 +75,15 @@ main .container{
   font-size: 28px;
   font-weight: 700;
   transform: translate(-50%, -50%);
-
+}
+.cards .card span.word.hint {
+  display: none;
+}
+.cards .card.hint span.word {
+  display: none;
+}
+.cards .card.hint span.word.hint {
+  display: block;
 }
 .cards .card .bottom{
   display: flex;
@@ -90,8 +98,8 @@ main .container{
 .cards .card .bottom .page .cur{
   color: #FF8DD4;
 }
-.cards .card .bottom .star{
-  color: #FF8DD4;
+.cards .card .bottom .marker{
+  width: 18px;
 }
 .cards .card .bottom .speaker{
   color: #FF8DD4;
@@ -240,7 +248,7 @@ main .container{
   
 }
 .answer_card .right img{
-  width: 24px;
+  width: 18px;
 }
 
 .modal.show_answer .modal_content .modal_top{
