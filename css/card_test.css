@@ -200,18 +200,18 @@ main .container{
   border-radius: 12px;
   background: #FFEFFA;
 }
-.answer_card[data-result="incorrect"]{
+.answer_card[data-isCorrect="0"]{
   background: #F5F5F5;
   color: #CCCCCC;
 }
-.answer_card[data-result="incorrect"] i.ph-circle{
+.answer_card[data-isCorrect="0"] i.ph-circle{
   display: none;
 }
-.answer_card[data-result="correct"]{
+.answer_card[data-isCorrect="1"]{
   background: #FFEFFA;
   color: #FF8DD4;
 }
-.answer_card[data-result="correct"] i.ph-x{
+.answer_card[data-isCorrect="1"] i.ph-x{
   display: none;
 }
 .answer_card .left{

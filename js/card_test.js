@@ -41,8 +41,9 @@ const setCardHtml = (word, total, cur) => {
 const setCardTestPage = () => {
   const _cards = document.querySelector('main .cards')
   TEST_WORD_LIST.forEach((word, index)=>{
-    if(word.result == undefined){
-      _cards.insertAdjacentHTML('afterbegin', setCardHtml(word, Number(URL_PARAMS.problem_nums), index+1))
+    if(word.isCorrect == undefined){
+      // _cards.insertAdjacentHTML('afterbegin', setCardHtml(word, Number(URL_PARAMS.problem_nums), index+1))
+      _cards.insertAdjacentHTML('afterbegin', setCardHtml(word, TEST_WORD_LIST.length, index+1))
     }
   })
   const _first_card = document.querySelector('.cards .card:last-child');;
@@ -60,7 +61,8 @@ const clickGrading = async (event, outcome) => {
   _currentCard.classList.add('end');
   _currentCard.classList.remove('active');
   const word_data = TEST_WORD_LIST.find(data => data.id == Number(_currentCard.dataset.id));
-  word_data.result = outcome;
+  // word_data.result = outcome;
+  word_data.isCorrect = outcome;
   if (!_nextCard) {
     _currentCard.remove();
     updateRecentLearningData("state", "after");
@@ -129,10 +131,10 @@ const setCardTouchEvent = () => {
       const cardCenterX = cardRect.left + cardRect.width / 2;
       const positionHorizontal = cardCenterX > screenWidth / 2 ? 'right' : 'left';
       if(positionHorizontal == 'right') {
-        clickGrading(null, 'correct');
+        clickGrading(null, 1);
       }
       if(positionHorizontal == 'left'){
-        clickGrading(null, 'incorrect');
+        clickGrading(null, 0);
       }
     } else {
       _card.classList.remove('correct', 'incorrect');
@@ -171,7 +173,7 @@ const setTestResultsHtml = () => {
 // 원형 프로그래스 바 세팅
 const setProGressBar = () => {
   const total = TEST_WORD_LIST.length;
-  const correct_num = TEST_WORD_LIST.filter(data => data.result == 'correct').length;
+  const correct_num = TEST_WORD_LIST.filter(data => data.isCorrect).length;
   console.log(total, correct_num)
   const _probressBar = document.querySelector('.progress_bar');
   const bar = new ProgressBar.Circle(_probressBar, {
@@ -204,9 +206,9 @@ const setProGressBar = () => {
 const clickRetest = async (event, is_all) => {
   await updateRecentLearningData("state", "during");
   if(!is_all) {
-    TEST_WORD_LIST = TEST_WORD_LIST.filter((data)=>data.result == 'incorrect');  
+    TEST_WORD_LIST = TEST_WORD_LIST.filter((data)=>data.isCorrect == 0);  
   }
-  TEST_WORD_LIST.forEach((data)=>data.result = undefined);
+  TEST_WORD_LIST.forEach((data)=>data.isCorrect = undefined);
   await updateRecentLearningData("test_list", TEST_WORD_LIST);
   location.reload();
 }
@@ -219,12 +221,51 @@ const clickShowAnswer = async (event) => {
   modal.middle.innerHTML = await setShowAnswerHtml();
   
   const btns = [
-    {class:"gray", text: "틀린 단어 마크 해제", fun: ``},
-    {class:"pink", text: "맞은 단어 마크 해제", fun: ``}
+    {class:"gray", text: "틀린 단어 마크 등록", fun: `data-register="1" onclick="clickBatchSetMarkBtn(event, false)"`},
+    {class:"pink", text: "맞은 단어 마크 등록", fun: `data-register="1" onclick="clickBatchSetMarkBtn(event, true)"`}
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
   setTimeout(()=>modal.container.classList.add('active'),300)
 }
+
+// 마크 일괄 조작 버튼 클릭 시
+const clickBatchSetMarkBtn = async (event, isCorrect) => {
+  const isRegister = Number(event.target.dataset.register);
+  const updateMarkAndStatus = async (word_id, status) => {
+    const _li = document.querySelector(`li[data-id="${word_id}"]`);
+    _li.querySelector('img').src = `/images/marker_${status}.png`;
+    await updateIndexedDbWord(word_id, { status });
+  };
+  for (let i = 0; i < TEST_WORD_LIST.length; i++) {
+    const data = TEST_WORD_LIST[i];
+    const word_id = data.id;
+    if (data.isCorrect && isCorrect && isRegister) {
+      await updateMarkAndStatus(word_id, 1); // 맞은 단어 마크 등록
+    } else if (data.isCorrect && isCorrect && !isRegister) {
+      await updateMarkAndStatus(word_id, 0); // 맞은 단어 마크 해제
+    } else if (!data.isCorrect && !isCorrect && isRegister) {
+      await updateMarkAndStatus(word_id, 2); // 틀린 단어 마크 등록
+    } else if (!data.isCorrect && !isCorrect && !isRegister) {
+      await updateMarkAndStatus(word_id, 0); // 틀린 단어 마크 해제
+    }
+  }
+  const nextBtnText = `${isCorrect ? '맞은' : '틀린'} 단어 마크 ${isRegister ? '해제' : '등록'}`;
+  event.target.innerHTML = nextBtnText;
+  event.target.dataset.register = isRegister == 0 ? 1 : 0;
+};
+
+// 마커 클릭 시
+const clickMarker = async (event) => {
+  const _li = findParentTarget(event.target, 'li');
+  let status = Number(_li.dataset.status) + 1;
+  if(status > 2) status = 0;
+  _li.querySelector('img').src = `/images/marker_${status}.png`;
+  _li.dataset.status = status;
+  const word_id = Number(_li.dataset.id);
+  await updateIndexedDbWord(word_id, {status : status});
+}
+
+
 
 const init = async () => {
   const state = await getRecentLearningData("state");

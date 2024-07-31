@@ -197,7 +197,8 @@ const setShowAnswerHtml = async () => {
       <li 
         data-id="${data.id}" 
         data-noteid="${data.notebookId}" 
-        data-result="${data.result}" 
+        data-isCorrect="${data.isCorrect}" 
+        data-status="${data.status}"
         class="answer_card ${data.result}"
         >
         <div class="left">
@@ -210,9 +211,9 @@ const setShowAnswerHtml = async () => {
             <p>${data.meaning}</p>
           </div>
         </div>
-        <div class="right">
+        <button class="right" onclick="clickMarker(event)">
           <img src="/images/marker_${data.status}.png">
-        </div>
+        </button>
       </li>
 
       `}).join('')}

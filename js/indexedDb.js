@@ -297,21 +297,64 @@ function getIndexedDbWordById(id) {
   });
 }
 
+// // 단어 업데이트 함수
+// function updateIndexedDbWord(id, notebookId, word, meaning, example, description, updatedAt, status) {
+//   return new Promise((resolve, reject) => {
+//     const transaction = INDEXED_DB.transaction(["words"], "readwrite");
+//     const store = transaction.objectStore("words");
+
+//     const request = store.put({ id, notebookId, word, meaning, example, description, updatedAt, status });
+
+//     request.onsuccess = function() {
+//       console.log("단어가 성공적으로 업데이트되었습니다.");
+//       resolve();
+//     };
+
+//     request.onerror = function(event) {
+//       console.error("단어를 업데이트하는 중에 오류가 발생했습니다.:", event.target.errorCode);
+//       reject(event.target.errorCode);
+//     };
+//   });
+// }
+
 // 단어 업데이트 함수
-function updateIndexedDbWord(id, notebookId, word, meaning, example, description, updatedAt, status) {
+function updateIndexedDbWord(id, updatedData) {
+  // id, notebookId, word, meaning, example, description, updatedAt, status
   return new Promise((resolve, reject) => {
     const transaction = INDEXED_DB.transaction(["words"], "readwrite");
     const store = transaction.objectStore("words");
 
-    const request = store.put({ id, notebookId, word, meaning, example, description, updatedAt, status });
+    const getRequest = store.get(id);
 
-    request.onsuccess = function() {
-      console.log("단어가 성공적으로 업데이트되었습니다.");
-      resolve();
+    getRequest.onsuccess = function(event) {
+      const wordData = event.target.result;
+      if (!wordData) {
+        reject(`ID ${id}에 해당하는 단어를 찾을 수 없습니다.`);
+        return;
+      }
+
+      // 업데이트할 데이터만 갱신
+      for (const key in updatedData) {
+        if (updatedData.hasOwnProperty(key)) {
+          wordData[key] = updatedData[key];
+        }
+      }
+
+      const updateRequest = store.put(wordData);
+
+      updateRequest.onsuccess = function() {
+        console.log("단어가 성공적으로 업데이트되었습니다.");
+        resolve();
+      };
+
+      updateRequest.onerror = function(event) {
+        console.error("단어를 업데이트하는 중에 오류가 발생했습니다.:", event.target.errorCode);
+        reject(event.target.errorCode);
+      };
     };
 
-    request.onerror = function(event) {
-      console.error("단어를 업데이트하는 중에 오류가 발생했습니다.:", event.target.errorCode);
+    getRequest.onerror = function(event) {
+      console.error("단어를 가져오는 중에 오류가 발생했습니다.:", event.target.errorCode);
       reject(event.target.errorCode);
     };
   });
