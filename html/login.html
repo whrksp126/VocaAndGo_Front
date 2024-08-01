@@ -60,29 +60,12 @@
     const clickGoogleLogin = () => {
       const device_type = getDevicePlatform();
       if(device_type == 'web'){
-        writeTestAppLog(`<div>web</div>`)
         window.location.href = 'https://vocaandgo.ghmate.com/login/google?device_type=web';
       }else{
-        writeTestAppLog(`<div>app</div>`)
-        window.location.href = 'https://vocaandgo.ghmate.com/login/google?device_type=app';
+        window.ReactNativeWebView.postMessage('launchGoogleAuth');
+        // window.location.href = 'https://vocaandgo.ghmate.com/login/google?device_type=app';
       }
     }
-    createTestViewLog();
-
-    window.addEventListener('message', function(event) {
-      writeTestAppLog(`<div>data</div>`)
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === 'authSuccess') {
-          writeTestAppLog(`<div>${data.token}</div>`)
-          writeTestAppLog(`<div>${data.email}</div>`)
-          writeTestAppLog(`<div>${data.name}</div>`)
-          writeTestAppLog(`<div>${data.status}</div>`)
-        }
-      } catch (error) {
-        console.error('Error parsing message:', error);
-      }
-    });
   </script>
 </body>
 </html>

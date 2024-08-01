@@ -12,15 +12,9 @@ function is_backable() {
 // 기기 타입 조회
 function getDevicePlatform() {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  const isAppWebView = userAgent.includes('HeyVocaWebView');
+  const isAppWebView = userAgent.includes('HeyVoca');
   if (isAppWebView) {
     return 'app'
-    // if (/Android/i.test(userAgent)) {
-    //   return 'android';
-    // }
-    // else if (/iPhone|iPad|iPod/i.test(userAgent)) {
-    //   return 'ios';
-    // }
   }else{
     return 'web';
   }
