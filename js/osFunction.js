@@ -21,6 +21,7 @@ function getDevicePlatform() {
     // else if (/iPhone|iPad|iPod/i.test(userAgent)) {
     //   return 'ios';
     // }
+  }else{
+    return 'web';
   }
-  return 'web';
 }
