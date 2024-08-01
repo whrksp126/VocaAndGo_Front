@@ -14,12 +14,13 @@ function getDevicePlatform() {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   const isAppWebView = userAgent.includes('HeyVocaWebView');
   if (isAppWebView) {
-    if (/Android/i.test(userAgent)) {
-      return 'android';
-    }
-    else if (/iPhone|iPad|iPod/i.test(userAgent)) {
-      return 'ios';
-    }
+    return 'app'
+    // if (/Android/i.test(userAgent)) {
+    //   return 'android';
+    // }
+    // else if (/iPhone|iPad|iPod/i.test(userAgent)) {
+    //   return 'ios';
+    // }
   }
   return 'web';
 }
