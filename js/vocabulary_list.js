@@ -35,6 +35,14 @@ const setUserNameHtml = async () => {
   const _name = document.querySelector('header .container h2 strong');
   // const user_data = await getIndexedDbUsers();
   const user_data = JSON.parse(localStorage.getItem('user'));
+  if(!user_data){
+    localStorage.setItem('user', JSON.stringify({
+      token: "",
+      email: "구글 로그인이 필요합니다.",
+      name: "비회원"
+    }))
+  }
+  console.log('user_data,',user_data)
   _name.innerHTML = `${user_data.name}`;
 }
 // 단어장 리스트 만들기
