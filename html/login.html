@@ -68,6 +68,21 @@
       }
     }
     createTestViewLog();
+
+    window.addEventListener('message', function(event) {
+      try {
+        writeTestAppLog(`<div>data</div>`)
+        const data = JSON.parse(event.data);
+        if (data.type === 'authSuccess') {
+          writeTestAppLog(`<div>${data.token}</div>`)
+          writeTestAppLog(`<div>${data.email}</div>`)
+          writeTestAppLog(`<div>${data.name}</div>`)
+          writeTestAppLog(`<div>${data.status}</div>`)
+        }
+      } catch (error) {
+        console.error('Error parsing message:', error);
+      }
+    });
   </script>
 </body>
 </html>
