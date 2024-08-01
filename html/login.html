@@ -70,8 +70,8 @@
     createTestViewLog();
 
     window.addEventListener('message', function(event) {
+      writeTestAppLog(`<div>data</div>`)
       try {
-        writeTestAppLog(`<div>data</div>`)
         const data = JSON.parse(event.data);
         if (data.type === 'authSuccess') {
           writeTestAppLog(`<div>${data.token}</div>`)
