@@ -58,14 +58,18 @@
       }
     })
     const clickGoogleLogin = () => {
+      createTestViewLog()
       const device_type = getDevicePlatform();
       if(device_type == 'web'){
+        writeTestAppLog('<div>web</div>')
         window.location.href = 'https://vocaandgo.ghmate.com/login/google?device_type=web';
       }else{
+        writeTestAppLog('<div>app</div>')
         window.ReactNativeWebView.postMessage('launchGoogleAuth');
         // window.location.href = 'https://vocaandgo.ghmate.com/login/google?device_type=app';
       }
     }
+    
   </script>
 </body>
 </html>
