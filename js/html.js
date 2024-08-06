@@ -147,7 +147,7 @@ const setVocabularyListHtml = async (vocabulary_list) => {
     const words = await getIndexedDbWordsByNotebookId(vocabulary.id);
     const totalWords = words.length;
     const learnedCount = words.reduce((count, word) => {return word.status == 1 ? count + 1 : count}, 0);
-    const progress = (learnedCount / totalWords) * 100 || 0;  
+    const progress = Math.round((learnedCount / totalWords) * 100) || 0;
     html += `
       <li 
         data-id="${vocabulary.id}"
