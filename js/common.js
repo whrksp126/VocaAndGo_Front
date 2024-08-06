@@ -253,7 +253,7 @@ const writeTestAppLog = (html) => {
 
 // 마커 클릭 시
 const clickMarker = async (event) => {
-  const _li = findParentTarget(event.target, 'li') || findParentTarget(event.target, '.card');
+  const _li = findParentTarget(event.target, 'li') || findParentTarget(event.target, '.item') || findParentTarget(event.target, '.card');
   let status = Number(_li.dataset.status) + 1;
   if(status > 2) status = 0;
   _li.querySelector('img').src = `/images/marker_${status}.png`;
@@ -282,9 +282,36 @@ const clickStartTest = async (event, type, vocabulary_id=null) => {
   if(word_types != 'all'){ // 헷갈리는 단어만 선택 시
     vocabulary_word_list = vocabulary_word_list.filter((word)=>word.status == 2)
   }
+  if(vocabulary_word_list.length < 4){
+    return alert('테스트는 4개 이상의 단어가 필요합니다!')
+  }
   await updateRecentLearningData("type", test_type);
   await updateRecentLearningData("state", "before");
-  await updateRecentLearningData("test_list", setTestWrodList(vocabulary_word_list, problem_nums));
+  if(test_type == 'card'){
+    await updateRecentLearningData("test_list", setTestWrodList(vocabulary_word_list, problem_nums));
+  }else if(test_type == 'mcq'){
+    const meaningValues = vocabulary_word_list.map(item => item.meaning);
+    const wordValues = vocabulary_word_list.map(item => item.word);
+    const randomMeanings = [];
+    for (let i = 0; i < problem_nums; i++) {
+      const selectedMeanings = [];
+      const usedIndices = new Set(); // 이미 선택된 인덱스를 추적
+      // 임의로 4개의 값을 선택하여 배열에 추가
+      while (selectedMeanings.length < 4) {
+        const randomIndex = Math.floor(Math.random() * meaningValues.length);
+        if (!usedIndices.has(randomIndex)) {
+          selectedMeanings.push({
+            word : wordValues[randomIndex],
+            meaning: meaningValues[randomIndex]
+          });
+          usedIndices.add(randomIndex); // 선택된 인덱스를 기록
+        }
+      }
+      randomMeanings.push(selectedMeanings);
+    }
+    test_list = setTestWrodOptionList(vocabulary_word_list, problem_nums, randomMeanings);
+    await updateRecentLearningData("test_list", test_list);
+  }
   window.location.href=`/html/${type}_test.html?${urlParams}`
 }
 
@@ -315,6 +342,109 @@ const setTestWrodList = (vocabulary_word_list, problem_nums) => {
   return tempArray.slice(0, problem_nums);
 }
 
+// 전체 단어 리스트에서 테스트할 단어만 추출 후 옵션 추가
+const setTestWrodOptionList = (vocabulary_word_list, problem_nums, option_list) => {
+  let tempArray = [...vocabulary_word_list];
+  for (let i = tempArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
+  }
+  tempArray = tempArray.slice(0, problem_nums);
+  for (let i = 0; i < problem_nums; i++) {
+    tempArray[i].options = option_list[i];
+    let result = tempArray[i].options.findIndex(option => option.meaning === tempArray[i].meaning) + 1;
+    if (result === 0) {
+      const randomIndex = Math.floor(Math.random() * tempArray[i].options.length);
+      tempArray[i].options[randomIndex] = {
+        word : tempArray[i].word,
+        meaning : tempArray[i].meaning,
+      };
+      result = randomIndex + 1;
+    }
+    tempArray[i].result = result;
+  }
+  
+  return tempArray
+}
+
+// 테스트 결과 화면
+const setTestResultsHtml = () => {
+  const html = `
+    <div class="test_result_box">
+      <div class="top">
+        <div class="progress_bar"></div>
+      </div>
+      <div class="btns">
+        <button onclick="clickShowAnswer(event)" class="out_line">정답 보기</button>
+        <button onclick="clickRetest(event, true)" class="gray">테스트 다시 하기</button>
+        <button onclick="clickRetest(event, false)" class="fill">모르는 문제 다시 풀기</button>
+      </div>
+    </div>
+  `
+  document.querySelector('main').insertAdjacentHTML("beforeend", html);
+  document.querySelector('.test_result_box').classList.add('active');
+  setProGressBar()
+}
+
+// 원형 프로그래스 바 세팅
+const setProGressBar = () => {
+  const total = TEST_WORD_LIST.length;
+  const correct_num = TEST_WORD_LIST.filter(data => data.isCorrect).length;
+  console.log(total, correct_num)
+  const _probressBar = document.querySelector('.progress_bar');
+  console.log(_probressBar)
+  const bar = new ProgressBar.Circle(_probressBar, {
+    trailColor: '#FFEFFA',
+    strokeWidth: 12.5,
+    trailWidth: 12.5,
+    easing: 'easeInOut',
+    duration: 1400,
+    // text: {autoStyleContainer: false},
+    from: { color: '#FF8DD4', width: 12.5 },
+    to: { color: '#FF8DD4', width: 12.5 },
+    // 모든 애니메이션 호출에 대한 기본 단계 함수를 설정합니다.
+    step: function(state, circle) {
+      circle.path.setAttribute('stroke', state.color);
+      circle.path.setAttribute('stroke-width', state.width);
+      const value = Math.round(correct_num/total * 100);
+      circle.setText(`
+        <h2>${value + '점'}</h2>
+        <div>
+          <strong>${correct_num}</strong>
+          <span>/${total}</span>
+        </div>
+      `);
+    }
+  });
+  bar.animate(correct_num/total);  // 0.0에서 1.0 사이의 숫자
+}
+
+// 정답 보기 클릭 시
+const clickShowAnswer = async (event) => {
+  const modal = openDefaultModal();
+  modal.container.classList.add('show_answer')
+  modal.top.innerHTML = modalTopHtml(`정답 보기`);
+  modal.middle.innerHTML = await setShowAnswerHtml();
+  
+  const btns = [
+    {class:"gray", text: "틀린 단어 마크 등록", fun: `data-register="1" onclick="clickBatchSetMarkBtn(event, false)"`},
+    {class:"pink", text: "맞은 단어 마크 등록", fun: `data-register="1" onclick="clickBatchSetMarkBtn(event, true)"`}
+  ]
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  setTimeout(()=>modal.container.classList.add('active'),300)
+}
+
+// 다시 풀기 클릭 시
+const clickRetest = async (event, is_all) => {
+  await updateRecentLearningData("state", "during");
+  if(!is_all) {
+    TEST_WORD_LIST = TEST_WORD_LIST.filter((data)=>data.isCorrect == 0);  
+  }
+  TEST_WORD_LIST.forEach((data)=>data.isCorrect = undefined);
+  await updateRecentLearningData("test_list", TEST_WORD_LIST);
+  location.reload();
+
+}
 // GTTS 
 const generateSpeech = async (text, language) => {
   const url = `https://vocaandgo.ghmate.com/tts/output`;

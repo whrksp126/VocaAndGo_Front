@@ -12,7 +12,7 @@ const setVocabularyList = async () => {
 }
 
 // 단어장 클릭 시
-const clickVocabularyItem = (event, id) => {
+const clickVocabularyItem = async (event, id) => {
   const vocabulary = getValueFromURL("vocabulary");
   const type = getValueFromURL("test_type");
 
@@ -26,6 +26,13 @@ const clickVocabularyItem = (event, id) => {
     {class:"pink", text: "시작", fun: `onclick="clickStartTest(event, '${type}', ${id})"`}
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
+
+  const vocabulary_word_list = await getVocabularyWordList(id);
+  const _numInp = modal.middle.querySelector('.problem_nums input[type="number"]');
+  _numInp.setAttribute('min', 4)
+  _numInp.setAttribute('max', vocabulary_word_list.length)
+  _numInp.setAttribute('value', vocabulary_word_list.length > 10 ? 10 : vocabulary_word_list.length);
+
   setTimeout(()=>modal.container.classList.add('active'),300);
   modal.middle.addEventListener('click', event => clickEventBtn(event));
 }

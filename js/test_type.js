@@ -1,5 +1,5 @@
 // 단어장 추가 버튼 클릭 시
-const clickTestType = (event, type) => {
+const clickTestType = async (event, type) => {
   const vocabulary = getValueFromURL("vocabulary");
   if(vocabulary == 'each'){
     window.location.href=`/html/select_vocabulary_list.html?vocabulary=${vocabulary}&test_type=${type}`
@@ -14,6 +14,12 @@ const clickTestType = (event, type) => {
       {class:"pink", text: "시작", fun: `onclick="clickStartTest(event, '${type}')"`}
     ]
     modal.bottom.innerHTML = modalBottomHtml(btns);
+
+    const vocabulary_word_list = await getVocabularyWordList();
+    const _numInp = modal.middle.querySelector('.problem_nums input[type="number"]');
+    _numInp.setAttribute('min', 4)
+    _numInp.setAttribute('max', vocabulary_word_list.length)
+    _numInp.setAttribute('value', vocabulary_word_list.length > 10 ? 10 : vocabulary_word_list.length);
     setTimeout(()=>modal.container.classList.add('active'),300);
     modal.middle.addEventListener('click', event => clickEventBtn(event));
   }

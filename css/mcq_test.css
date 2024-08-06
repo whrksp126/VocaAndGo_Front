@@ -1,68 +1,91 @@
-main .container {
-  height: calc(100vh - 290px - var(--header-height));
-  ;
+main {
+  position: relative;
 }
-.cards {
+main .container {
+  height: calc(100vh  - var(--header-height));
+  padding: 0;
+}
+.items{
   position: relative;
   width: 100%;
+  
 }
-.cards .card{
+.items .item{
   position: absolute;
   top: 0;
-  left: 0;
-  z-index: 1;
+  left: 100%;
   display: flex;
+  flex-flow: column;
+  gap: 20px;
   width: 100%;
   height: 100%;
+  padding: 16px;
+  transition: all .3s;
+}
+.items .item.active{
+  left: 0;
+}
+.items .item.end{
+  left: -100%;
+}
+.card{
+  position: relative;
+  display: flex;
+  flex: 1;
+  width: 100%;
   padding: 20px;
   border-radius: 12px;
   background: #FFEFFA;
-  transform: scale(0.9);
   transition: all .3s;
 }
 
-.cards .card.move{
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-  transition: initial;
-}
-.cards .card.active{  
-  transform: scale(1);
-}
-
-.cards .card.correct{
+.card.correct{
   
 }
-.cards .card.correct.end{
-  left: 100%;
+.card.incorrect{
+  
 }
-.cards .card.incorrect{
-
-}
-.cards .card.incorrect.end{
-  left: -100%;
-}
-.cards .card .granding{
+.card .granding{
   position: absolute;
   top: 50%;
   left: 50%;
-  font-size: 250px;
+  visibility: hidden;
+  font-size: 150px;
   color: #FF8DD4;
   opacity: 0;
   transform: translate(-50%, -50%);
+  transition: all .3s;
 }
-.cards .card .granding i{
-  display: none;
+.card .granding i{
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  transform: translate(-50%, -50%);
 }
-.cards .card.correct .granding .ph-circle{
-  display: block;
+.item.correct .card .granding .ph-circle{
+  visibility: visible;
 }
-.cards .card.incorrect .granding .ph-x{
-  display: block;
+.item.incorrect .card {
+  background: #F5F5F5;
 }
-.cards .card.end .granding{
+.item.incorrect .card .granding .ph-x{
+  visibility: visible;
+  color: #cccccc80;
+}
+.item .card.end .granding{
   opacity: 1;
 }
-.cards .card span.word{
+/* .card.correct .granding .ph-circle{
+  visibility: visible;
+} */
+/* .card.incorrect .granding .ph-x{
+  visibility: visible;
+} */
+/* .card.end .granding{
+  opacity: 1;
+} */
+.card span.word{
   position: absolute;
   top: 50%;
   left: 50%;
@@ -70,40 +93,38 @@ main .container {
   font-size: 28px;
   font-weight: 700;
   transform: translate(-50%, -50%);
-
 }
-.cards .card .bottom{
+.card span.word.hint{
+  display: none;
+}
+.card .bottom{
   display: flex;
   align-items: end;
   justify-content: space-between;
   width: 100%;
   font-size: 18px;
 }
-.cards .card .bottom .page{
+.card .bottom .page{
   font-size: 14px;
   color: #999999;
 }
-.cards .card .bottom .page .cur{
+.card .bottom .page .cur{
   color: #FF8DD4;
 }
-.cards .card .bottom .marker{
+.card .bottom .marker{
   width: 18px;
 }
-.cards .card .bottom .speaker{
+.card .bottom .speaker{
   color: #FF8DD4;
 }
 
 .btns{
-  position: fixed;
-  bottom: 0;
-  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-flow: column;
   gap: 10px;
   width: 100%;
-  padding: 20px;
 }
 .btns button{
   width: 100%;
@@ -113,4 +134,8 @@ main .container {
   border-radius: 10px;
   font-size: 14px;
   font-weight: 700;
+}
+.btns button.active{
+  background: #FF8DD4;
+  color: #FFFFFF;
 }

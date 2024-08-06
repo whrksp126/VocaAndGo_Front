@@ -23,12 +23,14 @@ body {
   --111-color : #111;
   --fff-color : #fff;
   --f5-color : #f5F5F5;
+  --linear-gradient-255 : linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
 }
 [data-theme="dark"] {
   --000-color : #000;
   --111-color : #fff;
   --fff-color : #111;
   --f5-color : #444444;
+  --linear-gradient-255 : linear-gradient(to bottom, rgba(0, 0, 0, 0.01) 0%, rgba(0, 0, 0, 1) 100%);
 }
 .container{
   display: flex;
@@ -176,7 +178,7 @@ footer nav ul li span{
   padding: 20px;
   background: var(--fff-color);
   color: var(--fff-color);
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+  background: var(--linear-gradient-255);
 }
 .modal .modal_content .modal_bottom .buttons{
   display: flex;
@@ -463,6 +465,168 @@ footer nav ul li span{
 }
 /* 테스트 설정 모달 */
 /* *************** */
+
+/* ************ */
+/* 테스트 결과  */
+.test_result_box{
+  position: absolute;
+  top: 100vh;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - var(--header-height));
+  background: var(--fff-color);
+  transition: all .3s;
+}
+.test_result_box.active{
+  top: 0;
+  left: 0;
+}
+
+.test_result_box .top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - var(--header-height) - 195px);
+}
+.test_result_box .top .progress_bar{
+  position: relative;
+  width: 240px;
+  height: 240px;
+}
+.test_result_box .btns{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  flex-flow: column;
+  gap: 10px;
+  padding: 20px;
+  background: var(--fff-color);
+}
+.test_result_box .btns button{
+  flex: initial;
+  width: 100%;
+  height: 45px;
+  padding: 0 20px;
+  border: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--fff-color);
+}
+.test_result_box .btns button.out_line{
+  border: 1px solid #FF8DD4;
+  color: #FF8DD4;
+  background: var(--fff-color);
+}
+.test_result_box .btns button.fill {
+  background: #FF8DD4;
+}
+.test_result_box .btns button.gray {
+  background: #CCCCCC;
+}
+.progressbar-text{
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+.progressbar-text h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #FF8DD4;
+}
+.progressbar-text strong {
+  font-weight: 700;
+  font-size: 14px;
+  color: #FF8DD4;
+}
+.progressbar-text span {
+  font-weight: 400;
+  color: #999999;
+  font-size: 14px;
+}
+/* 테스트 결과  */
+/* ************ */
+
+/* ************** */
+/* 정답 보기 모달  */
+
+.answer_card{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #FFEFFA;
+}
+.answer_card[data-isCorrect="0"]{
+  background: #F5F5F5;
+  color: #CCCCCC;
+}
+.answer_card[data-isCorrect="0"] i.ph-circle{
+  display: none;
+}
+.answer_card[data-isCorrect="1"]{
+  background: #FFEFFA;
+  color: #FF8DD4;
+}
+.answer_card[data-isCorrect="1"] i.ph-x{
+  display: none;
+}
+.answer_card .left{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.answer_card .left i{
+  font-size: 20px;
+}
+.answer_card .left .texts{
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  color: #111;
+}
+.answer_card .left .texts span{
+  font-size: 16px;
+  font-weight: 700;
+}
+.answer_card .left .texts p{
+  font-size: 12px;
+  font-weight: 400;
+}
+.answer_card .right{
+  
+}
+.answer_card .right img{
+  width: 18px;
+}
+
+
+.modal.show_answer .modal_content .modal_top{
+  position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  height: 39px;
+}
+.modal.show_answer .modal_content .modal_top::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 30px;
+  height: 3px;
+  border-radius: 5;
+  background-color: #DDDDDD;
+  transform: translate(-50%,0);
+}
+.modal.show_answer .modal_content .modal_middle > ul {
+  gap: 10px;
+}
+.modal.show_answer .modal_content .modal_middle > ul li{}
+/* 정답 보기 모달  */
+/* ************** */
+
 
 #logEl {
   position: fixed;

@@ -164,81 +164,12 @@ const setCardTouchEvent = () => {
   _card.addEventListener('touchcancel', endTouch); 
 }
 
-const setTestResultsHtml = () => {
-  const html = `
-    <div class="test_result_box">
-      <div class="top">
-        <div class="progress_bar"></div>
-      </div>
-      <div class="btns">
-        <button onclick="clickShowAnswer(event)" class="out_line">정답 보기</button>
-        <button onclick="clickRetest(event, true)" class="gray">테스트 다시 하기</button>
-        <button onclick="clickRetest(event, false)" class="fill">모르는 문제 다시 풀기</button>
-      </div>
-    </div>
-  `
-  document.querySelector('main').insertAdjacentHTML("beforeend", html);
-  document.querySelector('.test_result_box').classList.add('active');
-  setProGressBar()
-}
 
-// 원형 프로그래스 바 세팅
-const setProGressBar = () => {
-  const total = TEST_WORD_LIST.length;
-  const correct_num = TEST_WORD_LIST.filter(data => data.isCorrect).length;
-  console.log(total, correct_num)
-  const _probressBar = document.querySelector('.progress_bar');
-  const bar = new ProgressBar.Circle(_probressBar, {
-    trailColor: '#FFEFFA',
-    strokeWidth: 12.5,
-    trailWidth: 12.5,
-    easing: 'easeInOut',
-    duration: 1400,
-    // text: {autoStyleContainer: false},
-    from: { color: '#FF8DD4', width: 12.5 },
-    to: { color: '#FF8DD4', width: 12.5 },
-    // 모든 애니메이션 호출에 대한 기본 단계 함수를 설정합니다.
-    step: function(state, circle) {
-      circle.path.setAttribute('stroke', state.color);
-      circle.path.setAttribute('stroke-width', state.width);
-      const value = Math.round(correct_num/total * 100);
-      circle.setText(`
-        <h2>${value + '점'}</h2>
-        <div>
-          <strong>${correct_num}</strong>
-          <span>/${total}</span>
-        </div>
-      `);
-    }
-  });
-  bar.animate(correct_num/total);  // 0.0에서 1.0 사이의 숫자
-}
 
-// 다시 풀기 클릭 시
-const clickRetest = async (event, is_all) => {
-  await updateRecentLearningData("state", "during");
-  if(!is_all) {
-    TEST_WORD_LIST = TEST_WORD_LIST.filter((data)=>data.isCorrect == 0);  
-  }
-  TEST_WORD_LIST.forEach((data)=>data.isCorrect = undefined);
-  await updateRecentLearningData("test_list", TEST_WORD_LIST);
-  location.reload();
-}
 
-// 정답 보기 클릭 시
-const clickShowAnswer = async (event) => {
-  const modal = openDefaultModal();
-  modal.container.classList.add('show_answer')
-  modal.top.innerHTML = modalTopHtml(`정답 보기`);
-  modal.middle.innerHTML = await setShowAnswerHtml();
-  
-  const btns = [
-    {class:"gray", text: "틀린 단어 마크 등록", fun: `data-register="1" onclick="clickBatchSetMarkBtn(event, false)"`},
-    {class:"pink", text: "맞은 단어 마크 등록", fun: `data-register="1" onclick="clickBatchSetMarkBtn(event, true)"`}
-  ]
-  modal.bottom.innerHTML = modalBottomHtml(btns);
-  setTimeout(()=>modal.container.classList.add('active'),300)
-}
+
+
+
 
 // 마크 일괄 조작 버튼 클릭 시
 const clickBatchSetMarkBtn = async (event, isCorrect) => {
