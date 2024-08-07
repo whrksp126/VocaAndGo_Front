@@ -42,14 +42,11 @@
         token: getValueFromURL('token'),
         email: getValueFromURL('email'),
         name: getValueFromURL('name'),
+        state: "login"
       };
       const user_data = JSON.parse(localStorage.getItem('user'));
       if(token){
-        alert('들어옴')
-        if(user_data.state == "login"){
-          window.location.href = '/html/vocabulary_list.html';
-        }
-        if(user_data){
+        if(user_data.token != user.token){
           // 이미 기록된 사용자가 있을 경우
           // 데이터 삭제 경고, 백업 했는지 확인
           // deleteDatabase('HEY_VOCA_DB')
