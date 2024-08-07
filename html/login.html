@@ -45,6 +45,7 @@
       };
       const user_data = JSON.parse(localStorage.getItem('user'));
       if(token){
+        alert('들어옴')
         if(user_data.state == "login"){
           window.location.href = '/html/vocabulary_list.html';
         }
