@@ -19,9 +19,16 @@ const clickLogOut = (event) => {
 // 로그아웃 모달에서 로그아웃 클릭 시
 const clickModalLogOut = (event) => {
   alert('다시 만나요~');
+  const user_data = JSON.parse(localStorage.getItem('user'));
+  localStorage.setItem('user', JSON.stringify({
+    token: user_data.token,
+    email: user_data.email,
+    name: user_data.name,
+    state: "logout"
+  }))
   const device_type = getDevicePlatform();
   if(device_type == 'web'){
-    window.location.href = 'https://vocaandgo.ghmate.com/login/google?device_type=web';
+    window.location.href = '/html/login.html';
   }else{
     window.ReactNativeWebView.postMessage('logoutGoogleAuth');
     window.location.href = '/html/login.html'

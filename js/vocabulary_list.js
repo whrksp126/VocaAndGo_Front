@@ -37,7 +37,7 @@ const setUserNameHtml = async () => {
   const user_data = JSON.parse(localStorage.getItem('user'));
   if(!user_data){
     localStorage.setItem('user', JSON.stringify({
-      token: "",
+      token: null,
       email: "구글 로그인이 필요합니다.",
       name: "비회원"
     }))
