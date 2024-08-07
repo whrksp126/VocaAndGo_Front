@@ -46,19 +46,22 @@
       };
       const user_data = JSON.parse(localStorage.getItem('user'));
       if(token){
+        alert('token 받음')
         if(user_data.token != user.token){
+          alert('사용자 같지 않음')
           // 이미 기록된 사용자가 있을 경우
           // 데이터 삭제 경고, 백업 했는지 확인
           // deleteDatabase('HEY_VOCA_DB')
           localStorage.setItem('user', JSON.stringify(user));
-          window.location.href = 'https://voca.ghmate.com/html/vocabulary_list.html';
+          window.location.href = '/html/vocabulary_list.html';
         }else{
+          alert('사용자 같음')
           localStorage.setItem('user', JSON.stringify(user));
-          window.location.href = 'https://voca.ghmate.com/html/vocabulary_list.html';
+          window.location.href = '/html/vocabulary_list.html';
         }
       }else{
         if(user_data.state == "login"){
-          window.location.href = 'https://voca.ghmate.com/html/vocabulary_list.html';
+          window.location.href = '/html/vocabulary_list.html';
         }
       }
     })
