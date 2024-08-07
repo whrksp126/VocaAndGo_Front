@@ -44,9 +44,10 @@
         name: getValueFromURL('name'),
         state: "login"
       };
-      const user_data = JSON.parse(localStorage.getItem('user'));
       if(token){
         alert('token 받음')
+        const user_data = JSON.parse(localStorage.getItem('user'));
+        alert('user_data')
         if(user_data.token != user.token){
           alert('사용자 같지 않음')
           // 이미 기록된 사용자가 있을 경우
@@ -61,6 +62,7 @@
         }
         alert('toke 종료')
       }else{
+        const user_data = JSON.parse(localStorage.getItem('user'));
         if(user_data.state == "login"){
           window.location.href = '/html/vocabulary_list.html';
         }
