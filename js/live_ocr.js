@@ -1,95 +1,101 @@
+// Elements
 const video = document.getElementById('video');
 const captureButton = document.getElementById('capture');
-const photoContainer = document.getElementById('photo-container');
-let imageCapture;
-let stream;
+const photo = document.getElementById('photo');
+const cropCanvas = document.getElementById('crop_canvas');
+const viewCanvas = document.getElementById('view_canvas');
 
-async function setupCamera() {
+// 카메라를 시작하고 최상의 해상도를 결정합니다.
+async function startCamera() {
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ 
-      video: { 
-        width: 1920, 
-        height: 1080,
-        focusMode: 'continuous'
-      } 
-    });
-    video.srcObject = stream;
-    const track = stream.getVideoTracks()[0];
-    imageCapture = new ImageCapture(track);
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+    if (videoDevices.length > 0) {
+      const constraints = {
+        video: {
+          deviceId: { exact: videoDevices[0].deviceId },
+          width: { ideal: 1920, max: 4096 },
+          height: { ideal: 1080, max: 2160 }
+        }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = stream;
+      video.play();
+
+      // 비디오 해상도 정보를 비디오 메타 데이터가 로드된 후에 얻음
+      video.addEventListener('loadedmetadata', () => {
+        console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
+      });
+    } else {
+      console.error("비디오 입력 장치를 찾을 수 없습니다..");
+    }
   } catch (err) {
-    console.error("Camera access denied or not supported:", err);
+    console.error("카메라 액세스 오류: ", err);
   }
 }
 
-async function takePhoto() {
-  try {
-    const blob = await imageCapture.takePhoto();
-    const img = document.createElement("img");
-    img.src = URL.createObjectURL(blob);
-    img.onload = () => { performOCR(img); }
-    img.style.width = "100%";
-    img.style.height = "auto";
-    photoContainer.innerHTML = '';
-    photoContainer.appendChild(img);
-  } catch (error) {
-    console.error("Error taking photo:", error);
-  }
-}
+// 버튼을 클릭하면 사진을 캡처합니다.
+captureButton.addEventListener('click', async () => {
+  // 비디오 해상도를 표시
+  console.log(`Captured resolution: ${video.videoWidth}x${video.videoHeight}`);
+  const videoRect = video.getBoundingClientRect();
+  // 비디오의 보이는 부분 계산
+  const visibleWidth = videoRect.width;
+  const visibleHeight = videoRect.height;
+  const visibleX = (video.videoWidth - visibleWidth) / 2;
+  const visibleY = (video.videoHeight - visibleHeight) / 2;
 
-async function performOCR(img) {
-  try {
-    const result = await Tesseract.recognize(
-      img.src,
-      'eng',
-      {
-        logger: m => console.log(m.status, m.progress)
-      }
-    );
-    // Use a regular expression to filter out non-English or nonsensical words
-    const wordRegex = /^[a-zA-Z]{2,}$/; // Only match words with two or more alphabetic characters
-    const words = result.data.words
-      .map(word => word.text)
-      .filter(text => wordRegex.test(text));
+  // 잘린 부분을 캔버스에 그립니다
+  const viewContext = viewCanvas.getContext('2d');
+  viewCanvas.width = visibleWidth;
+  viewCanvas.height = visibleHeight;
+  viewContext.drawImage(video, visibleX, visibleY, visibleWidth, visibleHeight, 0, 0, visibleWidth, visibleHeight);
 
-    console.log("Filtered words:", words); // Log filtered words
-    overlayText(result, img); // Continue to display all words on the image for visual verification
-  } catch (err) {
-    console.error("OCR failed:", err);
-  }
-}
+  // focusRect 크기에 맞는 이미지로 다시 크롭하기
+  const focusRect = document.querySelector('.center_focus').getBoundingClientRect();
+  // 자른 이미지를 위한 새 캔버스 만들기
+  const context = cropCanvas.getContext('2d');
+  cropCanvas.width = focusRect.width;
+  cropCanvas.height = focusRect.height;
 
-function overlayText(ocrResult, img) {
-  const scaleX = img.width / img.naturalWidth;
-  const scaleY = img.height / img.naturalHeight;
+  context.drawImage(viewCanvas, focusRect.left, focusRect.top, focusRect.width, focusRect.height, 0, 0, focusRect.width, focusRect.height);
+  
+  // 캔버스를 데이터 URL로 변환하여 표시
+  const dataURL = cropCanvas.toDataURL('image/png');
+  photo.setAttribute('src', dataURL);
+  photo.style.display = 'block';
 
-  ocrResult.data.words.forEach(word => {
-    // Create a box around the word
-    const box = document.createElement('div');
-    box.style.position = 'absolute';
-    box.style.left = `${word.bbox.x0 * scaleX}px`;
-    box.style.top = `${word.bbox.y0 * scaleY}px`;
-    box.style.width = `${(word.bbox.x1 - word.bbox.x0) * scaleX}px`;
-    box.style.height = `${(word.bbox.y1 - word.bbox.y0) * scaleY}px`;
-    box.style.border = '2px solid red';
-    box.style.boxSizing = 'border-box';
-    photoContainer.appendChild(box);
-
-    // Create text inside the box
-    const text = document.createElement('span');
-    text.style.position = 'absolute';
-    text.style.left = '50%';
-    text.style.top = '50%';
-    text.style.transform = 'translate(-50%, -50%)';
-    text.style.color = 'yellow';
-    text.style.fontSize = 'small';
-    text.textContent = word.text;
-    box.appendChild(text);
+  // OCR 처리
+  const result = await Tesseract.recognize(cropCanvas, 'eng+kor+jpn', {
+    logger: m => console.log(m)
   });
-}
 
-
-captureButton.addEventListener('click', () => {
-  takePhoto();
+  // 인식된 텍스트와 위치 정보를 콘솔에 출력
+  result.data.words.forEach(word => {
+    console.log(`Text: ${word.text}, Bounding Box: ${JSON.stringify(word.bbox)}`);
+  });
+  
 });
 
-setupCamera();
+const setFocus = () => {
+  const focusRect = document.querySelector('.center_focus').getBoundingClientRect();
+  document.querySelector('.blur.top').style.height = `${focusRect.top}px`;
+
+  document.querySelector('.blur.left').style.top = `${focusRect.top}px`;
+  document.querySelector('.blur.left').style.width = `${focusRect.left}px`;
+  document.querySelector('.blur.left').style.height = `${focusRect.height}px`;
+
+  document.querySelector('.blur.bottom').style.height = `calc(${window.innerHeight}px - (${focusRect.height}px + ${focusRect.top}px))`;
+
+  document.querySelector('.blur.right').style.top = `${focusRect.top}px`;
+  document.querySelector('.blur.right').style.width = `calc(100% - (${focusRect.left + focusRect.width}px))`;
+  document.querySelector('.blur.right').style.height = `${focusRect.height}px`;
+};
+
+window.addEventListener('resize', setFocus);
+window.addEventListener('load', () => {
+  setFocus();
+  startCamera();
+});

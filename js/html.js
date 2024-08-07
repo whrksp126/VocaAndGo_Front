@@ -32,8 +32,12 @@ const defaultModalHtml = () => `
 `
 
 // 모달 TOP
-const modalTopHtml = (title) => {
-  return `<h1>${title}</h1>`
+const modalTopHtml = (title, html=null) => {
+  if(!html){
+    return `<h1>${title}</h1>`
+  }else{
+    return html
+  }
 }
 
 // 모달 BOTTOM AND

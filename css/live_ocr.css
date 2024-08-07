@@ -1,17 +1,93 @@
-#video-container {
-  position: relative;
-  width: 100%;
-  max-width: 640px;
-  margin: auto;
+body {
+  padding: 0;
+  margin: 0;
 }
-video, canvas {
-  width: 100%;
-  height: auto;
+p {
+  padding: 0;
+  margin: 0;
 }
-#photo-container {
-  width: 100%;  
-  max-width: 1000px;  
-  margin: auto;  
-  overflow: hidden;  
+.camera_container {
   position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  overflow: hidden; /* 추가 */
+}
+.camera_container .focus_box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  text-align: center;
+  flex-flow: column;
+  transform: translate(-50%, -50%);
+}
+.camera_container .focus_box .center_focus {
+  
+}
+.camera_container .focus_box p {
+  color: #fff;
+  font-size: 14px;
+}
+.camera_container .capture_btn {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  z-index: 2;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  background: #FF8DD4;
+  font-size: 35px;
+  color: #fff;
+  transform: translate(-50%, -50%);
+}
+.camera_container .blurs {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+.camera_container .blurs .blur {
+  position: absolute;
+  background: #00000099;
+  backdrop-filter: blur(5px);
+}
+.camera_container .blurs .blur.top {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+}
+.camera_container .blurs .blur.left {
+  left: 0;
+  width: 50px;
+}
+.camera_container .blurs .blur.bottom {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+}
+.camera_container .blurs .blur.right {
+  right: 0;
+  width: 50px;
+}
+#video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비디오가 전체 화면을 자연스럽게 채우도록 설정 */
+  transform: translate(-50%, -50%);
 }

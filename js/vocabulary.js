@@ -6,7 +6,7 @@ const clickAddWord = async (event) => {
   const ID = getValueFromURL("vocabulary_id");
   const modal = openDefaultModal();
   modal.container.classList.add('add_word')
-  modal.top.innerHTML = modalTopHtml(`단어 추가`);
+  modal.top.innerHTML = modalTopHtml(`단어 추가`, `<div></div><h1>단어 추가</h1><button><i class="ph ph-camera"></i></button>`);
   const DATA = {id: ID, word : "",meaning : "",example : "",description : "",};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
