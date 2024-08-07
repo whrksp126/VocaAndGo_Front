@@ -51,14 +51,14 @@
           // 데이터 삭제 경고, 백업 했는지 확인
           // deleteDatabase('HEY_VOCA_DB')
           localStorage.setItem('user', JSON.stringify(user));
-          window.location.href = '/html/vocabulary_list.html';
+          window.location.href = 'https://voca.ghmate.com/html/vocabulary_list.html';
         }else{
           localStorage.setItem('user', JSON.stringify(user));
-          window.location.href = '/html/vocabulary_list.html';
+          window.location.href = 'https://voca.ghmate.com/html/vocabulary_list.html';
         }
       }else{
         if(user_data.state == "login"){
-          window.location.href = '/html/vocabulary_list.html';
+          window.location.href = 'https://voca.ghmate.com/html/vocabulary_list.html';
         }
       }
     })
