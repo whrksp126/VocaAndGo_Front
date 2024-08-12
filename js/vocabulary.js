@@ -6,7 +6,13 @@ const clickAddWord = async (event) => {
   const ID = getValueFromURL("vocabulary_id");
   const modal = openDefaultModal();
   modal.container.classList.add('add_word')
-  modal.top.innerHTML = modalTopHtml(`단어 추가`, `<div></div><h1>단어 추가</h1><button><i class="ph ph-camera"></i></button>`);
+  modal.top.innerHTML = modalTopHtml(`단어 추가`, `
+    <div></div>
+    <h1>단어 추가</h1>
+    <button onclick="clickOpenOcrCamera(event, ocrCameraCallback)">
+      <i class="ph ph-camera"></i>
+    </button>
+  `);
   const DATA = {id: ID, word : "",meaning : "",example : "",description : "",};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
@@ -16,6 +22,64 @@ const clickAddWord = async (event) => {
   modal.bottom.innerHTML = modalBottomHtml(btns);
   setTimeout(()=>modal.container.classList.add('active'),300)
 }
+const ocrCameraCallback = (original, view, crop) => {
+  selectOcrWordFun(original, view, crop)
+}
+const selectOcrWordFun = async (original, view, crop) => {
+  // OCR 데이터 가져오기
+  // const ocr_data_list = await getOcr(crop.img, ['eng', 'kor', 'jpn']);
+  const ocr_data_list = await getOcr(crop.img, ['eng']);
+
+  const url = `https://vocaandgo.ghmate.com/search/search_word_en`;
+  const method = 'GET';
+  for (const ocr_data of ocr_data_list) {
+    const data = { word: ocr_data.text };
+    try {
+      const result = await fetchDataAsync(url, method, data);
+      if (result.code != 200) {
+        console.error('검색 에러');
+      } else {
+        ocr_data.search_list = result.data;
+      }
+    } catch (error) {
+      console.error('API 요청 중 오류 발생:', error);
+    }
+  }
+  // TODO : 모달 변경
+
+  const modal = getDefaultModal();
+  modal.container.classList.add('ocr_word')
+  modal.top.innerHTML = modalTopHtml(`단어 선택`);
+  modal.middle.innerHTML = `
+    <div class="preview"><img src="${view.img}"></div>
+    <ul class="search_list active"></ul>
+  `;
+  const _searchList = modal.middle.querySelector('.search_list');
+  let search_list = []
+  ocr_data_list.forEach((ocr_data)=>{
+    if(ocr_data.search_list.length<=0) return 
+    search_list = [...search_list, ...ocr_data.search_list]
+  })
+  console.log('view,',view)
+  console.log('crop,',crop)
+  console.log('ocr_data_list,',ocr_data_list)
+  const cur_img_rect = document.querySelector('.ocr_word .preview img').getBoundingClientRect();
+  console.log(cur_img_rect)
+  // TODO : ocr_data_list index 클릭한 요소로 입력하기
+  const start_x = ((crop.visible.w - cur_img_rect.width)/2) + ocr_data_list[0].box.x0
+  const start_y = ((crop.visible.h - cur_img_rect.height)/2) + ocr_data_list[0].box.y0;
+  const end_x = ocr_data_list[0].box.x1;
+  const end_y = ocr_data_list[0].box.y1;
+  console.log(end_x,start_yend_y)
+
+  setSearchListEl(_searchList, search_list);
+  const btns = [
+    {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event, ocrCameraCallback)"`},
+  ]
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+}
+
+
 
 // 단어 수정 버튼 클릭 시
 const clickEditVocabularyBook = async (event) => {
@@ -156,7 +220,6 @@ const setVocabularyHtml = async (id) => {
     bodyStyle.setProperty('--card-background', `#FFEFFA`);
     bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
     for(let word of words){
-      console.log(word)
       const html = `
         <li 
           data-id="${word.id}"
@@ -205,22 +268,32 @@ const onInputWord = async (event) => {
     return
   };
   await getSearchWordData(word);
-  _searchList.classList.toggle('active', SEARCH_LIST.length > 0);
-  const regex = new RegExp(`(${word})`, 'gi');
-  const highlightText = (text, regex, keyword) => text.split(regex).map(part =>
-    part.toLowerCase() === keyword.toLowerCase() ? `<strong>${part}</strong>` : `<span>${part}</span>`
-  ).join('');
-  _searchList.innerHTML = '';  
-  SEARCH_LIST.forEach(({ word: dataWord, meanings }, index) => {
-    const search_word_html = highlightText(dataWord, regex, word);
+  setSearchListEl(_searchList, SEARCH_LIST, word)
+}
+
+// 검색 리스트 엘리먼트 세팅
+const setSearchListEl = (_el, search_list, word) => {
+  _el.classList.toggle('active', search_list.length > 0);
+  _el.innerHTML = '';  
+  search_list.forEach(({ word: dataWord, meanings }, index) => {
+    const search_word_html = setHighlightText(dataWord, word?word:dataWord);
     const search_meaning_html = meanings.join(', ');
-    _searchList.insertAdjacentHTML('beforeend', `
-      <li onclick="clickSelectSearchedWord(event)" data-index="${index}">
+    _el.insertAdjacentHTML('beforeend', `
+      <li onclick="${word?'clickSelectSearchedWord(event)':''}" data-index="${index}">
         <div class="search_word">${search_word_html}</div>
         <div class="search_meaning">${search_meaning_html}</div>
       </li>
     `);
   });
+}
+
+// Highlight Text 세팅
+const setHighlightText = (text, keyword) => {
+  const regex = new RegExp(`(${keyword})`, 'gi');
+  return text.split(regex).map(part =>
+    part.toLowerCase() === keyword.toLowerCase() ? `<strong>${part}</strong>` : `<span>${part}</span>`
+  ).join('');
+
 }
 // 의미 입력 시
 const onInputMeaning = async (event) => {

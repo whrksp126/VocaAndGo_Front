@@ -1,17 +1,27 @@
-body {
+[data-page="live_ocr"]body {
   padding: 0;
   margin: 0;
 }
-p {
+[data-page="live_ocr"] p {
   padding: 0;
   margin: 0;
 }
 .camera_container {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   background: #000;
   overflow: hidden; /* 추가 */
+}
+.camera_container .off_camera {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+  color: #fff;
+  font-size: 32px;
 }
 .camera_container .focus_box {
   position: absolute;
@@ -90,4 +100,54 @@ p {
   height: 100%;
   object-fit: cover; /* 비디오가 전체 화면을 자연스럽게 채우도록 설정 */
   transform: translate(-50%, -50%);
+}
+.modal.ocr_word .modal_content .modal_middle{
+  position: relative;
+  overflow: initial;
+}
+.modal.ocr_word .modal_content .modal_middle .preview{
+  height: 100%;
+}
+.modal.ocr_word .modal_content .modal_middle .preview img{
+  height: 100%;
+  width: 100%;
+  object-fit: none;
+}
+.ocr_word .search_list {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  display: none;
+  flex-flow: column;
+  width: 100%;
+  max-height: 215px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: #FFEFFA;
+  overflow: auto;
+}
+.ocr_word .search_list li{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 37px;
+  
+}
+.ocr_word .search_list li:not(:last-child){
+  border-bottom: 1px solid #DDDDDD;
+}
+.ocr_word .search_list li .search_word{
+  font-weight: 700;
+  font-size: 14px;
+}
+.ocr_word .search_list li .search_word strong{
+  color: #FF8DD4;
+}
+.ocr_word .search_list li .search_meaning{
+  flex: 1;
+  font-size: 11px;
+}
+.ocr_word .search_list.active{
+  display: flex;
 }

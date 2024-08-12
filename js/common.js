@@ -73,7 +73,7 @@ const setLocalStorageData = (key, value) => {
 
 
 // 모달 기본 엘리먼트 추가
-const openDefaultModal = (isBackClose=true) => {
+const openDefaultModal = (scrollClose=false, isBackClose=true) => {
   removeModal();
   history.replaceState({ modalOpen: true }, '', '');
   history.pushState({ modalOpen: true }, '', '');
@@ -86,66 +86,69 @@ const openDefaultModal = (isBackClose=true) => {
   _modal.addEventListener('click', event => clickHandler(event, isBackClose));
   window.addEventListener('popstate', onPopStateHandler);
   window.openModal = true;
-  let startY;
-  let startHeight;
-  let startTime;
-  let isInternalScroll = false;
-  
-  _modal_content.addEventListener('touchstart', (event) => {
-    const _eventBtn = findParentTarget(event.target, 'button');
-    if(_eventBtn) return;
-      if (_modal_middle.scrollTop !== 0 && _modal_middle.scrollTop + _modal_middle.offsetHeight !== _modal_middle.scrollHeight) {
-          isInternalScroll = true;
-      } else {
-          isInternalScroll = false;
-      }
-  
-      if (isInternalScroll) return;
-  
-      const p_top = 30 + 39 + 20;
-      const p_bottom = 20;
-      const maxHeight = _modal_middle.offsetHeight + p_top + p_bottom;
-      _modal_content.style.maxHeight = `${maxHeight}px`;
-      const touch = event.touches[0];
-      startY = touch.clientY;
-      startHeight = _modal_content.offsetHeight;
-      startTime = new Date().getTime();
-      _modal_content.style.transition = 'none';
-  });
-  
-  _modal_content.addEventListener('touchmove', (event) => {
-    const _eventBtn = findParentTarget(event.target, 'button');
+
+  if(scrollClose){
+    let startY;
+    let startHeight;
+    let startTime;
+    let isInternalScroll = false;
+    _modal_content.addEventListener('touchstart', (event) => {
+      const _eventBtn = findParentTarget(event.target, 'button');
       if(_eventBtn) return;
-      if (isInternalScroll) return;
-      const touch = event.touches[0];
-      const moveY = touch.clientY;
-      const distance = startY - moveY;
-      const newHeight = startHeight + distance;
-      const minHeight = 100; 
-      if (newHeight > minHeight) {
-          _modal_content.style.height = `${newHeight}px`;
-      }
-  });
+        if (_modal_middle.scrollTop !== 0 && _modal_middle.scrollTop + _modal_middle.offsetHeight !== _modal_middle.scrollHeight) {
+            isInternalScroll = true;
+        } else {
+            isInternalScroll = false;
+        }
+    
+        if (isInternalScroll) return;
+    
+        const p_top = 30 + 39 + 20;
+        const p_bottom = 20;
+        const maxHeight = _modal_middle.offsetHeight + p_top + p_bottom;
+        _modal_content.style.maxHeight = `${maxHeight}px`;
+        const touch = event.touches[0];
+        startY = touch.clientY;
+        startHeight = _modal_content.offsetHeight;
+        startTime = new Date().getTime();
+        _modal_content.style.transition = 'none';
+    });
+    
+    _modal_content.addEventListener('touchmove', (event) => {
+      const _eventBtn = findParentTarget(event.target, 'button');
+        if(_eventBtn) return;
+        if (isInternalScroll) return;
+        const touch = event.touches[0];
+        const moveY = touch.clientY;
+        const distance = startY - moveY;
+        const newHeight = startHeight + distance;
+        const minHeight = 100; 
+        if (newHeight > minHeight) {
+            _modal_content.style.height = `${newHeight}px`;
+        }
+    });
+    
+    _modal_content.addEventListener('touchend', (event) => {
+      const _eventBtn = findParentTarget(event.target, 'button');
+      if(_eventBtn) return;
+        if (isInternalScroll) return;
+        _modal_content.style.transition = '';
+        const finalHeight = _modal_content.offsetHeight;
+        _modal_content.style.height = `${finalHeight}px`;
+    
+        const endTime = new Date().getTime(); 
+        const duration = endTime - startTime; 
+        const distance = event.changedTouches[0].clientY - startY; 
+        const speed = distance / duration; 
+    
+        const speedThreshold = 0.5; 
+        const distanceThreshold = 50; 
+        if (speed > speedThreshold && distance > distanceThreshold) {
+            _modal.click();
+        }
+    });
+  }
   
-  _modal_content.addEventListener('touchend', (event) => {
-    const _eventBtn = findParentTarget(event.target, 'button');
-    if(_eventBtn) return;
-      if (isInternalScroll) return;
-      _modal_content.style.transition = '';
-      const finalHeight = _modal_content.offsetHeight;
-      _modal_content.style.height = `${finalHeight}px`;
-  
-      const endTime = new Date().getTime(); 
-      const duration = endTime - startTime; 
-      const distance = event.changedTouches[0].clientY - startY; 
-      const speed = distance / duration; 
-  
-      const speedThreshold = 0.5; 
-      const distanceThreshold = 50; 
-      if (speed > speedThreshold && distance > distanceThreshold) {
-          _modal.click();
-      }
-  });
   
   
   
@@ -443,8 +446,26 @@ const clickRetest = async (event, is_all) => {
   TEST_WORD_LIST.forEach((data)=>data.isCorrect = undefined);
   await updateRecentLearningData("test_list", TEST_WORD_LIST);
   location.reload();
-
 }
+
+const getOcr = async (img, lngs) => {
+  // OCR 처리
+  let ocr_data = [];
+  const result = await Tesseract.recognize(img, lngs.join('+'), {
+    // logger: m => console.log(m)
+  });
+  // 인식된 텍스트와 위치 정보를 콘솔에 출력
+  result.data.words.forEach(word => {
+    console.log(`Text: ${word.text}, Bounding Box: ${JSON.stringify(word.bbox)}`);
+    ocr_data.push({
+      text: word.text,
+      box : word.bbox
+    })
+  });
+  return ocr_data;
+}
+
+
 // GTTS 
 const generateSpeech = async (text, language) => {
   const url = `https://vocaandgo.ghmate.com/tts/output`;
