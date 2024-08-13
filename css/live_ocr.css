@@ -105,8 +105,23 @@
   position: relative;
   overflow: initial;
 }
+
 .modal.ocr_word .modal_content .modal_middle .preview{
+  position: relative;
   height: 100%;
+}
+.modal.ocr_word .modal_content .modal_middle .preview .highlighter{
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: auto;
+  height: auto;
+  background: #ff8dd480;
+  display: none;
+}
+.modal.ocr_word .modal_content .modal_middle .preview .highlighter.active{
+  display: block;
 }
 .modal.ocr_word .modal_content .modal_middle .preview img{
   height: 100%;
@@ -150,4 +165,10 @@
 }
 .ocr_word .search_list.active{
   display: flex;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.1), 
+    0 0 20px rgba(255, 255, 255, 0.2), 
+    0 0 30px rgba(255, 255, 255, 0.5), 
+    0 0 40px rgba(255, 255, 255, 0.7),
+    0 0 50px rgba(255, 255, 255, 0.8);
 }
