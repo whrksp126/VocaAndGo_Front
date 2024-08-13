@@ -95,7 +95,7 @@ const setFocus = () => {
 };
 
 
-window.addEventListener('resize', setFocus);
+// window.addEventListener('resize', setFocus);
 // window.addEventListener('load', () => {
 //   setFocus();
 //   startCamera();

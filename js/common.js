@@ -66,10 +66,10 @@ const findParentTarget = (targetEl, parent) => {
   return targetEl.closest(parent);
 }
 
-// 로컬 스토리지에 데이터 저장
-const setLocalStorageData = (key, value) => {
-  localStorage.setItem(key, JSON.stringify(value));
-}
+// // 로컬 스토리지에 데이터 저장
+// const setLocalStorageData = (key, value) => {
+//   localStorage.setItem(key, JSON.stringify(value));
+// }
 
 
 // 모달 기본 엘리먼트 추가
@@ -220,7 +220,7 @@ const addEventClickColor = () => {
 }
 
 // 신규 단어장 추가 버튼 클릭 시
-const clickSaveVocabulary = async (event, callback) => {
+const clickSaveVocabulary = async (event, htmlFun) => {
   const _modal = findParentTarget(event.target, '.modal');
   const VOCABULARY_NAME = document.querySelector('.vocabulary_name').value;
   const _colorLi = document.querySelector('.vocabulary_color li.active');
@@ -235,11 +235,12 @@ const clickSaveVocabulary = async (event, callback) => {
   }
   if(_modal.dataset.id){
     const result = await updateIndexedDbNotebook(Number(_modal.dataset.id), data.name, data.color, data.updatedAt, data.status);
-    localStorageData.vocabulary_list = localStorageData.vocabulary_list.map(item => item.id === ID ? data : item);
+    // localStorageData.vocabulary_list = localStorageData.vocabulary_list.map(item => item.id === ID ? data : item);
   }else{
     const result = await addIndexedDbNotebook(data.name, data.color, data.createdAt, data.updatedAt, data.status);
   }
-  callback();
+  const _ul = document.querySelector('main .container ul');
+  _ul.innerHTML = await htmlFun();
   _modal.click();
 }
 

@@ -133,32 +133,34 @@ const clickGoBackVocabularyPage = (event) => {
 
 // 단어 설정 모달에서 저장 클릭 시
 const clickModalsetWordBtn = async (event) => {
-  const PREV_VOCABULARY_ID = Number(getValueFromURL("vocabulary_id"));
+  const prev_vocabulary_id = Number(getValueFromURL("vocabulary_id"));
   const _modal = findParentTarget(event.target, '.modal');
   
-  const VOCABULARY_ID = Number(_modal.querySelector('.vocabulary').value);
-  const ID = Number(_modal.dataset.id);
-  const WORD = _modal.querySelector('input.word').value;
-  const MEANING = _modal.querySelector('input.meaning').value;
-  const EXAMPLE = _modal.querySelector('input.example').value;
-  const EXPLANATION = _modal.querySelector('input.explanation').value;
+  const vocabulary_id = Number(_modal.querySelector('.vocabulary').value);
+  const word_id = Number(_modal.dataset.id);
+  const word = _modal.querySelector('input.word').value;
+  const meaning = _modal.querySelector('input.meaning').value;
+  const example = _modal.querySelector('input.example').value;
+  const explanation = _modal.querySelector('input.explanation').value;
   const createdAt = new Date().toISOString();
-  const data = {
-    notebookId : Number(VOCABULARY_ID),
-    id : ID,
-    word : WORD,
-    meaning : MEANING,
-    example : EXAMPLE,
-    description : EXPLANATION,
-    status : 0
+  const new_data = {
+    notebookId : Number(vocabulary_id),
+    word : word,
+    meaning : meaning,
+    example : example,
+    description : explanation,
+    status : 0,
+    updatedAt : new Date().toISOString()
   }
   if(_modal.dataset.id){
-    const result = await updateIndexedDbWord(data.id, data.notebookId, data.word, data.meaning, data.example, data.description, createdAt, data.status);
+
+    const result = await updateIndexedDbWord(word_id, new_data);
   }else{
-    const result = await addIndexedDbWord(data.notebookId, data.word, data.meaning, data.example, data.description, createdAt, createdAt, data.status);
+    const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
   }
   _modal.click();
-  setVocabularyHtml(PREV_VOCABULARY_ID);
+  const _ul = document.querySelector('main .container ul');
+  _ul.innerHTML = await setVocabularyHtml(prev_vocabulary_id);
   // TODO : 단어 저장, 수정, 삭제 기능 구현
 }
 // 단어 삭제 모달에서 삭제 클릭 시
@@ -168,7 +170,8 @@ const clickModalDeleteWordBook = async (event) => {
   const WORD_ID = Number(_modal.dataset.id);
   const reuslt = await deleteIndexedDbWord(WORD_ID);
   _modal.click();
-  setVocabularyHtml(VOCABULARY_ID);
+  const _ul = document.querySelector('main .container ul');
+  _ul.innerHTML = await setVocabularyHtml(VOCABULARY_ID);
 }
 
 // 선택 삭제 버튼 클릭 시
@@ -196,7 +199,8 @@ const clickModalDeleteSelectWordBook = async (event) => {
   }
   const _modal = findParentTarget(event.target, '.modal');
   _modal.click();
-  setVocabularyHtml(VOCABULARY_ID);
+  const _ul = document.querySelector('main .container ul');
+  _ul.innerHTML = await setVocabularyHtml(VOCABULARY_ID);
 }
 
 // 단어장 명 세팅
@@ -207,56 +211,51 @@ const setVocabularyNameHtml = async (id) => {
 }
 // 단어 리스트 세팅
 const setVocabularyHtml = async (id) => {
-  const _ul = document.querySelector('main .container ul');
-  _ul.innerHTML = '';
+  let html = '';
   const words = await getIndexedDbWordsByNotebookId(Number(id));
-  if(words.length > 0){
-    const noteBook = await getIndexedDbNotebookById(Number(id));
-    const bodyStyle = document.querySelector('body').style;
-    // bodyStyle.setProperty('--card-color', `#${noteBook.color.main}`);
-    // bodyStyle.setProperty('--card-background', `#${noteBook.color.background}`);
-    // bodyStyle.setProperty('--progress-color', `#${noteBook.color.main}4d`); // 색상 코드에 투명도 추가
-    bodyStyle.setProperty('--card-color', `#FF8DD4`);
-    bodyStyle.setProperty('--card-background', `#FFEFFA`);
-    bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
-    for(let word of words){
-      const html = `
-        <li 
-          data-id="${word.id}"
-          data-status="${word.status}"
-        >
-          <div class="input_checkbox">
-            <input type="checkbox" id="${word.id}">
-            <label for="${word.id}">
-              <i class="ph ph-square"></i>
-              <i class="ph-fill ph-check-square"></i>
-            </label>
+  const noteBook = await getIndexedDbNotebookById(Number(id));
+  const bodyStyle = document.querySelector('body').style;
+  // bodyStyle.setProperty('--card-color', `#${noteBook.color.main}`);
+  // bodyStyle.setProperty('--card-background', `#${noteBook.color.background}`);
+  // bodyStyle.setProperty('--progress-color', `#${noteBook.color.main}4d`); // 색상 코드에 투명도 추가
+  bodyStyle.setProperty('--card-color', `#FF8DD4`);
+  bodyStyle.setProperty('--card-background', `#FFEFFA`);
+  bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
+  for(let word of words){
+     html += `
+      <li 
+        data-id="${word.id}"
+        data-status="${word.status}"
+      >
+        <div class="input_checkbox">
+          <input type="checkbox" id="${word.id}">
+          <label for="${word.id}">
+            <i class="ph ph-square"></i>
+            <i class="ph-fill ph-check-square"></i>
+          </label>
+        </div>
+        <div class="top">
+          <div class="left">
+            <div class="word">${word.word}</div>
+            <button class="marker" onclick="clickMarker(event)">
+              <img src="/images/marker_${word.status}.png">
+            </button>
           </div>
-          <div class="top">
-            <div class="left">
-              <div class="word">${word.word}</div>
-              <button class="marker" onclick="clickMarker(event)">
-                <img src="/images/marker_${word.status}.png">
-              </button>
-            </div>
-            <div class="right">
-              <div class="btns">
-                <button class="sound_btn" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
-                <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
-                <button onclick="clickDeleteWordBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
-              </div>
+          <div class="right">
+            <div class="btns">
+              <button class="sound_btn" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
+              <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
+              <button onclick="clickDeleteWordBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
             </div>
           </div>
-          <div class="bottom">
-            <div class="meaning">${word.meaning}</div>
-          </div>
-        </li>
-      `
-      _ul.insertAdjacentHTML('beforeend', html)
-    }
-  }else{
-    console.log('단어 추가 유도 UI');
+        </div>
+        <div class="bottom">
+          <div class="meaning">${word.meaning}</div>
+        </div>
+      </li>
+    `
   }
+  return html;
 }
 
 // 단어 입력 시
@@ -409,11 +408,17 @@ function matchStarting(word, splitKeyword) {
 }
 
 
-const setInitHtml = () => {
-  const id = getValueFromURL("vocabulary_id");
-  setVocabularyNameHtml(id);
-  setVocabularyHtml(id);
+const setInitHtml = async () => {
+  const index_status = await waitIndexDbOpen();
+  if(index_status == "on"){
+    const id = getValueFromURL("vocabulary_id");
+    setVocabularyNameHtml(id);
+    const _ul = document.querySelector('main .container ul');
+    _ul.innerHTML = await setVocabularyHtml(id);
+  }
+  if(index_status == "err"){
+    alert("데이터 호출 err")
+  }
+
 }
-
-
 setInitHtml();

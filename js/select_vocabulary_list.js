@@ -59,7 +59,13 @@ const clickEventBtn = (event) => {
   }
 }
 
-const setInitHtml = () => {
-  setVocabularyList();
+const setInitHtml = async () => {
+  const index_status = await waitIndexDbOpen();
+  if(index_status == "on"){
+    setVocabularyList();
+  }
+  if(index_status == "err"){
+    alert("데이터 호출 err")
+  }
 }
 setInitHtml();

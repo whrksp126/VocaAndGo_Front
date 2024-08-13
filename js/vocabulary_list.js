@@ -50,20 +50,21 @@ const setUserNameHtml = async () => {
 const setVocabularyList = async () => {
   const _ul = document.querySelector('main .container ul');
   _ul.innerHTML = ``;
-  const noteBooks = await getIndexedDbNotebooks();
-  if(noteBooks.length > 0){
-    const html = await setVocabularyListHtml(noteBooks);
-    _ul.innerHTML = html;
-  }else{
-    console.log('단어장 추가 유도 UI');
-  }
+  const html = await setVocabularyListHtml();
+  _ul.innerHTML = html;
 }
 // 단어장 클릭 시
 const clickVocabularyItem = (event, id) => {
   window.location.href=`/html/vocabulary.html?vocabulary_id=${id}`
 }
-const setInitHtml = () => {
-  setUserNameHtml();
-  setVocabularyList();
+const setInitHtml = async () => {
+  const index_status = await waitIndexDbOpen();
+  if(index_status == "on"){
+    setUserNameHtml();
+    setVocabularyList();
+  }
+  if(index_status == "err"){
+    alert("데이터 호출 err")
+  }
 }
 setInitHtml();

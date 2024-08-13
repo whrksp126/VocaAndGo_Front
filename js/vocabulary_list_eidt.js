@@ -22,7 +22,7 @@ const clickModalDeleteVocabularyBook = (event) => {
   const id = Number(_modal.dataset.id);
   deleteIndexedDbNotebook(id)
   _modal.click();
-  setEditVocabularyListHtml();
+  setInitHtml()
 }
 
 // 단어장 수정 클릭 시
@@ -48,15 +48,14 @@ const clickEditVocabularyBook = async (event, data={name:"", color:"FF8DD4"}) =>
 
 // 단어장 에디터 리스트에서 리스트 HTML 세팅
 const setEditVocabularyListHtml = async () => {
-  const _ul = document.querySelector('main .container ul');
-  _ul.innerHTML = ``;
+  let html = '';
   const noteBooks = await getIndexedDbNotebooks();
   if(noteBooks.length > 0){
     for(let noteBook of noteBooks){
       const words = await getIndexedDbWordsByNotebookId(noteBook.id);
       const totalWords = words.length;
       const learnedCount = words.reduce((count, word) => {return word.status === "learned" ? count + 1 : count}, 0);
-      const html = `
+       html += `
         <li 
           data-id="${noteBook.id}"
           style="--card-color: #${noteBook.color.main}; --card-background: #${noteBook.color.background}; --progress-color: #${noteBook.color.main}4d; ">
@@ -70,13 +69,18 @@ const setEditVocabularyListHtml = async () => {
           </div>
         </li>
       `
-      _ul.insertAdjacentHTML('beforeend', html);
     }
-  }else{
-    console.log('단어장 추가 유도 UI');
   }
+  return html 
 }
-const setInitHtml = () => {
-  setEditVocabularyListHtml();
+const setInitHtml = async () => {
+  const index_status = await waitIndexDbOpen();
+  if(index_status == "on"){
+    const _ul = document.querySelector('main .container ul');
+    _ul.innerHTML = await setEditVocabularyListHtml();
+  }
+  if(index_status == "err"){
+    alert("데이터 호출 err")
+  }
 }
 setInitHtml();

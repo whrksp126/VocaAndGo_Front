@@ -1,23 +1,39 @@
 const INDEXED_DB_NAME = "HEY_VOCA_DB";
 const INDEXED_DB_VERSION = 1;
 let INDEXED_DB;
+let INDEXED_STATUS = "off";
+
+// 인덱스 DB 호출 await
+const waitIndexDbOpen = () => {
+  return new Promise((resolve) => {
+    const intervalId = setInterval(() => {
+      if (["on", "err"].includes(INDEXED_STATUS)) {
+        clearInterval(intervalId); // 조건을 만족하면 인터벌 중지
+        resolve(INDEXED_STATUS); // INDEXED_STATUS 값을 반환하며 Promise 해결
+      }
+    }, 30);
+  });
+};
+
 
 // 데이터베이스를 여는 요청
 const INDEXED_DB_REQUEST = indexedDB.open(INDEXED_DB_NAME, INDEXED_DB_VERSION);
 
 INDEXED_DB_REQUEST.onerror = function(event) {
+  INDEXED_STATUS = "err"
   console.error("데이터베이스 오류: ", event.target.errorCode);
 };
 
 INDEXED_DB_REQUEST.onsuccess = function(event) {
   INDEXED_DB = event.target.result;
+  INDEXED_STATUS = "on"
   console.log("데이터베이스가 성공적으로 열렸습니다.");
 };
 
 INDEXED_DB_REQUEST.onupgradeneeded = function(event) {
   INDEXED_DB = event.target.result;
+  INDEXED_STATUS = "on"
   console.log('데이터베이스가 처음으로 열렸습니다.')
-
   // 사용자 스토어 생성
   const userStore = INDEXED_DB.createObjectStore("users", { keyPath: "id", autoIncrement: true });
   // userStore.createIndex("email", "email", { unique: true });
@@ -43,9 +59,9 @@ INDEXED_DB_REQUEST.onupgradeneeded = function(event) {
 
   // 최근 학습 스토어 생성
   const recentLearningStore = INDEXED_DB.createObjectStore("recentLearning");
-  recentLearningStore.put("card", "type");
-  recentLearningStore.put("before", "state");
-  recentLearningStore.put([], "test_list");
+  recentLearningStore.put(null, "type"); // card, mcq
+  recentLearningStore.put(null, "state"); // "before", after
+  recentLearningStore.put(null, "test_list"); // []
 
   // 더미 데이터 추가
   const isNewDatabase = event.oldVersion === 0;
@@ -55,25 +71,25 @@ INDEXED_DB_REQUEST.onupgradeneeded = function(event) {
       const userStore = userTransaction.objectStore("users");
 
       // 사용자 더미 데이터
-      userStore.add({ name: "열공이", email: "" });
+      userStore.add({ name: "비회원", email: "구글 로그인이 필요합니다" });
 
       const notebookTransaction = INDEXED_DB.transaction("notebooks", "readwrite");
       const notebookStore = notebookTransaction.objectStore("notebooks");
 
       // 단어장 더미 데이터
-      const createdAt = new Date().toISOString();
-      notebookStore.add({ name: "초등 영단어", color: {main: "42F98B", background: "E2FFE8"}, createdAt, updatedAt: createdAt, status: "active" });
-      notebookStore.add({ name: "중등 영단어", color: {main: "FF8DD4", background: "FFEFFA"}, createdAt, updatedAt: createdAt, status: "active" });
-      notebookStore.add({ name: "고등 영단어", color: {main: "CD8DFF", background: "F6EFFF"}, createdAt, updatedAt: createdAt, status: "active" });
-      notebookStore.add({ name: "수능 영단어", color: {main: "74D5FF", background: "EAF6FF"}, createdAt, updatedAt: createdAt, status: "active" });
-      notebookStore.add({ name: "토익 영단어", color: {main: "FFBD3C", background: "FFF6DF"}, createdAt, updatedAt: createdAt, status: "active" });
+      // const createdAt = new Date().toISOString();
+      // notebookStore.add({ name: "초등 영단어", color: {main: "42F98B", background: "E2FFE8"}, createdAt, updatedAt: createdAt, status: "active" });
+      // notebookStore.add({ name: "중등 영단어", color: {main: "FF8DD4", background: "FFEFFA"}, createdAt, updatedAt: createdAt, status: "active" });
+      // notebookStore.add({ name: "고등 영단어", color: {main: "CD8DFF", background: "F6EFFF"}, createdAt, updatedAt: createdAt, status: "active" });
+      // notebookStore.add({ name: "수능 영단어", color: {main: "74D5FF", background: "EAF6FF"}, createdAt, updatedAt: createdAt, status: "active" });
+      // notebookStore.add({ name: "토익 영단어", color: {main: "FFBD3C", background: "FFF6DF"}, createdAt, updatedAt: createdAt, status: "active" });
 
       const wordTransaction = INDEXED_DB.transaction("words", "readwrite");
       const wordStore = wordTransaction.objectStore("words");
 
       // 단어 더미 데이터
-      wordStore.add({ notebookId: 1, word: "apple", meaning: "사과", example: "I ate an apple.", description: "먹는 사과", createdAt, updatedAt: createdAt, status: 0 });
-      wordStore.add({ notebookId: 1, word: "book", meaning: "도서", example: "I read a book.", description: "읽는 책", createdAt, updatedAt: createdAt, status: 1 });
+      // wordStore.add({ notebookId: 1, word: "apple", meaning: "사과", example: "I ate an apple.", description: "먹는 사과", createdAt, updatedAt: createdAt, status: 0 });
+      // wordStore.add({ notebookId: 1, word: "book", meaning: "도서", example: "I read a book.", description: "읽는 책", createdAt, updatedAt: createdAt, status: 1 });
     };
   }
 };
@@ -297,26 +313,6 @@ function getIndexedDbWordById(id) {
   });
 }
 
-// // 단어 업데이트 함수
-// function updateIndexedDbWord(id, notebookId, word, meaning, example, description, updatedAt, status) {
-//   return new Promise((resolve, reject) => {
-//     const transaction = INDEXED_DB.transaction(["words"], "readwrite");
-//     const store = transaction.objectStore("words");
-
-//     const request = store.put({ id, notebookId, word, meaning, example, description, updatedAt, status });
-
-//     request.onsuccess = function() {
-//       console.log("단어가 성공적으로 업데이트되었습니다.");
-//       resolve();
-//     };
-
-//     request.onerror = function(event) {
-//       console.error("단어를 업데이트하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-//       reject(event.target.errorCode);
-//     };
-//   });
-// }
-
 // 단어 업데이트 함수
 function updateIndexedDbWord(id, updatedData) {
   // id, notebookId, word, meaning, example, description, updatedAt, status
@@ -336,6 +332,7 @@ function updateIndexedDbWord(id, updatedData) {
       // 업데이트할 데이터만 갱신
       for (const key in updatedData) {
         if (updatedData.hasOwnProperty(key)) {
+          console.log(wordData[key], updatedData[key])
           wordData[key] = updatedData[key];
         }
       }

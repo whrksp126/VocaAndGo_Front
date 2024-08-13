@@ -145,7 +145,8 @@ const setWordModalHtml = async ({id, word, meaning, example, description}) => {
 }
 
 // 단어장 리스트 html
-const setVocabularyListHtml = async (vocabulary_list) => {
+const setVocabularyListHtml = async () => {
+  const vocabulary_list = await getIndexedDbNotebooks();
   let html = ``;
   for(const vocabulary of vocabulary_list){
     const words = await getIndexedDbWordsByNotebookId(vocabulary.id);

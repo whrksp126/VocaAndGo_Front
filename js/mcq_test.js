@@ -96,21 +96,26 @@ const clickMcqOption = (event, index) => {
 }
 
 const init = async () => {
-  const state = await getRecentLearningData("state");
-  if(state == 'before') {
-    await updateRecentLearningData("state", "during");
-    TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
+  const index_status = await waitIndexDbOpen();
+  if(index_status == "on"){
+    const state = await getRecentLearningData("state");
+    if(state == 'before') {
+      await updateRecentLearningData("state", "during");
+      TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
+    }
+    if(state == 'during'){ 
+      TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
+    }
+    if(state == 'after'){
+      const test_list = await getRecentLearningData("test_list", TEST_WORD_LIST);
+      TEST_WORD_LIST = test_list;
+      setTestResultsHtml();
+    }
+    setMcqTestPage();
   }
-  if(state == 'during'){ 
-    TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
+  if(index_status == "err"){
+    alert("데이터 호출 err")
   }
-  if(state == 'after'){
-    const test_list = await getRecentLearningData("test_list", TEST_WORD_LIST);
-    TEST_WORD_LIST = test_list;
-    setTestResultsHtml();
-  }
-  setMcqTestPage();
-  // setCardTouchEvent();
 }
 init();
 
