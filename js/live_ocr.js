@@ -21,10 +21,8 @@ const camera_container_html = (callback) => {
       <canvas id="view_canvas" style="display: none;"></canvas>
       <img id="photo" alt="Captured Photo" style="display: none;"/>
     </div>
-  `
-} 
-
-
+  `;
+};
 
 async function startCamera(callback) {
   document.body.insertAdjacentHTML('beforeend', camera_container_html(callback));
@@ -94,41 +92,34 @@ const setFocus = () => {
   document.querySelector('.blur.right').style.height = `${focusRect.height}px`;
 };
 
-
-// window.addEventListener('resize', setFocus);
-// window.addEventListener('load', () => {
-//   setFocus();
-//   startCamera();
-// });
-const clickOpenOcrCamera = async (event, callback) =>{
+const clickOpenOcrCamera = async (event, callback) => {
   await startCamera(callback);
   setFocus();
-}
+};
 
 // 카메라 닫기 클릭 시
 const clickCloseCamera = (event) => {
   const video = document.getElementById('video');
-  
+
   // 비디오에서 스트림 가져오기
   const stream = video.srcObject;
-  
+
   if (stream) {
     // 스트림의 모든 트랙 중지
     const tracks = stream.getTracks();
     tracks.forEach(track => track.stop());
   }
-  
+
   // 비디오의 소스를 해제
   video.srcObject = null;
 
   // 카메라 컨테이너 요소 제거
   document.querySelector('.camera_container').remove();
-}
+};
+
 // 카메라 촬영 클릭 시
 const clickCapturBtn = async (event, callback) => {
-
   const video = document.getElementById('video');
-  const photo = document.getElementById('photo');
   const viewCanvas = document.getElementById('view_canvas');
   const cropCanvas = document.getElementById('crop_canvas');
 
@@ -138,7 +129,7 @@ const clickCapturBtn = async (event, callback) => {
   originalCanvas.width = video.videoWidth;
   originalCanvas.height = video.videoHeight;
   originalContext.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-  
+
   // 비디오 해상도를 표시
   console.log(`Captured resolution: ${video.videoWidth}x${video.videoHeight}`);
   const videoRect = video.getBoundingClientRect();
@@ -153,8 +144,6 @@ const clickCapturBtn = async (event, callback) => {
   viewCanvas.width = visibleWidth;
   viewCanvas.height = visibleHeight;
   viewContext.drawImage(video, visibleX, visibleY, visibleWidth, visibleHeight, 0, 0, visibleWidth, visibleHeight);
-
-
 
   // focusRect 크기에 맞는 이미지로 다시 크롭하기
   const focusRect = document.querySelector('.center_focus').getBoundingClientRect();
@@ -173,22 +162,27 @@ const clickCapturBtn = async (event, callback) => {
 
   const view = {
     img: viewCanvas.toDataURL('image/png'),
-    visible : {
-      w : visibleWidth,
-      h : visibleHeight,
-      x : visibleX,
-      y : visibleY
-    },
-  }
+    visible: {
+      w: visibleWidth,
+      h: visibleHeight,
+      x: visibleX,
+      y: visibleY
+    }
+  };
+  
   const crop = {
     img: cropCanvas.toDataURL('image/png'),
-    visible : {
-      w : focusRect.width,
-      h : focusRect.height,
-      x : focusRect.left,
-      y : focusRect.top
-    },
-  }
+    visible: {
+      w: focusRect.width,
+      h: focusRect.height,
+      x: focusRect.left,
+      y: focusRect.top
+    }
+  };
+
+  // React Native로 데이터를 전송
+  window.ReactNativeWebView.postMessage(JSON.stringify({ original, view, crop }));
+
   await callback(original, view, crop);
   clickCloseCamera();
-}
+};
