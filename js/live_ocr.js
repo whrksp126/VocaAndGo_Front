@@ -47,24 +47,19 @@ async function startCamera(callback) {
       });
 
       let constraints;
-      alert('hasBackCamera,',hasBackCamera)
-      alert('hasFrontCamera,',hasFrontCamera)
       if (hasBackCamera) {
-        // 후면 카메라가 있는 경우 후면 카메라로 설정
         constraints = {
           video: {
             facingMode: { exact: "environment" }
           }
         };
       } else if (hasFrontCamera) {
-        // 후면 카메라가 없고 전면 카메라가 있는 경우 전면 카메라로 설정
         constraints = {
           video: {
             facingMode: { exact: "user" }
           }
         };
       } else {
-        // 둘 다 없으면 기본 카메라 사용
         constraints = {
           video: true
         };
