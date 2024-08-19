@@ -34,44 +34,51 @@ async function startCamera(callback) {
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
     if (videoDevices.length > 0) {
-      const constraints = {
-        video: {
-          facingMode: { exact: "environment" },
-          deviceId: { exact: videoDevices[0].deviceId },
-          width: { ideal: 1920, max: 4096 },
-          height: { ideal: 1080, max: 2160 }
+      let hasFrontCamera = false;
+      let hasBackCamera = false;
+
+      videoDevices.forEach((device) => {
+        if (device.label.toLowerCase().includes('front')) {
+          hasFrontCamera = true;
         }
-      };
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        video.srcObject = stream;
-        video.play();
-
-        // 비디오 해상도 정보를 비디오 메타 데이터가 로드된 후에 얻음
-        video.addEventListener('loadedmetadata', () => {
-          console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
-        });
-      } catch (err) {
-        if (err.name === 'OverconstrainedError') {
-          console.warn("요청한 해상도를 사용할 수 없습니다. 기본 해상도로 시도합니다.");
-
-          // 기본 해상도로 다시 시도
-          const defaultConstraints = {
-            video: true // 기본 해상도 사용
-          };
-
-          const stream = await navigator.mediaDevices.getUserMedia(defaultConstraints);
-          video.srcObject = stream;
-          video.play();
-
-          video.addEventListener('loadedmetadata', () => {
-            console.log(`기본 비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
-          });
-        } else {
-          throw err;
+        if (device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear')) {
+          hasBackCamera = true;
         }
+      });
+
+      let constraints;
+      alert('hasBackCamera,',hasBackCamera)
+      alert('hasFrontCamera,',hasFrontCamera)
+      if (hasBackCamera) {
+        // 후면 카메라가 있는 경우 후면 카메라로 설정
+        constraints = {
+          video: {
+            facingMode: { exact: "environment" }
+          }
+        };
+      } else if (hasFrontCamera) {
+        // 후면 카메라가 없고 전면 카메라가 있는 경우 전면 카메라로 설정
+        constraints = {
+          video: {
+            facingMode: { exact: "user" }
+          }
+        };
+      } else {
+        // 둘 다 없으면 기본 카메라 사용
+        constraints = {
+          video: true
+        };
       }
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = stream;
+      video.play();
+
+      // 비디오 해상도 정보를 비디오 메타 데이터가 로드된 후에 얻음
+      video.addEventListener('loadedmetadata', () => {
+        console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
+      });
+
     } else {
       console.error("비디오 입력 장치를 찾을 수 없습니다.");
     }
