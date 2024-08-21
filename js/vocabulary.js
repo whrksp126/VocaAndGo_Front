@@ -152,8 +152,9 @@ const clickModalsetWordBtn = async (event) => {
     status : 0,
     updatedAt : new Date().toISOString()
   }
+  if(word.trim().length <= 0) return alert('단어는 필수 입력 사항입니다');
+  if(meaning.trim().length <= 0) return alert('의미는 필수 입력 사항입니다');
   if(_modal.dataset.id){
-
     const result = await updateIndexedDbWord(word_id, new_data);
   }else{
     const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
@@ -243,7 +244,7 @@ const setVocabularyHtml = async (id) => {
           </div>
           <div class="right">
             <div class="btns">
-              <button class="sound_btn" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
+              <button class="sound_btn" onclick="generateSpeech(event, '${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
               <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
               <button onclick="clickDeleteWordBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
             </div>

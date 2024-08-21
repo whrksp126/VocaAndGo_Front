@@ -41,7 +41,7 @@ const setMcqHtml = (word, total, cur) => {
             <span>/</span>
             <span class="total">${total}</span>
           </div>
-          <button class="speaker" onclick="generateSpeech('${word.word}', 'en')">
+          <button class="speaker" onclick="generateSpeech(event, '${word.word}', 'en')">
             <i class="ph-fill ph-speaker-high"></i>
           </button>
         </div>
@@ -69,10 +69,11 @@ const setMcqTestPage = () => {
 
 // 옵션 클릭 시
 const clickMcqOption = (event, index) => {
-  findParentTarget(event.target, '.option_btn').classList.add('active');
   const __item = document.querySelectorAll('.items .item');
   const _currentItem = __item[__item.length - 1];
   if(!_currentItem) return;
+  if(_currentItem.dataset.isdone) return;
+  findParentTarget(event.target, '.option_btn').classList.add('active');
   const _nextItem = __item[__item.length - 2];
   const isCorrect = Number(_currentItem.dataset.result) == Number(index) ;
   _currentItem.classList.add(isCorrect ? 'correct' : 'incorrect');
@@ -88,11 +89,13 @@ const clickMcqOption = (event, index) => {
       updateRecentLearningData("test_list", TEST_WORD_LIST);
       setTestResultsHtml();
     }else{
+      console.log('실행됨')
       _nextItem.classList.add('active');
       updateRecentLearningData("test_list", TEST_WORD_LIST);
       setTimeout(() => _currentItem.remove(), 300);
     }
   },500)
+  _currentItem.dataset.isdone = true;
 }
 
 const init = async () => {

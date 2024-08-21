@@ -86,66 +86,58 @@ const openDefaultModal = (scrollClose=false, isBackClose=true) => {
   _modal.addEventListener('click', event => clickHandler(event, isBackClose));
   window.addEventListener('popstate', onPopStateHandler);
   window.openModal = true;
-
   if(scrollClose){
     let startY;
     let startHeight;
     let startTime;
     let isInternalScroll = false;
+    setTimeout(()=>_modal_content.style.setProperty('--max-height', `${_modal_content.offsetHeight}px`),500)
     _modal_content.addEventListener('touchstart', (event) => {
       const _eventBtn = findParentTarget(event.target, 'button');
       if(_eventBtn) return;
-        if (_modal_middle.scrollTop !== 0 && _modal_middle.scrollTop + _modal_middle.offsetHeight !== _modal_middle.scrollHeight) {
-            isInternalScroll = true;
-        } else {
-            isInternalScroll = false;
-        }
-    
-        if (isInternalScroll) return;
-    
-        const p_top = 30 + 39 + 20;
-        const p_bottom = 20;
-        const maxHeight = _modal_middle.offsetHeight + p_top + p_bottom;
-        _modal_content.style.maxHeight = `${maxHeight}px`;
-        const touch = event.touches[0];
-        startY = touch.clientY;
-        startHeight = _modal_content.offsetHeight;
-        startTime = new Date().getTime();
-        _modal_content.style.transition = 'none';
+      const _scroll = findParentTarget(event.target, '.scroll');
+      if(_scroll && _scroll.scrollTop != 0) return
+      const touch = event.touches[0];
+      startY = touch.clientY;
+      startHeight = _modal_content.offsetHeight;
+      startTime = new Date().getTime();
+      _modal_content.style.transition = 'none';
     });
     
     _modal_content.addEventListener('touchmove', (event) => {
       const _eventBtn = findParentTarget(event.target, 'button');
-        if(_eventBtn) return;
-        if (isInternalScroll) return;
-        const touch = event.touches[0];
-        const moveY = touch.clientY;
-        const distance = startY - moveY;
-        const newHeight = startHeight + distance;
-        const minHeight = 100; 
-        if (newHeight > minHeight) {
-            _modal_content.style.height = `${newHeight}px`;
-        }
+      if(_eventBtn) return;
+      const _scroll = findParentTarget(event.target, '.scroll');
+      if(_scroll && _scroll.scrollTop != 0) return
+      const touch = event.touches[0];
+      const moveY = touch.clientY;
+      const distance = startY - moveY;
+      const newHeight = startHeight + distance;
+      const minHeight = 100; 
+      if (newHeight > minHeight) {
+        _modal_content.style.height = `${newHeight}px`;
+      }
     });
     
     _modal_content.addEventListener('touchend', (event) => {
       const _eventBtn = findParentTarget(event.target, 'button');
       if(_eventBtn) return;
-        if (isInternalScroll) return;
-        _modal_content.style.transition = '';
-        const finalHeight = _modal_content.offsetHeight;
-        _modal_content.style.height = `${finalHeight}px`;
-    
-        const endTime = new Date().getTime(); 
-        const duration = endTime - startTime; 
-        const distance = event.changedTouches[0].clientY - startY; 
-        const speed = distance / duration; 
-    
-        const speedThreshold = 0.5; 
-        const distanceThreshold = 50; 
-        if (speed > speedThreshold && distance > distanceThreshold) {
-            _modal.click();
-        }
+      const _scroll = findParentTarget(event.target, '.scroll');
+      if(_scroll && _scroll.scrollTop != 0) return
+      _modal_content.style.transition = '';
+      const finalHeight = _modal_content.offsetHeight;
+      _modal_content.style.height = `${finalHeight}px`;  
+      const endTime = new Date().getTime(); 
+      const duration = endTime - startTime; 
+      const distance = event.changedTouches[0].clientY - startY; 
+      const speed = distance / duration; 
+      const speedThreshold = 0.5; 
+      const distanceThreshold = 50; 
+      if (speed > speedThreshold && distance > distanceThreshold) {
+        _modal.click();
+      }else{
+        _modal_content.style.height = `var(--max-height)`;
+      }
     });
   }
   
@@ -222,17 +214,18 @@ const addEventClickColor = () => {
 // 신규 단어장 추가 버튼 클릭 시
 const clickSaveVocabulary = async (event, htmlFun) => {
   const _modal = findParentTarget(event.target, '.modal');
-  const VOCABULARY_NAME = document.querySelector('.vocabulary_name').value;
+  const vocabulary_name = document.querySelector('.vocabulary_name').value.trim();
   const _colorLi = document.querySelector('.vocabulary_color li.active');
-  const ID = _modal.dataset.id || crypto.randomUUID();
+  const id = _modal.dataset.id || crypto.randomUUID();
   const createdAt = new Date().toISOString();
   const data = {
-    name: VOCABULARY_NAME, 
+    name: vocabulary_name, 
     color: {main : _colorLi.dataset.color,background : _colorLi.dataset.background}, 
     createdAt: createdAt, 
     updatedAt: createdAt, 
     status: "active"
   }
+  if(vocabulary_name.length <= 0) return alert('단어장 이름을 입력해 주세요.');
   if(_modal.dataset.id){
     const result = await updateIndexedDbNotebook(Number(_modal.dataset.id), data.name, data.color, data.updatedAt, data.status);
     // localStorageData.vocabulary_list = localStorageData.vocabulary_list.map(item => item.id === ID ? data : item);
@@ -380,14 +373,49 @@ const setTestResultsHtml = () => {
       </div>
       <div class="btns">
         <button onclick="clickShowAnswer(event)" class="out_line">정답 보기</button>
-        <button onclick="clickRetest(event, true)" class="gray">테스트 다시 하기</button>
-        <button onclick="clickRetest(event, false)" class="fill">모르는 문제 다시 풀기</button>
+        <button onclick="clickRetestModalBtn(event)" class="gray">테스트 다시 하기</button>
+        <button onclick="window.location.href='/html/test.html'" class="fill">테스트 종료</button>
       </div>
     </div>
   `
   document.querySelector('main').insertAdjacentHTML("beforeend", html);
   document.querySelector('.test_result_box').classList.add('active');
   setProGressBar()
+  
+}
+
+// 테스트 다시 하기 버튼 클릭 시
+const clickRetestModalBtn = async (event) => {
+  const modal = openDefaultModal();
+  modal.container.classList.add('retest')
+  modal.top.innerHTML = modalTopHtml(`테스트 다시 하기 설정`);
+  modal.middle.innerHTML = `
+    <div class="radio_btns">
+      <button class="active" data-type="only_wrong">
+        <i class="ph-bold ph-check"></i>
+        <span>틀린 문제만 다시 풀기</span>
+      </button>
+      <button data-type="all">
+        <i class="ph-bold ph-check"></i>
+        <span>전체 다시 풀기</span>
+      </button>
+    </div>
+  `;
+  
+  const btns = [
+    {class:"gray close", text: "취소", fun: ``},
+    {class:"pink", text: "시작", fun: `onclick="clickRetest(event)"`}
+  ]
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  setTimeout(()=>modal.container.classList.add('active'),300)
+  modal.middle.addEventListener('click', (event)=>{
+    const _btn = findParentTarget(event.target, 'button');
+    if(!_btn)return;
+    const _radioBtns = findParentTarget(event.target, '.radio_btns');
+    _radioBtns.querySelector('button.active').classList.remove('active');
+    _btn.classList.add('active');
+  });
+
 }
 
 // 원형 프로그래스 바 세팅
@@ -425,11 +453,11 @@ const setProGressBar = () => {
 
 // 정답 보기 클릭 시
 const clickShowAnswer = async (event) => {
-  const modal = openDefaultModal();
+  const modal = openDefaultModal(true);
   modal.container.classList.add('show_answer')
   modal.top.innerHTML = modalTopHtml(`정답 보기`);
   modal.middle.innerHTML = await setShowAnswerHtml();
-  
+  modal.middle.classList.add('scroll');
   const btns = [
     {class:"gray", text: "틀린 단어 마크 등록", fun: `data-register="1" onclick="clickBatchSetMarkBtn(event, false)"`},
     {class:"pink", text: "맞은 단어 마크 등록", fun: `data-register="1" onclick="clickBatchSetMarkBtn(event, true)"`}
@@ -438,10 +466,38 @@ const clickShowAnswer = async (event) => {
   setTimeout(()=>modal.container.classList.add('active'),300)
 }
 
+// 마크 일괄 조작 버튼 클릭 시
+const clickBatchSetMarkBtn = async (event, isCorrect) => {
+  const isRegister = Number(event.target.dataset.register);
+  const updateMarkAndStatus = async (word_id, status) => {
+    const _li = document.querySelector(`li[data-id="${word_id}"]`);
+    _li.querySelector('img').src = `/images/marker_${status}.png`;
+    await updateIndexedDbWord(word_id, { status });
+  };
+  for (let i = 0; i < TEST_WORD_LIST.length; i++) {
+    const data = TEST_WORD_LIST[i];
+    const word_id = data.id;
+    if (data.isCorrect && isCorrect && isRegister) {
+      await updateMarkAndStatus(word_id, 1); // 맞은 단어 마크 등록
+    } else if (data.isCorrect && isCorrect && !isRegister) {
+      await updateMarkAndStatus(word_id, 0); // 맞은 단어 마크 해제
+    } else if (!data.isCorrect && !isCorrect && isRegister) {
+      await updateMarkAndStatus(word_id, 2); // 틀린 단어 마크 등록
+    } else if (!data.isCorrect && !isCorrect && !isRegister) {
+      await updateMarkAndStatus(word_id, 0); // 틀린 단어 마크 해제
+    }
+  }
+  const nextBtnText = `${isCorrect ? '맞은' : '틀린'} 단어 마크 ${isRegister ? '해제' : '등록'}`;
+  event.target.innerHTML = nextBtnText;
+  event.target.dataset.register = isRegister == 0 ? 1 : 0;
+};
+
 // 다시 풀기 클릭 시
-const clickRetest = async (event, is_all) => {
+const clickRetest = async (event) => {
   await updateRecentLearningData("state", "during");
-  if(!is_all) {
+  const modal = getDefaultModal();
+  const type = modal.middle.querySelector('button.active').dataset.type;
+  if(type != "all"){
     TEST_WORD_LIST = TEST_WORD_LIST.filter((data)=>data.isCorrect == 0);  
   }
   TEST_WORD_LIST.forEach((data)=>data.isCorrect = undefined);
@@ -467,8 +523,10 @@ const getOcr = async (img, lngs) => {
 }
 
 
+
 // GTTS 
-const generateSpeech = async (text, language) => {
+const generateSpeech = async (event, text, language) => {
+  event.preventDefault();
   const url = `https://vocaandgo.ghmate.com/tts/output`;
   const method = 'GET';
   const data = {text, language};

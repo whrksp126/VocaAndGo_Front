@@ -35,7 +35,7 @@ const setCardHtml = (word, total, cur) => {
           <span>/</span>
           <span class="total">${total}</span>
         </div>
-        <button class="speaker click_event" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
+        <button class="speaker click_event" onclick="generateSpeech(event,'${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
       </div>
     </div>
   `
@@ -93,11 +93,11 @@ const setCardTouchEvent = () => {
 
   // 클릭 시
   const click = (event) => {
-    const _clickEvent = findParentTarget(event.target, 'click_event');
-    if(_clickEvent) return;
-    const _card = findParentTarget(event.target, '.card');
-    _card.classList.toggle('hint');
-
+    event.preventDefault();
+    // const _clickEvent = findParentTarget(event.target, 'click_event');
+    // if(_clickEvent) return;
+    // const _card = findParentTarget(event.target, '.card');
+    // _card.classList.toggle('hint');
   }
   // 터치 시작 이벤트 핸들러
   const startTouch = (e) => {
@@ -171,31 +171,7 @@ const setCardTouchEvent = () => {
 
 
 
-// 마크 일괄 조작 버튼 클릭 시
-const clickBatchSetMarkBtn = async (event, isCorrect) => {
-  const isRegister = Number(event.target.dataset.register);
-  const updateMarkAndStatus = async (word_id, status) => {
-    const _li = document.querySelector(`li[data-id="${word_id}"]`);
-    _li.querySelector('img').src = `/images/marker_${status}.png`;
-    await updateIndexedDbWord(word_id, { status });
-  };
-  for (let i = 0; i < TEST_WORD_LIST.length; i++) {
-    const data = TEST_WORD_LIST[i];
-    const word_id = data.id;
-    if (data.isCorrect && isCorrect && isRegister) {
-      await updateMarkAndStatus(word_id, 1); // 맞은 단어 마크 등록
-    } else if (data.isCorrect && isCorrect && !isRegister) {
-      await updateMarkAndStatus(word_id, 0); // 맞은 단어 마크 해제
-    } else if (!data.isCorrect && !isCorrect && isRegister) {
-      await updateMarkAndStatus(word_id, 2); // 틀린 단어 마크 등록
-    } else if (!data.isCorrect && !isCorrect && !isRegister) {
-      await updateMarkAndStatus(word_id, 0); // 틀린 단어 마크 해제
-    }
-  }
-  const nextBtnText = `${isCorrect ? '맞은' : '틀린'} 단어 마크 ${isRegister ? '해제' : '등록'}`;
-  event.target.innerHTML = nextBtnText;
-  event.target.dataset.register = isRegister == 0 ? 1 : 0;
-};
+
 
 
 const init = async () => {
