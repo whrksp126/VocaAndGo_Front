@@ -138,8 +138,8 @@ const clickModalsetWordBtn = async (event) => {
   
   const vocabulary_id = Number(_modal.querySelector('.vocabulary').value);
   const word_id = Number(_modal.dataset.id);
-  const word = _modal.querySelector('input.word').value;
-  const meaning = _modal.querySelector('input.meaning').value;
+  const word = _modal.querySelector('input.word').value.trim();
+  const meaning = _modal.querySelector('input.meaning').value.trim();
   const example = _modal.querySelector('input.example').value;
   const explanation = _modal.querySelector('input.explanation').value;
   const createdAt = new Date().toISOString();
@@ -152,8 +152,8 @@ const clickModalsetWordBtn = async (event) => {
     status : 0,
     updatedAt : new Date().toISOString()
   }
-  if(word.trim().length <= 0) return alert('단어는 필수 입력 사항입니다');
-  if(meaning.trim().length <= 0) return alert('의미는 필수 입력 사항입니다');
+  if(word.length <= 0) return alert('단어는 필수 입력 사항입니다');
+  if(meaning.length <= 0) return alert('의미는 필수 입력 사항입니다');
   if(_modal.dataset.id){
     const result = await updateIndexedDbWord(word_id, new_data);
   }else{

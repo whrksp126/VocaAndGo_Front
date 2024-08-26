@@ -1,0 +1,130 @@
+header .container {
+  justify-content: center;
+}
+header .container h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--111-color);
+}
+main {}
+main .container{
+  height: calc(100vh - 61px - 69px);
+  overflow: auto;
+
+}
+main .container ul {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  grid-gap: 15px; 
+  width: 100%;
+}
+main .container ul li{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-flow: column;
+  min-height: 156px;
+
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--background-color);
+}
+main .container ul li .top{
+  width: 100%;
+}
+main .container ul li .top .hash{
+  display: inline-block;
+  padding: 3px 6px;
+  margin-bottom: 5px;
+  border-radius: 50px;
+  background: var(--main-color);
+  font-size: 8px;
+  font-weight: 700;
+  color: #FFF;
+}
+main .container ul li .top h3{
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+}
+main .container ul li .bottom{
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  width: 100%;
+}
+main .container ul li .bottom .downloads{
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #999;
+}
+main .container ul li .bottom .downloads i{
+  font-size: 12px;
+}
+main .container ul li .bottom .downloads span{
+  font-size: 10px;
+}
+main .container ul li .bottom button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--sub-color);
+  font-size: 16px;
+  color: var(--main-color);
+}
+
+.modal.voca_preview .modal_content .modal_middle > ul{
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+}
+.modal.voca_preview .modal_content .modal_middle > ul li{
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-flow: column;
+  gap: 10px;
+  padding: 20px;
+  background: var(--card-background);
+  border-radius: 12px;
+  width: 100%;
+}
+.modal.voca_preview .modal_content .modal_middle > ul li .top{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+.modal.voca_preview .modal_content .modal_middle > ul li .top .left{
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.modal.voca_preview .modal_content .modal_middle > ul li .top .left .word{
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+}
+
+.modal.voca_preview .modal_content .modal_middle > ul li .top .right {
+  font-size: 18px;
+  color: var(--card-color);
+}
+.modal.voca_preview .modal_content .modal_middle > ul li .top .right .btns{
+  display: flex;
+  gap: 8px;
+}
+.modal.voca_preview .modal_content .modal_middle > ul li .top .right .btns button{
+  display: block;
+}
+.modal.voca_preview .modal_content .modal_middle > ul li .bottom .meaning{
+  font-size: 12px;
+  font-weight: 400;
+  color: #111;
+}

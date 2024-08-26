@@ -11,8 +11,14 @@ const clickAddVocabularyBook = (event, data={name:"", color:"FF8DD4"}) => {
   setTimeout(()=>modal.container.classList.add('active'),300)
   addEventClickColor();
 };
-
-
+// const init = async () => {
+//   const notebooks = await getIndexedDbNotebooks();
+//   for(const notebook of notebooks){
+//     notebook.words = await getIndexedDbWordsByNotebookId(notebook.id);
+//   }
+//   console.log('notebooks,',JSON.stringify(notebooks))
+// }
+// init()
 
 
 

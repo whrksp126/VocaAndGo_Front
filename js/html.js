@@ -9,6 +9,10 @@ const footerHtml = `
         <span>단어장</span>
       </li>
       <li>
+        <i class="ph-fill ph-storefront"></i>
+        <span>서점</span>
+      </li>
+      <li>
         <i class="ph-fill ph-notepad"></i>
         <span>테스트</span>
       </li>
@@ -224,7 +228,7 @@ const setTextSetupHtml = () => {
   `
 }
 
-// 정답 보기 html
+// 정답 확인 html
 const setShowAnswerHtml = async () => {
   const test_list = await getRecentLearningData("test_list");
   return `
@@ -254,5 +258,35 @@ const setShowAnswerHtml = async () => {
 
       `}).join('')}
     </ul>
+  `
+}
+
+// 단어장 미리보기 html
+const setVocabularyPreviewHtml = (word_list) => {
+  const bodyStyle = document.querySelector('body').style;
+  bodyStyle.setProperty('--card-color', `#FF8DD4`);
+  bodyStyle.setProperty('--card-background', `#FFEFFA`);
+  return `
+  <ul>
+    ${word_list.map((data)=>{return `
+    <li data-id="${data.id}">
+      <div class="top">
+        <div class="left">
+          <div class="word">${data.word}</div>
+        </div>
+        <div class="right">
+          <div class="btns">
+            <button class="sound_btn" onclick="generateSpeech(event, '${data.word}', 'en')">
+              <i class="ph-fill ph-speaker-high"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="meaning">${data.meaning.join(', ')}</div>
+      </div>
+    </li>
+    `}).join('')}
+  </ul>
   `
 }

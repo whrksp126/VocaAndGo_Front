@@ -91,7 +91,11 @@ const openDefaultModal = (scrollClose=false, isBackClose=true) => {
     let startHeight;
     let startTime;
     let isInternalScroll = false;
-    setTimeout(()=>_modal_content.style.setProperty('--max-height', `${_modal_content.offsetHeight}px`),500)
+    let max_height = 0;
+    setTimeout(()=>{
+      max_height = _modal_content.offsetHeight;
+      _modal_content.style.setProperty('--max-height', `${max_height}px`);
+    },500)
     _modal_content.addEventListener('touchstart', (event) => {
       const _eventBtn = findParentTarget(event.target, 'button');
       if(_eventBtn) return;
@@ -257,6 +261,7 @@ const clickMarker = async (event) => {
   _li.dataset.status = status;
   const word_id = Number(_li.dataset.id);
   await updateIndexedDbWord(word_id, {status : status});
+  if(TEST_WORD_LIST)TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
 }
 
 
@@ -372,7 +377,7 @@ const setTestResultsHtml = () => {
         <div class="progress_bar"></div>
       </div>
       <div class="btns">
-        <button onclick="clickShowAnswer(event)" class="out_line">정답 보기</button>
+        <button onclick="clickShowAnswer(event)" class="out_line">정답 확인</button>
         <button onclick="clickRetestModalBtn(event)" class="gray">테스트 다시 하기</button>
         <button onclick="window.location.href='/html/test.html'" class="fill">테스트 종료</button>
       </div>
@@ -422,9 +427,7 @@ const clickRetestModalBtn = async (event) => {
 const setProGressBar = () => {
   const total = TEST_WORD_LIST.length;
   const correct_num = TEST_WORD_LIST.filter(data => data.isCorrect).length;
-  console.log(total, correct_num)
   const _probressBar = document.querySelector('.progress_bar');
-  console.log(_probressBar)
   const bar = new ProgressBar.Circle(_probressBar, {
     trailColor: '#FFEFFA',
     strokeWidth: 12.5,
@@ -451,11 +454,11 @@ const setProGressBar = () => {
   bar.animate(correct_num/total);  // 0.0에서 1.0 사이의 숫자
 }
 
-// 정답 보기 클릭 시
+// 정답 확인 클릭 시
 const clickShowAnswer = async (event) => {
   const modal = openDefaultModal(true);
   modal.container.classList.add('show_answer')
-  modal.top.innerHTML = modalTopHtml(`정답 보기`);
+  modal.top.innerHTML = modalTopHtml(`정답 확인`);
   modal.middle.innerHTML = await setShowAnswerHtml();
   modal.middle.classList.add('scroll');
   const btns = [
@@ -473,6 +476,7 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
     const _li = document.querySelector(`li[data-id="${word_id}"]`);
     _li.querySelector('img').src = `/images/marker_${status}.png`;
     await updateIndexedDbWord(word_id, { status });
+    TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
   };
   for (let i = 0; i < TEST_WORD_LIST.length; i++) {
     const data = TEST_WORD_LIST[i];

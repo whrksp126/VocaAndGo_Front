@@ -260,6 +260,7 @@ footer nav ul li span{
   border-radius: 10px;
   background: #FFEFFA;
   overflow: auto;
+  color: #111;
 }
 .input_text .search_list li{
   display: flex;

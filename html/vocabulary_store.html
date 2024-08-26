@@ -14,13 +14,13 @@
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/common.css">
   <script src="/js/initStyle.js"></script>
-  <link rel="stylesheet" href="/css/test.css">
+  <link rel="stylesheet" href="/css/vocabulary_store.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="/js/html.js"></script>
   <script src="/js/dummy.js"></script>
 
 </head> 
-<body data-page="test">
+<body data-page="vocabulary_store">
   <div id="app">
     <header>
       <div class="container">
@@ -29,27 +29,21 @@
     </header>
     <main>
       <div class="container">
-        <ul class="selete_vocabulary">
-          <li class="all">
+        <ul>
+          <li>
             <div class="top">
-              <h3>
-                <div>All</div>
-                <span>전체 단어장</span>
-              </h3>
-              <p>나의 전체 단어장에 있는 단어들을<br>랜덤으로 학습해요!</p>
+              <p class="hash">HOT</p>
+              <h3>토익 준비용 🔥</h3>
             </div>
-            <button onclick="window.location.href=`/html/test_type.html?vocabulary=all`">시작하기</button>
-          </li>
-          <li class="each">
-            <div class="top">
-              <h3>
-                <div><i class="ph-bold ph-check"></i></div>
-                <span>선택 단어장</span>
-              </h3>
-              <p>원하는 단어장에 있는 단어들을<br>랜덤으로 학습해요!</p>
+            <div class="bottom">
+              <div class="downloads">
+                <i class="ph ph-box-arrow-down"></i>
+                <span>235,480</span>
+              </div>
+              <button class="">
+                <i class="ph ph-plus"></i>
+              </button>
             </div>
-            <button onclick="window.location.href=`/html/test_type.html?vocabulary=each`">시작하기</button>
-            <!-- <button onclick="alert('준비 중~^^')">시작하기</button> -->
           </li>
         </ul>
       </div>
@@ -61,11 +55,11 @@
             <i class="ph-fill ph-notepad"></i>
             <span>단어장</span>
           </li>
-          <li onclick="window.location.href='/html/vocabulary_store.html'">
+          <li class="active">
             <i class="ph-fill ph-storefront"></i>
             <span>서점</span>
           </li>
-          <li class="active">
+          <li onclick="window.location.href='/html/test.html'">
             <i class="ph-fill ph-exam"></i>
             <span>테스트</span>
           </li>
@@ -78,6 +72,6 @@
     </footer>
   </div>
   <script src="/js/common.js"></script>
-  <script src="/js/test.js"></script>
+  <script src="/js/vocabulary_store.js"></script>
 </body>
 </html>
