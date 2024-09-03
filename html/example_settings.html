@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon/favicon.ico?v=2024.08.270203" type="image/x-icon">
   <title>HeyVoca</title>
   <!-- Indexed_DB -->
@@ -11,35 +11,32 @@
   <script src="/js/osFunction.js?v=2024.08.270203"></script>
   <!-- 로그인 확인 -->
   <script src="/js/loginSession.js?v=2024.08.270203"></script>
-
   <link rel="stylesheet" href="/css/reset.css?v=2024.08.270203">
   <link rel="stylesheet" href="/css/common.css?v=2024.08.270203">
   <script src="/js/initStyle.js?v=2024.08.270203"></script>
-  <link rel="stylesheet" href="/css/mcq_test.css?v=2024.08.270203">
+
+  <link rel="stylesheet" href="/css/mypage.css?v=2024.08.270203">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="/js/html.js?v=2024.08.270203"></script>
-  <script src="/js/dummy.js?v=2024.08.270203"></script>
-
 </head> 
-<body data-page="mcq_test" class="react">
+<body data-page="example_settings" class="react">
   <div id="app">
     <header>
       <div class="container">
-        <button class="back_btn" onclick="window.location.href=`/html/test.html`"><i class="ph ph-caret-left"></i></button>
-        <h2>전체 단어장 테스트</h2>
+        <button class="back_btn" onclick="window.location.href='/html/mypage.html'"><i class="ph ph-caret-left"></i></button>
+        <h2>예문 설정</h2>
       </div>
     </header>
     <main>
-      <div class="container">
-        <div class="items"></div>
-      </div>
-
+      <ul> 
+        <li>
+          <h2>항상 보기</h2>
+          <div class="toggle_box theme"></div>
+        </li>
+      </ul>
     </main>
   </div>
-    <!-- progressbar -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/progressbar.js/1.1.0/progressbar.min.js?v=2024.08.270203"></script>
   <script src="/js/common.js?v=2024.08.270203"></script>
-  <script src="/js/test_common.js?v=2024.08.270203"></script>
-  <script src="/js/mcq_test.js?v=2024.08.270203"></script>
+  <script src="/js/mypage.js?v=2024.08.270203"></script>
 </body>
 </html>

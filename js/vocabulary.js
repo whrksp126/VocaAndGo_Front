@@ -13,7 +13,7 @@ const clickAddWord = async (event) => {
       <i class="ph ph-camera"></i>
     </button>
   `);
-  const DATA = {id: ID, word : "",meaning : "",example : "",description : "",};
+  const DATA = {id: ID, word : "",meaning : "", examples : [],description : "",};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
     {class:"close gray", text: "취소", fun: ""},
@@ -239,7 +239,7 @@ const setVocabularyHtml = async (id) => {
           <div class="left">
             <div class="word">${word.word}</div>
             <button class="marker" onclick="clickMarker(event)">
-              <img src="/images/marker_${word.status}.png">
+              <img src="/images/marker_${word.status}.png?v=2024.08.270203">
             </button>
           </div>
           <div class="right">
@@ -287,14 +287,7 @@ const setSearchListEl = (_el, search_list, word) => {
   });
 }
 
-// Highlight Text 세팅
-const setHighlightText = (text, keyword) => {
-  const regex = new RegExp(`(${keyword})`, 'gi');
-  return text.split(regex).map(part =>
-    part.toLowerCase() === keyword.toLowerCase() ? `<strong>${part}</strong>` : `<span>${part}</span>`
-  ).join('');
 
-}
 // 의미 입력 시
 const onInputMeaning = async (event) => {
   const word = event.target.value.trim();

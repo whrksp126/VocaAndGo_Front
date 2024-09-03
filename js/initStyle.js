@@ -2,12 +2,29 @@
 (function() {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark') {
-    backgroundColor = 'black';
-    textColor = 'white';
     document.documentElement.setAttribute('data-theme', 'dark');
   } else {
-    backgroundColor = 'white';
-    textColor = 'black';
     document.documentElement.setAttribute('data-theme', 'light');
   }
+
+  // 예문 보기 초기 기본 값 세팅
+  if(!localStorage.getItem('example_style')){
+    localStorage.setItem('example_style', JSON.stringify({
+      always_visible : true,
+    }))
+  }
 })();
+
+
+// 조회 예문 보기 
+const getExmapleStyleAlwaysVisible = () => {
+  const exampleStyle = JSON.parse(localStorage.getItem('example_style'));
+  return exampleStyle.always_visible;
+}
+
+// 세팅 예문 보기
+const setExampleStyleAlwaysVisible = (always_visible) => {
+  const exampleStyle = JSON.parse(localStorage.getItem('example_style'));
+  exampleStyle.always_visible = always_visible;
+  localStorage.setItem('example_style', JSON.stringify(exampleStyle));
+}

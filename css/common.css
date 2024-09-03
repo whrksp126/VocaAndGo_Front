@@ -228,6 +228,17 @@ footer nav ul li span{
   flex-flow: column;
   gap: 8px;
 }
+.input_text .title_box,
+.selete_box .title_box{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.input_text .title_box,
+.selete_box .title_box i{
+  font-size: 18px;
+  color: #FF8DD4;
+}
 .input_text label,
 .selete_box label{
   font-size: 14px;
@@ -247,6 +258,25 @@ footer nav ul li span{
   background: var(--fff-color);
   transition: all .3s;
 }
+.input_text .example_preview {
+  font-weight: 400;
+  font-size: 14px;
+}
+.input_text .example_preview .meaning{
+  margin-left: 10px;
+  font-size: 12px;
+}
+.input_text .example_box {
+  display: flex;
+  flex-flow: column;
+  gap: 5px;
+}
+
+.input_text .example_box strong,
+.input_text .example_preview strong{
+  font-weight: 600;
+}
+
 .input_text > .message{
   display: none;
 }

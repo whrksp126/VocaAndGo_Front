@@ -254,14 +254,17 @@ const writeTestAppLog = (html) => {
 
 // 마커 클릭 시
 const clickMarker = async (event) => {
+
   const _li = findParentTarget(event.target, 'li') || findParentTarget(event.target, '.item') || findParentTarget(event.target, '.card');
   let status = Number(_li.dataset.status) + 1;
   if(status > 2) status = 0;
-  _li.querySelector('img').src = `/images/marker_${status}.png`;
+  _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.08.270203`;
   _li.dataset.status = status;
   const word_id = Number(_li.dataset.id);
   await updateIndexedDbWord(word_id, {status : status});
-  if(TEST_WORD_LIST)TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
+  if(['card_test', 'mcq_test'].includes(document.querySelector('body').dataset.page)){
+    if(TEST_WORD_LIST)TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
+  }
 }
 
 
@@ -474,7 +477,7 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
   const isRegister = Number(event.target.dataset.register);
   const updateMarkAndStatus = async (word_id, status) => {
     const _li = document.querySelector(`li[data-id="${word_id}"]`);
-    _li.querySelector('img').src = `/images/marker_${status}.png`;
+    _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.08.270203`;
     await updateIndexedDbWord(word_id, { status });
     TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
   };
@@ -509,6 +512,14 @@ const clickRetest = async (event) => {
   location.reload();
 }
 
+// Highlight Text 세팅
+const setHighlightText = (text, keyword) => {
+  const regex = new RegExp(`(${keyword})`, 'gi');
+  return text.split(regex).map(part =>
+    part.toLowerCase() === keyword.toLowerCase() ? `<strong>${part}</strong>` : `<span>${part}</span>`
+  ).join('');
+}
+
 const getOcr = async (img, lngs) => {
   // OCR 처리
   let ocr_data = [];
@@ -525,8 +536,6 @@ const getOcr = async (img, lngs) => {
   });
   return ocr_data;
 }
-
-
 
 // GTTS 
 const generateSpeech = async (event, text, language) => {

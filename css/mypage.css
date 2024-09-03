@@ -171,3 +171,50 @@ main ul.logout_box li div{
   visibility: visible;
   opacity: 1;
 }
+
+
+
+.toggle_box .custom_checkbox {
+  display: none;
+}
+.toggle_box .custom_checkbox + .switch_box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 48.81px;
+  height: 25px;
+  border-radius: 50px;
+  transition: all .3s;
+}
+.toggle_box .custom_checkbox + .switch_box .btn_icon{
+  position: absolute;
+  top: 50%;
+  left: 2.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 12px;
+  transform: translate(0, -50%);
+  transition: all .3s;
+}
+.toggle_box .custom_checkbox:checked + 
+.switch_box{
+  background: #FF8DD4;
+}
+.toggle_box .custom_checkbox:checked + 
+.switch_box .btn_icon{
+  left: 100%;
+  transform: translate(calc(-100% - 2.5px), -50%);
+  background: #fff;
+}
+.toggle_box .custom_checkbox:not(:checked) + 
+.switch_box{
+  background: #CCCCCC;
+}
+.toggle_box .custom_checkbox:not(:checked) + 
+.switch_box .btn_icon{
+  background: #fff;
+}

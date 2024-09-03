@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <link rel="icon" href="/favicon/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon/favicon.ico?v=2024.08.270203" type="image/x-icon">
   <title>HeyVoca</title>
   <!-- Indexed_DB -->
-  <script src="/js/indexedDb.js"></script>
+  <script src="/js/indexedDb.js?v=2024.08.270203"></script>
   <!-- OS 함수 -->
-  <script src="/js/osFunction.js"></script>
+  <script src="/js/osFunction.js?v=2024.08.270203"></script>
   <!-- 로그인 확인 -->
-  <script src="/js/loginSession.js"></script>
-  <link rel="stylesheet" href="/css/reset.css">
-  <link rel="stylesheet" href="/css/common.css">
-  <script src="/js/initStyle.js"></script>
-  <link rel="stylesheet" href="/css/mypage.css">
+  <script src="/js/loginSession.js?v=2024.08.270203"></script>
+  <link rel="stylesheet" href="/css/reset.css?v=2024.08.270203">
+  <link rel="stylesheet" href="/css/common.css?v=2024.08.270203">
+  <script src="/js/initStyle.js?v=2024.08.270203"></script>
+  <link rel="stylesheet" href="/css/mypage.css?v=2024.08.270203">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <script src="/js/html.js"></script>
+  <script src="/js/html.js?v=2024.08.270203"></script>
 </head> 
 <body data-page="mypage">
   <div id="app">
@@ -42,8 +42,27 @@
             <i class="ph-fill ph-sun-dim"></i>
             <span>테마</span>
           </div>
-          <div class="right">
+          <div class="right theme" >
             <span>라이트</span>
+            <i class="ph ph-caret-right"></i>
+          </div>
+        </li>
+        <li onclick="window.location.href='/html/example_settings.html'">
+          <div class="left">
+            <i class="ph-fill ph-text-align-justify"></i>
+            <span>예문 설정</span>
+          </div>
+          <div class="right visible">
+            <span>항상 보기</span>
+            <i class="ph ph-caret-right"></i>
+          </div>
+        </li>
+        <li onclick="window.location.href='/html/vocabulary_backup.html'">
+          <div class="left">
+            <i class="ph-fill ph-hard-drives"></i>
+            <span>단어장 백업</span>
+          </div>
+          <div class="right">
             <i class="ph ph-caret-right"></i>
           </div>
         </li>
@@ -72,7 +91,7 @@
       </nav>
     </footer>
   </div>
-  <script src="/js/common.js"></script>
-  <script src="/js/mypage.js"></script>
+  <script src="/js/common.js?v=2024.08.270203"></script>
+  <script src="/js/mypage.js?v=2024.08.270203"></script>
 </body>
 </html>

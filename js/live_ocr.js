@@ -4,18 +4,21 @@ const camera_container_html = (callback) => {
       <button class="off_camera" onclick="clickCloseCamera(event)">
         <i class="ph ph-x"></i>
       </button>
+      <div class="blur"></div>
       <div class="focus_box">
-        <img class="center_focus" src="/images/focus.svg">
+        <img class="center_focus" src="/images/focus.svg?v=2024.08.270203">
         <p>정확한 텍스트 인식을 위해 검색하고 싶은<br>
           텍스트를 평평한 곳에 두고 촬영해주세요.</p>
       </div>
       <button class="capture_btn" id="capture" onclick="clickCapturBtn(event, ${callback})"><i class="ph ph-camera"></i></button>
+      <!-- 
       <div class="blurs">
         <div class="blur top"></div>
         <div class="blur left"></div>
         <div class="blur bottom"></div>
         <div class="blur right"></div>
       </div>
+      -->
       <video id="video" autoplay playsinline></video>
       <canvas id="crop_canvas" style="display: none;"></canvas>
       <canvas id="view_canvas" style="display: none;"></canvas>

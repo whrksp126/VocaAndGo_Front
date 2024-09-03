@@ -100,7 +100,7 @@ const setVocabularyBookHtml = ({name, color}) =>{
 }
 
 // 단어 설정 모달 html
-const setWordModalHtml = async ({id, word, meaning, example, description}) => {
+const setWordModalHtml = async ({id, word, meaning, examples, description}) => {
   const noteBooks = await getIndexedDbNotebooks();
   return `
     <ul>
@@ -132,8 +132,24 @@ const setWordModalHtml = async ({id, word, meaning, example, description}) => {
       </li>
       <li>
         <div class="input_text">
-          <label>예문</label>
-          <input class="example" value="${example}">
+          <div class="title_box">
+            <label>예문</label>
+            <button><i class="ph ph-plus"></i></button>
+          </div>
+          ${examples?.map((example, index)=>{
+          const search_word_html = setHighlightText(example.origin, 'Hello');
+          return `
+          <p class="example_preview">
+            <strong>${index+1}.</strong> ${search_word_html} 
+            <br>
+            <span class="meaning">${example.meaning}</span>
+          </p>
+          `})}
+          <div class="example_box">
+            <strong>${examples.length+1}.</strong>
+            <input class="example_origin" placeholder="예문을 입력해주세요." value="">
+            <input class="example_meaning"  placeholder="의미를 입력해주세요." value="">
+          </div>
           <span class="message"></span>
         </div>
       </li>
@@ -252,7 +268,7 @@ const setShowAnswerHtml = async () => {
           </div>
         </div>
         <button class="right" onclick="clickMarker(event)">
-          <img src="/images/marker_${data.status}.png">
+          <img src="/images/marker_${data.status}.png?v=2024.08.270203">
         </button>
       </li>
 
