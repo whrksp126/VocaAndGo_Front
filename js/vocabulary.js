@@ -31,7 +31,7 @@ const selectOcrWordFun = async (original, view, crop) => {
   // const ocr_data_list = await getOcr(crop.img, ['eng', 'kor', 'jpn']);
   const ocr_data_list = await getOcr(crop.img, ['eng']);
 
-  const url = `https://vocaandgo.ghmate.com/search/search_word_en`;
+  const url = `https://vocaandgo.ghmate.com/search/en`;
   const method = 'GET';
   for (const ocr_data of ocr_data_list) {
     const data = { word: ocr_data.text };
@@ -139,29 +139,30 @@ const clickModalsetWordBtn = async (event) => {
   const vocabulary_id = Number(_modal.querySelector('.vocabulary').value);
   const word_id = Number(_modal.dataset.id);
   const word = _modal.querySelector('input.word').value.trim();
-  const meaning = _modal.querySelector('input.meaning').value.trim();
+  const meaning = _modal.querySelector('input.meaning').value.split(',').map(item => item.trim()).filter(Boolean);
   const example = _modal.querySelector('input.example').value;
+  console.log('example,',example)
   const explanation = _modal.querySelector('input.explanation').value;
   const createdAt = new Date().toISOString();
   const new_data = {
     notebookId : Number(vocabulary_id),
     word : word,
     meaning : meaning,
-    example : example,
+    example : [],
     description : explanation,
     status : 0,
     updatedAt : new Date().toISOString()
   }
-  if(word.length <= 0) return alert('단어는 필수 입력 사항입니다');
-  if(meaning.length <= 0) return alert('의미는 필수 입력 사항입니다');
-  if(_modal.dataset.id){
-    const result = await updateIndexedDbWord(word_id, new_data);
-  }else{
-    const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
-  }
-  _modal.click();
-  const _ul = document.querySelector('main .container ul');
-  _ul.innerHTML = await setVocabularyHtml(prev_vocabulary_id);
+  // if(word.length <= 0) return alert('단어는 필수 입력 사항입니다');
+  // if(meaning.length <= 0) return alert('의미는 필수 입력 사항입니다');
+  // if(_modal.dataset.id){
+  //   const result = await updateIndexedDbWord(word_id, new_data);
+  // }else{
+  //   const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
+  // }
+  // _modal.click();
+  // const _ul = document.querySelector('main .container ul');
+  // _ul.innerHTML = await setVocabularyHtml(prev_vocabulary_id);
   // TODO : 단어 저장, 수정, 삭제 기능 구현
 }
 // 단어 삭제 모달에서 삭제 클릭 시
@@ -311,7 +312,7 @@ const onInputMeaning = async (event) => {
 
 // 단어 검색 요청 
 const getSearchWordData = async (word) => {
-  const url = `https://vocaandgo.ghmate.com/search/search_word_en`;
+  const url = `https://vocaandgo.ghmate.com/search/partial/en`;
   const method = 'GET';
   const data = {word : word};
   const result = await fetchDataAsync(url, method, data);
@@ -321,7 +322,7 @@ const getSearchWordData = async (word) => {
 }
 // 의미 검색 요청
 const getSearchMeaningData = async (word) => {
-  const url = `https://vocaandgo.ghmate.com/search/search_word_ko`;
+  const url = `https://vocaandgo.ghmate.com/search/partial/ko`;
   const method = 'GET';
   const data = {word : word};
   const result = await fetchDataAsync(url, method, data);
