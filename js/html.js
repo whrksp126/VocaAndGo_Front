@@ -136,6 +136,27 @@ const setWordModalHtml = async ({id, word, meaning, examples, description}) => {
             <label>예문</label>
             <button><i class="ph ph-plus"></i></button>
           </div>
+          <div class="preview_container">
+            <div class="box">
+              <div class="top">
+                <h3>1</h3>
+                <div class="btns">
+                  <button><i class="ph ph-pencil-simple"></i></button>
+                  <button><i class="ph ph-trash"></i></button>
+                </div>
+              </div>
+              <div class="content">
+                <div class="origin">
+                  <span>Art may be used as a</span> <strong>vehicle</strong> <span>for propaganda.</span>
+                </div>
+                <div class="meaning">
+                  <span>예술이 정치 선전의 수단으로 이용될 수도 있다.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <!-- 
           ${examples?.map((example, index)=>{
           const search_word_html = setHighlightText(example.origin, 'Hello');
           return `
@@ -145,10 +166,18 @@ const setWordModalHtml = async ({id, word, meaning, examples, description}) => {
             <span class="meaning">${example.meaning}</span>
           </p>
           `})}
+          -->
           <div class="example_box">
-            <strong>${examples.length+1}.</strong>
-            <input class="example_origin" placeholder="예문을 입력해주세요." value="">
-            <input class="example_meaning"  placeholder="의미를 입력해주세요." value="">
+            <div class="top">
+              <h3>${examples.length+1}.</h3>
+              <div class="btns">
+                <button><i class="ph ph-check-circle"></i></button>
+              </div>
+            </div>
+            <div class="content">
+              <input class="origin" placeholder="영어 예문을 입력해주세요." value="">
+              <input class="meaning" placeholder="한글 해석을 입력해주세요." value="">
+            </div>
           </div>
           <span class="message"></span>
         </div>

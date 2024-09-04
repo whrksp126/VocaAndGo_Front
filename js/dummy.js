@@ -112,36 +112,64 @@ const vocabulary_store_dummy_data = [
         id : 1,
         word : "monday",
         meaning: ["월요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 2,
         word : "tuesday",
         meaning: ["화요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 3,
         word : "wednesday",
         meaning: ["수요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 4,
         word : "thursday",
         meaning: ["목요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 5,
         word : "friday",
         meaning: ["금요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 6,
         word : "saturday",
         meaning: ["토요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 7,
         word : "sunday",
         meaning: ["일요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
     ]
   },
@@ -160,36 +188,64 @@ const vocabulary_store_dummy_data = [
         id : 1,
         word : "monday",
         meaning: ["월요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 2,
         word : "tuesday",
         meaning: ["화요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 3,
         word : "wednesday",
         meaning: ["수요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 4,
         word : "thursday",
         meaning: ["목요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 5,
         word : "friday",
         meaning: ["금요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 6,
         word : "saturday",
         meaning: ["토요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 7,
         word : "sunday",
         meaning: ["일요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
     ]
   },
@@ -208,36 +264,64 @@ const vocabulary_store_dummy_data = [
         id : 1,
         word : "monday",
         meaning: ["월요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 2,
         word : "tuesday",
         meaning: ["화요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 3,
         word : "wednesday",
         meaning: ["수요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 4,
         word : "thursday",
         meaning: ["목요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 5,
         word : "friday",
         meaning: ["금요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 6,
         word : "saturday",
         meaning: ["토요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 7,
         word : "sunday",
         meaning: ["일요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
     ]
   },
@@ -256,36 +340,64 @@ const vocabulary_store_dummy_data = [
         id : 1,
         word : "monday",
         meaning: ["월요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 2,
         word : "tuesday",
         meaning: ["화요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 3,
         word : "wednesday",
         meaning: ["수요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 4,
         word : "thursday",
         meaning: ["목요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 5,
         word : "friday",
         meaning: ["금요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 6,
         word : "saturday",
         meaning: ["토요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 7,
         word : "sunday",
         meaning: ["일요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
     ]
   },
@@ -304,36 +416,64 @@ const vocabulary_store_dummy_data = [
         id : 1,
         word : "monday",
         meaning: ["월요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 2,
         word : "tuesday",
         meaning: ["화요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 3,
         word : "wednesday",
         meaning: ["수요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 4,
         word : "thursday",
         meaning: ["목요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 5,
         word : "friday",
         meaning: ["금요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 6,
         word : "saturday",
         meaning: ["토요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
       {
         id : 7,
         word : "sunday",
         meaning: ["일요일"],
+        example: [
+          {origin : "", meaning : ""}
+        ],
+        description : ""
       },
     ]
   },

@@ -135,35 +135,32 @@ const clickGoBackVocabularyPage = (event) => {
 const clickModalsetWordBtn = async (event) => {
   const prev_vocabulary_id = Number(getValueFromURL("vocabulary_id"));
   const _modal = findParentTarget(event.target, '.modal');
-  
   const vocabulary_id = Number(_modal.querySelector('.vocabulary').value);
   const word_id = Number(_modal.dataset.id);
   const word = _modal.querySelector('input.word').value.trim();
   const meaning = _modal.querySelector('input.meaning').value.split(',').map(item => item.trim()).filter(Boolean);
-  const example = _modal.querySelector('input.example').value;
-  console.log('example,',example)
+  const example = [...document.querySelectorAll('.preview_container .box .content')].map(({ dataset: { origin, meaning } }) => ({ origin, meaning }));
   const explanation = _modal.querySelector('input.explanation').value;
   const createdAt = new Date().toISOString();
   const new_data = {
     notebookId : Number(vocabulary_id),
     word : word,
     meaning : meaning,
-    example : [],
+    example : example,
     description : explanation,
     status : 0,
     updatedAt : new Date().toISOString()
   }
-  // if(word.length <= 0) return alert('단어는 필수 입력 사항입니다');
-  // if(meaning.length <= 0) return alert('의미는 필수 입력 사항입니다');
-  // if(_modal.dataset.id){
-  //   const result = await updateIndexedDbWord(word_id, new_data);
-  // }else{
-  //   const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
-  // }
-  // _modal.click();
-  // const _ul = document.querySelector('main .container ul');
-  // _ul.innerHTML = await setVocabularyHtml(prev_vocabulary_id);
-  // TODO : 단어 저장, 수정, 삭제 기능 구현
+  if(word.length <= 0) return alert('단어는 필수 입력 사항입니다');
+  if(meaning.length <= 0) return alert('의미는 필수 입력 사항입니다');
+  if(_modal.dataset.id){
+    const result = await updateIndexedDbWord(word_id, new_data);
+  }else{
+    const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
+  }
+  _modal.click();
+  const _ul = document.querySelector('main .container ul');
+  _ul.innerHTML = await setVocabularyHtml(prev_vocabulary_id);
 }
 // 단어 삭제 모달에서 삭제 클릭 시
 const clickModalDeleteWordBook = async (event) => {
@@ -224,6 +221,7 @@ const setVocabularyHtml = async (id) => {
   bodyStyle.setProperty('--card-background', `#FFEFFA`);
   bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
   for(let word of words){
+    console.log(word)
      html += `
       <li 
         data-id="${word.id}"
@@ -253,6 +251,18 @@ const setVocabularyHtml = async (id) => {
         </div>
         <div class="bottom">
           <div class="meaning">${word.meaning}</div>
+          <div class="examples">
+            ${word.example.map(({origin, meaning})=>`
+            <div class="example" data-origin="${origin}" data-meaning="${meaning}">
+              <div class="origin">
+                ${setHighlightText(origin, word.word)}
+              </div>
+              <div class="meaning">
+                <span>${meaning}</span>
+              </div>
+            </div>
+            `).join('')}
+          </div>
         </div>
       </li>
     `
@@ -337,10 +347,39 @@ const clickSelectSearchedWord = (event) => {
   const data = SEARCH_LIST[Number(findParentTarget(event.target, 'li').dataset.index)];
   const _wordInput = document.querySelector('.input_text .word');
   const _meaningInput = document.querySelector('.input_text .meaning');
-  const _exampleInput = document.querySelector('.input_text .example');
-  const _explanationInput = document.querySelector('.input_text .explanation');
+  const _examplePreviewContainer = document.querySelector('.preview_container');
+  const _exampleBox = document.querySelector('.example_box');
+  
+  // const _exampleInput = document.querySelector('.input_text .example');
+  // const _explanationInput = document.querySelector('.input_text .explanation');
   _wordInput.value = data.word;
   _meaningInput.value = data.meanings ? data.meanings.join(', ') : data.meaning;
+  _examplePreviewContainer.innerHTML = `
+  ${data.example.map(({exam_en, exam_ko}, index)=>`
+    <div class="box">
+      <div class="top">
+        <h3>${index + 1}</h3>
+        <div class="btns">
+          <button><i class="ph ph-pencil-simple"></i></button>
+          <button><i class="ph ph-trash"></i></button>
+        </div>
+      </div>
+      <div class="content" data-origin="${exam_en}" data-meaning="${exam_ko}">
+        <div class="origin">
+          ${setHighlightText(exam_en, data.word)}
+        </div>
+        <div class="meaning">
+          <span>${exam_ko}</span>
+        </div>
+      </div>
+    </div>
+
+  `).join('')}
+  `
+  if(data.example.length > 0) _examplePreviewContainer.classList.add('active')
+  _exampleBox.querySelector('h3').innerHTML = `${data.example.length + 1}.`;
+  _exampleBox.querySelector('.origin').value = '';
+  _exampleBox.querySelector('.meaning').value = '';
   SEARCH_LIST = [];
   const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
   _searchList.classList.remove('active'); 

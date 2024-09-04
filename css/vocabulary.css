@@ -79,10 +79,41 @@ main .container ul li .top .right .btns button.delete_btn{
   display: none;
 }
 main .container ul li .bottom{}
-main .container ul li .bottom .meaning{
+main .container ul li .bottom > .meaning{
   font-size: 12px;
   font-weight: 400;
   color: #111;
+}
+main .container ul li .bottom > .examples {
+  visibility: hidden;
+  display: flex;
+  flex-flow: column;
+  gap: 5px;
+  padding-top: 0;
+  opacity: 0;
+  max-height: 0;
+  height: 100%;
+  transition: all .3s;
+}
+main .container ul li .bottom > .examples.active {
+  padding-top: 10px;
+  visibility: visible;
+  opacity: 1;
+  max-height: 500px;
+}
+main .container ul li .bottom > .examples .example{
+  
+}
+main .container ul li .bottom > .examples .example .origin{
+  font-size: 12px;
+  font-weight: 400;
+}
+main .container ul li .bottom > .examples .example .origin strong{
+  font-weight: 600;
+}
+main .container ul li .bottom > .examples .example .meaning{
+  font-size: 10px;
+  font-weight: 400;
 }
 main .container ul li .input_checkbox{
   position: absolute;
