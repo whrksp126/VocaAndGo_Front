@@ -73,7 +73,13 @@ const clickUpload = async (event) => {
   for (const notebook of notebooks){
     notebook.words = await getIndexedDbWordsByNotebookId(notebook.id);
   };
-  // TODO : 구글 드라이브에 단어장 저장 요청 API
+  console.log(JSON.stringify(notebooks))
+  const url = `https://vocaandgo.ghmate.com/login/backup`;
+  const method = `POST`;
+  const data = notebooks;
+  const result = await fetchDataAsync(url, method, data);
+  console.log(result)
+  
 }
 // 단어장 다운로드  클릭 시
 const clickDownload = (event) => {
