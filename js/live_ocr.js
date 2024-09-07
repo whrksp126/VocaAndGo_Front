@@ -33,21 +33,23 @@ async function startCamera(callback) {
   const video = document.getElementById('video');
 
   try {
-    // 디바이스 목록을 얻기
+    // 먼저 카메라 권한을 요청
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    
+    // 권한이 부여된 후에 enumerateDevices() 호출
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
+    alert(JSON.stringify(videoDevices));  // 제대로 된 장치 정보를 얻었는지 확인
 
     if (videoDevices.length > 0) {
       let backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
-      alert(JSON.stringify(videoDevices))
-      let constraints;
       
-      // 후면 카메라가 존재할 경우 후면 카메라 사용
+      let constraints;
       if (backCamera) {
         constraints = {
           video: {
-            deviceId: { exact: backCamera.deviceId },  // 후면 카메라의 deviceId를 명시적으로 사용
-            facingMode: { exact: "environment" }  // 명확히 후면 카메라 설정
+            deviceId: { exact: backCamera.deviceId },
+            facingMode: { ideal: "environment" }
           }
         };
       } else {
@@ -55,16 +57,10 @@ async function startCamera(callback) {
         return;
       }
 
-      // 카메라 스트림 가져오기
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       video.srcObject = stream;
       video.play();
-
-      // 비디오 메타데이터가 로드된 후 해상도 정보 출력
-      video.addEventListener('loadedmetadata', () => {
-        console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
-      });
-
+      
     } else {
       console.error("비디오 입력 장치를 찾을 수 없습니다.");
     }
@@ -72,6 +68,7 @@ async function startCamera(callback) {
     console.error("카메라 액세스 오류: ", err);
   }
 }
+
 
 
 const setFocus = () => {
