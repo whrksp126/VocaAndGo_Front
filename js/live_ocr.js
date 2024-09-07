@@ -35,16 +35,19 @@ async function startCamera(callback) {
   try {
     // 먼저 카메라 권한을 요청
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    
+
     // 권한이 부여된 후에 enumerateDevices() 호출
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
-    alert(JSON.stringify(videoDevices));  // 제대로 된 장치 정보를 얻었는지 확인
+    alert(JSON.stringify(videoDevices));  // 장치 정보 확인
 
     if (videoDevices.length > 0) {
       let backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
-      
+      let frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front'));
+
       let constraints;
+
+      // 후면 카메라가 있는 경우
       if (backCamera) {
         constraints = {
           video: {
@@ -52,15 +55,26 @@ async function startCamera(callback) {
             facingMode: { ideal: "environment" }
           }
         };
-      } else {
-        console.error("후면 카메라를 찾을 수 없습니다.");
-        return;
+      } 
+      // 후면 카메라가 없고 전면 카메라가 있을 경우
+      else if (frontCamera) {
+        constraints = {
+          video: {
+            deviceId: { exact: frontCamera.deviceId },
+            facingMode: { ideal: "user" }
+          }
+        };
+      } 
+      // 후면, 전면 둘 다 없으면 기본 카메라 사용
+      else {
+        constraints = { video: true };
       }
 
+      // 카메라 스트림 가져오기
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       video.srcObject = stream;
       video.play();
-      
+
     } else {
       console.error("비디오 입력 장치를 찾을 수 없습니다.");
     }
@@ -68,6 +82,7 @@ async function startCamera(callback) {
     console.error("카메라 액세스 오류: ", err);
   }
 }
+
 
 
 
