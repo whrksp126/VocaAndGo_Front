@@ -32,14 +32,19 @@ async function startCamera(callback) {
   document.body.insertAdjacentHTML('beforeend', camera_container_html(callback));
   const video = document.getElementById('video');
 
+  // 기존 스트림이 있다면 해제
+  if (video.srcObject) {
+    let tracks = video.srcObject.getTracks();
+    tracks.forEach(track => track.stop());
+  }
+
   try {
-    // 먼저 카메라 권한을 요청
+    // 기본 스트림 권한 요청
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
 
-    // 권한이 부여된 후에 enumerateDevices() 호출
+    // 디바이스 정보 가져오기
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
-    alert(JSON.stringify(videoDevices));  // 장치 정보 확인
 
     if (videoDevices.length > 0) {
       let backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
@@ -47,33 +52,48 @@ async function startCamera(callback) {
 
       let constraints;
 
-      // 후면 카메라가 있는 경우
+      // 후면 카메라가 있는 경우 최대 해상도 설정
       if (backCamera) {
         constraints = {
           video: {
             deviceId: { exact: backCamera.deviceId },
-            facingMode: { ideal: "environment" }
+            facingMode: { ideal: "environment" },
+            width: { ideal: 3840 },  // 4K 해상도
+            height: { ideal: 2160 },
+            advanced: [{
+              width: { max: 3840 },  // 최대 4K 해상도 요청
+              height: { max: 2160 }
+            }]
           }
         };
       } 
-      // 후면 카메라가 없고 전면 카메라가 있을 경우
+      // 후면 카메라가 없으면 전면 카메라를 최대 해상도로 사용
       else if (frontCamera) {
         constraints = {
           video: {
             deviceId: { exact: frontCamera.deviceId },
-            facingMode: { ideal: "user" }
+            facingMode: { ideal: "user" },
+            width: { ideal: 3840 },
+            height: { ideal: 2160 },
+            advanced: [{
+              width: { max: 3840 },
+              height: { max: 2160 }
+            }]
           }
         };
-      } 
-      // 후면, 전면 둘 다 없으면 기본 카메라 사용
-      else {
+      } else {
         constraints = { video: true };
       }
 
-      // 카메라 스트림 가져오기
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      video.srcObject = stream;
+      // 새로운 constraints로 스트림 요청
+      const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = newStream;
       video.play();
+
+      // 비디오 해상도 및 초점 확인
+      video.addEventListener('loadedmetadata', () => {
+        console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
+      });
 
     } else {
       console.error("비디오 입력 장치를 찾을 수 없습니다.");
@@ -82,7 +102,6 @@ async function startCamera(callback) {
     console.error("카메라 액세스 오류: ", err);
   }
 }
-
 
 
 
