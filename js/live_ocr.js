@@ -58,12 +58,8 @@ async function startCamera(callback) {
           video: {
             deviceId: { exact: backCamera.deviceId },
             facingMode: { ideal: "environment" },
-            width: { ideal: 3840 },  // 4K 해상도
-            height: { ideal: 2160 },
-            advanced: [{
-              width: { max: 3840 },  // 최대 4K 해상도 요청
-              height: { max: 2160 }
-            }]
+            width: { ideal: 1920 },  // Full HD 해상도
+            height: { ideal: 1080 }
           }
         };
       } 
@@ -73,12 +69,8 @@ async function startCamera(callback) {
           video: {
             deviceId: { exact: frontCamera.deviceId },
             facingMode: { ideal: "user" },
-            width: { ideal: 3840 },
-            height: { ideal: 2160 },
-            advanced: [{
-              width: { max: 3840 },
-              height: { max: 2160 }
-            }]
+            width: { ideal: 1920 },  // Full HD 해상도
+            height: { ideal: 1080 }
           }
         };
       } else {
