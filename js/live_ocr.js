@@ -33,55 +33,34 @@ async function startCamera(callback) {
   const video = document.getElementById('video');
 
   try {
+    // 디바이스 목록을 얻기
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
     if (videoDevices.length > 0) {
-      let hasFrontCamera = false;
-      let hasBackCamera = false;
-
-      videoDevices.forEach((device) => {
-        if (device.label.toLowerCase().includes('front')) {
-          hasFrontCamera = true;
-        }
-        if (device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear')) {
-          hasBackCamera = true;
-        }
-      });
-
+      let backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
+      alert(JSON.stringify(videoDevices))
       let constraints;
-      if (hasBackCamera) {
+      
+      // 후면 카메라가 존재할 경우 후면 카메라 사용
+      if (backCamera) {
         constraints = {
           video: {
-            facingMode: { ideal: "environment" }  // exact 대신 ideal 사용으로 더 유연한 설정
-          }
-        };
-      } else if (hasFrontCamera) {
-        constraints = {
-          video: {
-            facingMode: { ideal: "user" }  // 동일하게 ideal 사용
+            deviceId: { exact: backCamera.deviceId },  // 후면 카메라의 deviceId를 명시적으로 사용
+            facingMode: { exact: "environment" }  // 명확히 후면 카메라 설정
           }
         };
       } else {
-        constraints = {
-          video: true
-        };
+        console.error("후면 카메라를 찾을 수 없습니다.");
+        return;
       }
 
-      // 후면 카메라 시도 후 실패할 경우 전면 카메라로 fallback
-      let stream;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (error) {
-        console.warn("후면 카메라 선택 실패, 전면 카메라로 대체합니다.");
-        constraints = { video: { facingMode: "user" } };  // 전면 카메라로 fallback
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-      }
-
+      // 카메라 스트림 가져오기
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       video.srcObject = stream;
       video.play();
 
-      // 비디오 해상도 정보를 비디오 메타 데이터가 로드된 후에 얻음
+      // 비디오 메타데이터가 로드된 후 해상도 정보 출력
       video.addEventListener('loadedmetadata', () => {
         console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
       });
@@ -93,6 +72,7 @@ async function startCamera(callback) {
     console.error("카메라 액세스 오류: ", err);
   }
 }
+
 
 const setFocus = () => {
   const focusRect = document.querySelector('.center_focus').getBoundingClientRect();

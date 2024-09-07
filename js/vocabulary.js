@@ -221,7 +221,6 @@ const setVocabularyHtml = async (id) => {
   bodyStyle.setProperty('--card-background', `#FFEFFA`);
   bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
   for(let word of words){
-    console.log(word)
      html += `
       <li 
         data-id="${word.id}"
