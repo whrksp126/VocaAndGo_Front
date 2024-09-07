@@ -65,6 +65,7 @@ const clickOpenOcrCamera = () => {
 window.addEventListener('message', function(event) {
   const base64Image = event.data; // React Native에서 받은 base64 이미지
   if (base64Image.startsWith('data:image')) {
+    alert("base64Image,",base64Image)
     const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
     imgElement.src = base64Image; // 촬영한 이미지를 화면에 표시
   }
