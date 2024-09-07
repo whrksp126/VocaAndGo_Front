@@ -11,22 +11,13 @@ const camera_container_html = (callback) => {
           텍스트를 평평한 곳에 두고 촬영해주세요.</p>
       </div>
       <button class="capture_btn" id="capture" onclick="clickCapturBtn(event, ${callback})"><i class="ph ph-camera"></i></button>
-      <!-- 
-      <div class="blurs">
-        <div class="blur top"></div>
-        <div class="blur left"></div>
-        <div class="blur bottom"></div>
-        <div class="blur right"></div>
-      </div>
-      -->
       <video id="video" autoplay playsinline></video>
       <canvas id="crop_canvas" style="display: none;"></canvas>
       <canvas id="view_canvas" style="display: none;"></canvas>
       <img id="photo" alt="Captured Photo" style="display: none;"/>
     </div>
-  `
-} 
-
+  `;
+};
 
 async function startCamera(callback) {
   document.body.insertAdjacentHTML('beforeend', camera_container_html(callback));
@@ -39,10 +30,7 @@ async function startCamera(callback) {
   }
 
   try {
-    // 기본 스트림 권한 요청
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-
-    // 디바이스 정보 가져오기
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
@@ -52,19 +40,17 @@ async function startCamera(callback) {
 
       let constraints;
 
-      // 후면 카메라가 있는 경우 최대 해상도 설정
       if (backCamera) {
         constraints = {
           video: {
             deviceId: { exact: backCamera.deviceId },
             facingMode: { ideal: "environment" },
             width: { ideal: 1280 },
-            height: { ideal: 720 }
+            height: { ideal: 720 },
+            advanced: [{ focusMode: "auto" }] // 오토포커스 설정
           }
         };
-      } 
-      // 후면 카메라가 없으면 전면 카메라를 최대 해상도로 사용
-      else if (frontCamera) {
+      } else if (frontCamera) {
         constraints = {
           video: {
             deviceId: { exact: frontCamera.deviceId },
@@ -77,12 +63,13 @@ async function startCamera(callback) {
         constraints = { video: true };
       }
 
-      // 새로운 constraints로 스트림 요청
       const newStream = await navigator.mediaDevices.getUserMedia(constraints);
       video.srcObject = newStream;
       video.play();
 
-      // 비디오 해상도 및 초점 확인
+      // 클릭으로 오토포커스 재조정 트리거
+      video.addEventListener('click', restartCamera);
+
       video.addEventListener('loadedmetadata', () => {
         console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
       });
@@ -95,8 +82,21 @@ async function startCamera(callback) {
   }
 }
 
+// 클릭으로 카메라 스트림을 재시작하여 초점 재조정
+const restartCamera = async () => {
+  const video = document.getElementById('video');
+  if (video.srcObject) {
+    let tracks = video.srcObject.getTracks();
+    tracks.forEach(track => track.stop());
+  }
 
+  const constraints = { video: true };
+  const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  video.srcObject = stream;
+  video.play();
+};
 
+// 포커스 박스 설정
 const setFocus = () => {
   const focusRect = document.querySelector('.center_focus').getBoundingClientRect();
   document.querySelector('.blur.top').style.height = `${focusRect.top}px`;
@@ -112,75 +112,49 @@ const setFocus = () => {
   document.querySelector('.blur.right').style.height = `${focusRect.height}px`;
 };
 
-
-// window.addEventListener('resize', setFocus);
-// window.addEventListener('load', () => {
-//   setFocus();
-//   startCamera();
-// });
-const clickOpenOcrCamera = async (event, callback) =>{
+const clickOpenOcrCamera = async (event, callback) => {
   await startCamera(callback);
   // setFocus();
-}
+};
 
-// 카메라 닫기 클릭 시
 const clickCloseCamera = (event) => {
   const video = document.getElementById('video');
-  
-  // 비디오에서 스트림 가져오기
-  const stream = video.srcObject;
-  
-  if (stream) {
-    // 스트림의 모든 트랙 중지
-    const tracks = stream.getTracks();
+
+  if (video.srcObject) {
+    let tracks = video.srcObject.getTracks();
     tracks.forEach(track => track.stop());
   }
-  
-  // 비디오의 소스를 해제
+
   video.srcObject = null;
-
-  // 카메라 컨테이너 요소 제거
   document.querySelector('.camera_container').remove();
-}
-// 카메라 촬영 클릭 시
-const clickCapturBtn = async (event, callback) => {
+};
 
+const clickCapturBtn = async (event, callback) => {
   const video = document.getElementById('video');
-  const photo = document.getElementById('photo');
   const viewCanvas = document.getElementById('view_canvas');
   const cropCanvas = document.getElementById('crop_canvas');
 
-  // 원본 비디오 이미지를 위한 캔버스 만들기
   const originalCanvas = document.createElement('canvas');
   const originalContext = originalCanvas.getContext('2d');
   originalCanvas.width = video.videoWidth;
   originalCanvas.height = video.videoHeight;
   originalContext.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-  
-  // 비디오 해상도를 표시
-  console.log(`Captured resolution: ${video.videoWidth}x${video.videoHeight}`);
+
   const videoRect = video.getBoundingClientRect();
-  // 비디오의 보이는 부분 계산
   const visibleWidth = videoRect.width;
   const visibleHeight = videoRect.height;
   const visibleX = (video.videoWidth - visibleWidth) / 2;
   const visibleY = (video.videoHeight - visibleHeight) / 2;
 
-  // 잘린 부분을 캔버스에 그립니다
   const viewContext = viewCanvas.getContext('2d');
   viewCanvas.width = visibleWidth;
   viewCanvas.height = visibleHeight;
   viewContext.drawImage(video, visibleX, visibleY, visibleWidth, visibleHeight, 0, 0, visibleWidth, visibleHeight);
 
-
-
-  // focusRect 크기에 맞는 이미지로 다시 크롭하기
   const focusRect = document.querySelector('.center_focus').getBoundingClientRect();
-  // 자른 이미지를 위한 새 캔버스 만들기
   const context = cropCanvas.getContext('2d');
   cropCanvas.width = focusRect.width;
   cropCanvas.height = focusRect.height;
-
   context.drawImage(viewCanvas, focusRect.left, focusRect.top, focusRect.width, focusRect.height, 0, 0, focusRect.width, focusRect.height);
 
   const original = {
@@ -191,22 +165,14 @@ const clickCapturBtn = async (event, callback) => {
 
   const view = {
     img: viewCanvas.toDataURL('image/png'),
-    visible : {
-      w : visibleWidth,
-      h : visibleHeight,
-      x : visibleX,
-      y : visibleY
-    },
-  }
+    visible: { w: visibleWidth, h: visibleHeight, x: visibleX, y: visibleY }
+  };
+
   const crop = {
     img: cropCanvas.toDataURL('image/png'),
-    visible : {
-      w : focusRect.width,
-      h : focusRect.height,
-      x : focusRect.left,
-      y : focusRect.top
-    },
-  }
+    visible: { w: focusRect.width, h: focusRect.height, x: focusRect.left, y: focusRect.top }
+  };
+
   await callback(original, view, crop);
   clickCloseCamera();
-}
+};
