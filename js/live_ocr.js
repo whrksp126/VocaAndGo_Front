@@ -58,8 +58,8 @@ async function startCamera(callback) {
           video: {
             deviceId: { exact: backCamera.deviceId },
             facingMode: { ideal: "environment" },
-            width: { ideal: 1920 },  // Full HD 해상도
-            height: { ideal: 1080 }
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
           }
         };
       } 
@@ -69,8 +69,8 @@ async function startCamera(callback) {
           video: {
             deviceId: { exact: frontCamera.deviceId },
             facingMode: { ideal: "user" },
-            width: { ideal: 1920 },  // Full HD 해상도
-            height: { ideal: 1080 }
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
           }
         };
       } else {
@@ -84,7 +84,6 @@ async function startCamera(callback) {
 
       // 비디오 해상도 및 초점 확인
       video.addEventListener('loadedmetadata', () => {
-        alert(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
         console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
       });
 
