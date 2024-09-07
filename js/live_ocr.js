@@ -28,10 +28,10 @@ const camera_container_html = (callback) => {
 } 
 
 
-
 async function startCamera(callback) {
   document.body.insertAdjacentHTML('beforeend', camera_container_html(callback));
   const video = document.getElementById('video');
+
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
@@ -53,13 +53,13 @@ async function startCamera(callback) {
       if (hasBackCamera) {
         constraints = {
           video: {
-            facingMode: { exact: "environment" }
+            facingMode: { ideal: "environment" }  // exact 대신 ideal 사용으로 더 유연한 설정
           }
         };
       } else if (hasFrontCamera) {
         constraints = {
           video: {
-            facingMode: { exact: "user" }
+            facingMode: { ideal: "user" }  // 동일하게 ideal 사용
           }
         };
       } else {
@@ -68,7 +68,16 @@ async function startCamera(callback) {
         };
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      // 후면 카메라 시도 후 실패할 경우 전면 카메라로 fallback
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (error) {
+        console.warn("후면 카메라 선택 실패, 전면 카메라로 대체합니다.");
+        constraints = { video: { facingMode: "user" } };  // 전면 카메라로 fallback
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      }
+
       video.srcObject = stream;
       video.play();
 
@@ -108,7 +117,7 @@ const setFocus = () => {
 // });
 const clickOpenOcrCamera = async (event, callback) =>{
   await startCamera(callback);
-  setFocus();
+  // setFocus();
 }
 
 // 카메라 닫기 클릭 시
