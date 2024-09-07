@@ -92,6 +92,7 @@ async function startCamera(callback) {
 
       // 비디오 해상도 및 초점 확인
       video.addEventListener('loadedmetadata', () => {
+        alert(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
         console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
       });
 
