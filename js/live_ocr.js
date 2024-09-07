@@ -27,74 +27,117 @@ const camera_container_html = (callback) => {
   `
 } 
 
-
-async function startCamera(callback) {
-  document.body.insertAdjacentHTML('beforeend', camera_container_html(callback));
-  const video = document.getElementById('video');
-
-  // 기존 스트림이 있다면 해제
-  if (video.srcObject) {
-    let tracks = video.srcObject.getTracks();
-    tracks.forEach(track => track.stop());
-  }
-
-  try {
-    // 기본 스트림 권한 요청
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-
-    // 디바이스 정보 가져오기
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-    if (videoDevices.length > 0) {
-      let backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
-      let frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front'));
-
-      let constraints;
-
-      // 후면 카메라가 있는 경우 최대 해상도 설정
-      if (backCamera) {
-        constraints = {
-          video: {
-            deviceId: { exact: backCamera.deviceId },
-            facingMode: { ideal: "environment" },
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-            advanced: [{ focusMode: "auto" }]
-          }
-        };
-      } 
-      // 후면 카메라가 없으면 전면 카메라를 최대 해상도로 사용
-      else if (frontCamera) {
-        constraints = {
-          video: {
-            deviceId: { exact: frontCamera.deviceId },
-            facingMode: { ideal: "user" },
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-          }
-        };
-      } else {
-        constraints = { video: true };
-      }
-
-      // 새로운 constraints로 스트림 요청
-      const newStream = await navigator.mediaDevices.getUserMedia(constraints);
-      video.srcObject = newStream;
-      video.play();
-
-      // 비디오 해상도 및 초점 확인
-      video.addEventListener('loadedmetadata', () => {
-        console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
-      });
-
-    } else {
-      console.error("비디오 입력 장치를 찾을 수 없습니다.");
-    }
-  } catch (err) {
-    console.error("카메라 액세스 오류: ", err);
-  }
+// .modal.ocr_word .modal_content .modal_middle .preview img
+// 카메라 열기 버튼 클릭 시, React Native의 WebView에 메시지를 보냄
+const clickOpenOcrCamera = () => {
+  const modal = getDefaultModal();
+  modal.container.classList.add('ocr_word')
+  modal.top.innerHTML = modalTopHtml(`단어 선택`);
+  modal.middle.innerHTML = `
+    <div class="preview">
+      <img src="">
+      <div class="highlighter"></div>
+    </div>
+    <ul class="search_list active"></ul>
+  `;
+  // const _searchList = modal.middle.querySelector('.search_list');
+  // let search_list = []
+  
+  // ocr_data_list.forEach((ocr_data)=>{
+  //   if(ocr_data.search_list.length<=0) return 
+  //   ocr_data.search_list.forEach((search_data)=>{
+  //     if (search_data.word.toUpperCase() === ocr_data.text.toUpperCase()) {
+  //       search_data.box = ocr_data.box;
+  //       search_list = [...search_list, search_data]
+  //     }
+  //   })
+  // })
+  // OCR_DATA = {original, view, crop, search_list};
+  // setSearchListEl(_searchList, search_list);
+  const btns = [
+    {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event, ocrCameraCallback)"`},
+  ]
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  window.ReactNativeWebView.postMessage('openCamera');
 }
+
+// React Native에서 촬영한 이미지(base64)를 받는 이벤트 리스너
+window.addEventListener('message', function(event) {
+  const base64Image = event.data; // React Native에서 받은 base64 이미지
+  if (base64Image.startsWith('data:image')) {
+    const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
+    imgElement.src = base64Image; // 촬영한 이미지를 화면에 표시
+  }
+});
+
+// async function startCamera(callback) {
+  
+//   document.body.insertAdjacentHTML('beforeend', camera_container_html(callback));
+//   const video = document.getElementById('video');
+
+//   // 기존 스트림이 있다면 해제
+//   if (video.srcObject) {
+//     let tracks = video.srcObject.getTracks();
+//     tracks.forEach(track => track.stop());
+//   }
+
+//   try {
+//     // 기본 스트림 권한 요청
+//     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+//     // 디바이스 정보 가져오기
+//     const devices = await navigator.mediaDevices.enumerateDevices();
+//     const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+//     if (videoDevices.length > 0) {
+//       let backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('rear'));
+//       let frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front'));
+
+//       let constraints;
+
+//       // 후면 카메라가 있는 경우 최대 해상도 설정
+//       if (backCamera) {
+//         constraints = {
+//           video: {
+//             deviceId: { exact: backCamera.deviceId },
+//             facingMode: { ideal: "environment" },
+//             width: { ideal: 1280 },
+//             height: { ideal: 720 },
+//             advanced: [{ focusMode: "auto" }]
+//           }
+//         };
+//       } 
+//       // 후면 카메라가 없으면 전면 카메라를 최대 해상도로 사용
+//       else if (frontCamera) {
+//         constraints = {
+//           video: {
+//             deviceId: { exact: frontCamera.deviceId },
+//             facingMode: { ideal: "user" },
+//             width: { ideal: 1280 },
+//             height: { ideal: 720 },
+//           }
+//         };
+//       } else {
+//         constraints = { video: true };
+//       }
+
+//       // 새로운 constraints로 스트림 요청
+//       const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+//       video.srcObject = newStream;
+//       video.play();
+
+//       // 비디오 해상도 및 초점 확인
+//       video.addEventListener('loadedmetadata', () => {
+//         console.log(`비디오 해상도: ${video.videoWidth}x${video.videoHeight}`);
+//       });
+
+//     } else {
+//       console.error("비디오 입력 장치를 찾을 수 없습니다.");
+//     }
+//   } catch (err) {
+//     console.error("카메라 액세스 오류: ", err);
+//   }
+// }
 
 
 
@@ -119,10 +162,10 @@ const setFocus = () => {
 //   setFocus();
 //   startCamera();
 // });
-const clickOpenOcrCamera = async (event, callback) =>{
-  await startCamera(callback);
-  // setFocus();
-}
+// const clickOpenOcrCamera = async (event, callback) =>{
+//   await startCamera(callback);
+//   // setFocus();
+// }
 
 // 카메라 닫기 클릭 시
 const clickCloseCamera = (event) => {
