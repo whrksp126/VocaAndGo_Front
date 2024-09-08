@@ -58,7 +58,7 @@ const clickOpenOcrCamera = () => {
     {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event, ocrCameraCallback)"`},
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
-  window.ReactNativeWebView.postMessage('openCamera');
+  window.ReactNativeWebView.postMessage('launchCamera');
 }
 
 // React Native에서 촬영한 이미지(base64)를 받는 이벤트 리스너
