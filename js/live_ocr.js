@@ -30,8 +30,6 @@ const camera_container_html = (callback) => {
 // .modal.ocr_word .modal_content .modal_middle .preview img
 // 카메라 열기 버튼 클릭 시, React Native의 WebView에 메시지를 보냄
 const clickOpenOcrCamera = () => {
-  alert('사진 촬영 시작')
-
   const modal = getDefaultModal();
   modal.container.classList.add('ocr_word')
   modal.top.innerHTML = modalTopHtml(`단어 선택`);
@@ -66,10 +64,11 @@ const clickOpenOcrCamera = () => {
 
 // React Native에서 촬영한 이미지(base64)를 받는 이벤트 리스너
 window.addEventListener('message', function(event) {
-  
+  alert('Received message:', event.data);
   try {
     const data = JSON.parse(event.data); 
     if (data.type === 'capturedImage') {
+      alert('Captured image received:', data.image);
       const base64Image = data.image; 
       if (base64Image.startsWith('data:image')) {
         const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
@@ -77,10 +76,9 @@ window.addEventListener('message', function(event) {
       }
     }
   } catch (error) {
-    alert('메시지를 구문 분석하는 중에 오류가 발생했습니다.: ' + error);
+    alert('Error parsing message: ' + error);
   }
 });
-
 // async function startCamera(callback) {
   
 //   document.body.insertAdjacentHTML('beforeend', camera_container_html(callback));
