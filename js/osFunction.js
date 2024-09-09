@@ -21,9 +21,6 @@ function getDevicePlatform() {
 }
 
 window.addEventListener('message', function(event) {
-  const data = JSON.parse(event.data);
-  alert("data,",data)
-  if (data.type === 'capturedImage') {
-    console.log('Captured Image:', data.image);
-  }
+  alert('Received message: ' + event.data);
+
 });
