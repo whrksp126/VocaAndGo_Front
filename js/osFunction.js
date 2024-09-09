@@ -21,6 +21,6 @@ function getDevicePlatform() {
 }
 
 window.addEventListener('message', function(event) {
+  // Directly using the message, no need for JSON.parse
   alert('Received message: ' + event.data);
-
 });
