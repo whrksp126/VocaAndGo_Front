@@ -65,19 +65,19 @@ const clickOpenOcrCamera = () => {
 // React Native에서 촬영한 이미지(base64)를 받는 이벤트 리스너
 window.addEventListener('message', function(event) {
   alert('Received message:', event.data);
-  try {
-    const data = JSON.parse(event.data); 
-    if (data.type === 'capturedImage') {
-      alert('Captured image received:', data.image);
-      const base64Image = data.image; 
-      if (base64Image.startsWith('data:image')) {
-        const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
-        imgElement.src = base64Image; 
-      }
-    }
-  } catch (error) {
-    alert('Error parsing message: ' + error);
-  }
+  // try {
+  //   const data = JSON.parse(event.data); 
+  //   if (data.type === 'capturedImage') {
+  //     alert('Captured image received:', data.image);
+  //     const base64Image = data.image; 
+  //     if (base64Image.startsWith('data:image')) {
+  //       const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
+  //       imgElement.src = base64Image; 
+  //     }
+  //   }
+  // } catch (error) {
+  //   alert('Error parsing message: ' + error);
+  // }
 });
 // async function startCamera(callback) {
   
