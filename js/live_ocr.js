@@ -58,18 +58,21 @@ const clickOpenOcrCamera = () => {
     {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event, ocrCameraCallback)"`},
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
+  alert('사진 촬영 시작')
   window.ReactNativeWebView.postMessage('launchCamera');
+  
 }
 
 // React Native에서 촬영한 이미지(base64)를 받는 이벤트 리스너
 window.addEventListener('message', function(event) {
+  
   try {
-    const data = JSON.parse(event.data); // Correctly parse the event data
+    const data = JSON.parse(event.data); 
     if (data.type === 'capturedImage') {
-      const base64Image = data.image; // Extract the image
+      const base64Image = data.image; 
       if (base64Image.startsWith('data:image')) {
         const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
-        imgElement.src = base64Image; // Set the image source
+        imgElement.src = base64Image; 
       }
     }
   } catch (error) {
