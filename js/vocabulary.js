@@ -250,9 +250,14 @@ const setVocabularyHtml = async (id) => {
         </div>
         <div class="bottom">
           <div class="meaning">${word.meaning}</div>
-          <div class="examples">
+          <div class="examples ${getExmapleStyleAlwaysVisible() ? "active" : ""}">
             ${word.example.map(({origin, meaning})=>`
-            <div class="example" data-origin="${origin}" data-meaning="${meaning}">
+            <div 
+              class="example" 
+              data-origin="${origin}" 
+              data-meaning="${meaning}" 
+              onclick="generateSpeech(event, '${origin}', 'en')"
+              >
               <div class="origin">
                 ${setHighlightText(origin, word.word)}
               </div>
