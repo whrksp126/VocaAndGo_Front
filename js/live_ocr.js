@@ -63,12 +63,17 @@ const clickOpenOcrCamera = () => {
 
 // React Native에서 촬영한 이미지(base64)를 받는 이벤트 리스너
 window.addEventListener('message', function(event) {
-  alert(`${JSON.parse(event)}`)
-  const base64Image = event.data; // React Native에서 받은 base64 이미지
-  if (base64Image.startsWith('data:image')) {
-    alert("base64Image,",base64Image)
-    const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
-    imgElement.src = base64Image; // 촬영한 이미지를 화면에 표시
+  try {
+    const data = JSON.parse(event.data); // Correctly parse the event data
+    if (data.type === 'capturedImage') {
+      const base64Image = data.image; // Extract the image
+      if (base64Image.startsWith('data:image')) {
+        const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
+        imgElement.src = base64Image; // Set the image source
+      }
+    }
+  } catch (error) {
+    alert('메시지를 구문 분석하는 중에 오류가 발생했습니다.: ' + error);
   }
 });
 
