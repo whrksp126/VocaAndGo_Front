@@ -30,6 +30,8 @@ const camera_container_html = (callback) => {
 // .modal.ocr_word .modal_content .modal_middle .preview img
 // 카메라 열기 버튼 클릭 시, React Native의 WebView에 메시지를 보냄
 const clickOpenOcrCamera = () => {
+  alert('사진 촬영 시작')
+
   const modal = getDefaultModal();
   modal.container.classList.add('ocr_word')
   modal.top.innerHTML = modalTopHtml(`단어 선택`);
@@ -58,7 +60,6 @@ const clickOpenOcrCamera = () => {
     {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event, ocrCameraCallback)"`},
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
-  alert('사진 촬영 시작')
   window.ReactNativeWebView.postMessage('launchCamera');
   
 }
