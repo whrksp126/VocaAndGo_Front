@@ -25,3 +25,7 @@ function getDevicePlatform() {
 //   alert('동작함')
 //   document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img').src = src;
 // }
+
+function getImageSource() {
+  alert('이미지를 수신했습니다.');
+}
