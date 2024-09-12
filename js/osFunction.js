@@ -21,5 +21,5 @@ function getDevicePlatform() {
 }
 
 window.addEventListener('message', function(event) {
-  alert(`받은 메시지: ${event.data}`);
+  alert(`받은 메시지: ${event.data.message}`);
 });
