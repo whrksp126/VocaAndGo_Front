@@ -32,6 +32,7 @@ function getImageSource() {
 window.addEventListener('message', function(event) {
   alert('(W)React Native로부터 받은 메시지: ' + event.data);
 });
-document.addEventListener('message', function(event) {
-  alert('(D)React Native로부터 받은 메시지: ' + event.data);
-});
+// document.addEventListener('message', function(event) {
+//   alert('(D)React Native로부터 받은 메시지: ' + event.data);
+// });
+document.addEventListener('message',(e) => alert(e.data) );
