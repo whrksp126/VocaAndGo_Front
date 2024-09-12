@@ -44,12 +44,24 @@
   <script src="/js/live_ocr.js?v=2024.08.270203"></script>
   <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js?v=2024.08.270203'></script>
   <script>
-    document.addEventListener('message', function(event) {
-      alert(`document.React Native에서 받은 메시지: ${event.data}`);
+
+    document.addEventListener('message', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        alert(`document.React Native에서 받은 메시지: ${event.data}`);
+      } catch (error) {
+        console.error('Error parsing message:', error);
+      }
     });
-    window.addEventListener('message', function(event) {
-      alert(`window.React Native에서 받은 메시지: ${event.data}`);
+    window.addEventListener('message', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        alert(`window.React Native에서 받은 메시지: ${event.data}`);
+      } catch (error) {
+        console.error('Error parsing message:', error);
+      }
     });
+
 </script>
 </body>
 </html>
