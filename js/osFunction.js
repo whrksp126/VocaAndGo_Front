@@ -19,3 +19,8 @@ function getDevicePlatform() {
     return 'web';
   }
 }
+
+// 이미지 조회
+function getImageSource(src) {
+  document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img').src = src;
+}
