@@ -20,6 +20,6 @@ function getDevicePlatform() {
   }
 }
 
-window.addEventListener('message', function(event) {
+document.addEventListener('message', function(event) {
   alert(`받은 메시지: ${event.data}`);
 });
