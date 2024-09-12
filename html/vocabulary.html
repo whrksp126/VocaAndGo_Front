@@ -43,6 +43,10 @@
   <script src="/js/vocabulary.js?v=2024.08.270203"></script>
   <script src="/js/live_ocr.js?v=2024.08.270203"></script>
   <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js?v=2024.08.270203'></script>
-  
+  <script>
+    document.addEventListener('message', (event) => {
+      alert('React Native에서 받은 메시지: ' + event.data);
+    });
+</script>
 </body>
 </html>
