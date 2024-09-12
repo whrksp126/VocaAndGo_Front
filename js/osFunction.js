@@ -21,7 +21,7 @@ function getDevicePlatform() {
 }
 
 // 이미지 조회
-const getImageSource = (src) => {
+window.getImageSource = (src) => {
   alert('동작함')
   document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img').src = src;
 }
