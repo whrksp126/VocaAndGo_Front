@@ -45,21 +45,13 @@
   <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js?v=2024.08.270203'></script>
   <script>
 
-    document.addEventListener('message', (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        alert(`document.React Native에서 받은 메시지: ${event.data}`);
-      } catch (error) {
-        alert(`Error parsing message:${error}`)
-      }
+    document.addEventListener('message', function(event) {
+      const data = event.data;
+      alert('WebView에서 받은 메시지: ' + data.message);
     });
-    window.addEventListener('message', (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        alert(`window.React Native에서 받은 메시지: ${event.data}`);
-      } catch (error) {
-        alert(`Error parsing message:${error}`)
-      }
+    window.addEventListener('message', function(event) {
+      const data = event.data;
+      alert('WebView에서 받은 메시지: ' + data.message);
     });
 
 </script>
