@@ -50,7 +50,7 @@
         const data = JSON.parse(event.data);
         alert(`document.React Native에서 받은 메시지: ${event.data}`);
       } catch (error) {
-        console.error('Error parsing message:', error);
+        alert(`Error parsing message:${error}`)
       }
     });
     window.addEventListener('message', (event) => {
@@ -58,7 +58,7 @@
         const data = JSON.parse(event.data);
         alert(`window.React Native에서 받은 메시지: ${event.data}`);
       } catch (error) {
-        console.error('Error parsing message:', error);
+        alert(`Error parsing message:${error}`)
       }
     });
 
