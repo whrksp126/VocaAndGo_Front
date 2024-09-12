@@ -29,9 +29,7 @@ function getDevicePlatform() {
 function getImageSource() {
   alert('이미지를 수신했습니다.');
 }
-// window.addEventListener('message', function(event) {
-//   alert('(W)React Native로부터 받은 메시지: ' + event.data);
-// });
-// document.addEventListener('message', function(event) {
-//   alert('(D)React Native로부터 받은 메시지: ' + event.data);
-// });
+window.addEventListener('message', function(event) {
+  const data = event.data;
+  alert('(w)WebView에서 받은 메시지: ' + data.message);
+});
