@@ -19,13 +19,3 @@ function getDevicePlatform() {
     return 'web';
   }
 }
-
-window.addEventListener('message', function(event) {
-  alert(`받은 메시지: ${event.data.message}`);
-});
-
-window.addEventListener('dataFromReactNative', function(event) {
-  alert(`${receivedData.message}`)
-  const receivedData = event.detail;
-  document.getElementById('myData').innerHTML = '받은 메시지: ' + receivedData.message + ', 시간: ' + new Date(receivedData.timestamp);
-});
