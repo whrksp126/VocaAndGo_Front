@@ -21,3 +21,30 @@ function getDevicePlatform() {
 }
 
 
+// 네이티브 카메라 모달 열기
+function openCamera(type, callback){
+  if(type == 'ocr'){
+    window?.ReactNativeWebView?.postMessage('ocr_camera_open');
+  } 
+  const handleMessage = function(event) {
+    try {
+      const message = JSON.parse(event.data); 
+      if (message.type == 'ocr_camera_return'){
+        if(message.data){
+          callback(message.data)
+        }
+        closeCamera(type);
+        document.removeEventListener('message', handleMessage);
+      }
+    } catch (error) {
+      console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다. : ${error}`);
+    }
+  };
+  document.addEventListener('message', handleMessage);
+}
+// 네이티브 카메라 모달 닫기
+function closeCamera(type){
+  if(type == 'ocr'){
+    window?.ReactNativeWebView?.postMessage('ocr_camera_close');
+  }
+}
