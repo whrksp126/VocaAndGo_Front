@@ -28,7 +28,7 @@ function getDevicePlatform() {
 
 window.addEventListener('message', function(event) {
   const message = event.data;
-  alert('Message received: ' + message);
+  alert('메시지 수신됨: ' + message);
 });
 
 function getImageSource() {
