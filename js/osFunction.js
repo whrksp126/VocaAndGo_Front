@@ -30,6 +30,10 @@ window.addEventListener('message', function(event) {
   const message = event.data;
   alert('메시지 수신됨: ' + message);
 });
+document.addEventListener('message', function(event) {
+  const message = event.data;
+  alert('메시지 수신됨: ' + message);
+});
 
 function getImageSource() {
   alert('이미지를 수신했습니다.');
