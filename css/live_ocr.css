@@ -127,7 +127,7 @@
 .modal.ocr_word .modal_content .modal_middle .preview img{
   width: 100%;
   height: 100%;
-  /* object-fit: none; */
+  object-fit: contain;
 }
 
 .ocr_word .search_list {
