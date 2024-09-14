@@ -26,6 +26,11 @@ function getDevicePlatform() {
 //   document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img').src = src;
 // }
 
+window.addEventListener('message', function(event) {
+  const message = event.data;
+  alert('Message received: ' + message);
+});
+
 function getImageSource() {
   alert('이미지를 수신했습니다.');
 }
