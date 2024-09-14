@@ -32,7 +32,7 @@ window.addEventListener('message', function(event) {
 });
 document.addEventListener('message', function(event) {
   const message = event.data;
-  alert('메시지 수신됨: ' + message);
+  alert('(d)메시지 수신됨: ' + message);
 });
 
 function getImageSource() {
