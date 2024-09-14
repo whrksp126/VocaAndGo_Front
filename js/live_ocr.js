@@ -82,6 +82,19 @@ const clickOpenOcrCamera = async (event, callbak) => {
     const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
     imgElement.src = src;
     const ocr_data_list = await getOcr(src, ['eng']);
+    console.log(ocr_data_list)
+    // const _searchList = modal.middle.querySelector('.search_list');
+    // let search_list = []
+    // ocr_data_list.forEach((ocr_data)=>{
+    //   if(ocr_data.search_list.length<=0) return 
+    //   ocr_data.search_list.forEach((search_data)=>{
+    //     if (search_data.word.toUpperCase() === ocr_data.text.toUpperCase()) {
+    //       search_data.box = ocr_data.box;
+    //       search_list = [...search_list, search_data]
+    //     }
+    //   })
+    // })
+    // setSearchListEl(_searchList, search_list);
     alert(JSON.stringify(ocr_data_list))
   }
   openCamera('ocr', callback);

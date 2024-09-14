@@ -27,14 +27,24 @@
           <img src="/images/google_logo.png?v=2024.08.270203" alt="">
           <span>Google 로그인</span>
         </button>
-        <a class="non_members" href="/html/vocabulary_list.html">비회원 이용하기</a>
+        <a class="non_members" href="#" onclick="clickNonMembers(event)">비회원 이용하기</a>
       </div>
     </div>
   </div>
   <script src="/js/common.js?v=2024.08.270203"></script>
   <script>
+    
     document.addEventListener('DOMContentLoaded', (event) => {
+      
       const user_data = JSON.parse(localStorage.getItem('user'));
+      if(!user_data){
+        localStorage.setItem('user', JSON.stringify({
+          token : null,
+          email : null,
+          name : null,
+          status : "logout",
+        }))
+      }
       if(user_data?.state == "login"){
         window.location.href = '/html/vocabulary_list.html';
       }
@@ -70,7 +80,15 @@
         window.ReactNativeWebView.postMessage('launchGoogleAuth');
       }
     }
-    
+    const clickNonMembers = (event) => {
+      localStorage.setItem('user', JSON.stringify({
+        token : 1,
+        email : 'guest@heyvoca.com',
+        name : '비회원',
+        status : "login",
+      }))
+      window.location.href = '/html/vocabulary_list.html';
+    }
   </script>
 </body>
 </html>

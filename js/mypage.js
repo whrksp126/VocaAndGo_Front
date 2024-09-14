@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const _userEmail = document.querySelector('.user_email');
     _userEmail.innerHTML = user_data.email;
     const _theme = document.querySelector('.theme span');
-    _theme.innerHTML = theme_data == 'dark' ? '다크' : '라이드';
+    _theme.innerHTML = theme_data == 'dark' ? '다크' : '라이트';
     const _visible = document.querySelector('.visible span');
     _visible.innerHTML = example_visible ? '항상 보기' : '숨기기';
   }

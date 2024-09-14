@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const curPage = getLastPathFromURL();
   const isLoginPage = IS_MAIN_PAGES.includes(curPage);
   const user_data = JSON.parse(localStorage.getItem('user'));
-  // if(!user_data && !isLoginPage){
-  //   window.location.href = '/html/login.html'
-  // }
+  if(!user_data && !isLoginPage || user_data.state == "logout" && !isLoginPage){
+    window.location.href = '/html/login.html'
+  }
 })
