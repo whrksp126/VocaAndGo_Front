@@ -29,7 +29,13 @@ function getDevicePlatform() {
 function getImageSource() {
   alert('이미지를 수신했습니다.');
 }
+
 window.addEventListener('message', function(event) {
-  const data = event.data;
-  alert('(w)WebView에서 받은 메시지: ' + data.message);
+  const message = JSON.parse(event.data);
+  alert(`${event.data}`)  
+  if (message.type === 'image') {
+    // // 받은 base64 이미지를 처리
+    // const imgElement = document.getElementById('capturedImage');
+    // imgElement.src = message.data;  // 이미지 데이터를 img 태그에 설정
+  }
 });
