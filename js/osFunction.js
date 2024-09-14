@@ -20,18 +20,4 @@ function getDevicePlatform() {
   }
 }
 
-document.addEventListener('message', function(event) {
-  const message = JSON.parse(event.data);  // 메시지를 JSON으로 파싱
-  if (message.type === 'image') {
-    const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img')
-    imgElement.src = message.data;
-  }
-});
-
-// document.addEventListener('message', function(event) {
-//   const message = event.data;
-//   alert('(d)메시지 수신됨: ' + message);
-//   // document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img').src = "data:image/jpeg;base64,${photo.base64}";
-// });
-
 
