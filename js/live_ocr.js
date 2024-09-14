@@ -1,31 +1,31 @@
-const camera_container_html = (callback) => {
-  return `
-    <div class="camera_container">
-      <button class="off_camera" onclick="clickCloseCamera(event)">
-        <i class="ph ph-x"></i>
-      </button>
-      <div class="blur"></div>
-      <div class="focus_box">
-        <img class="center_focus" src="/images/focus.svg?v=2024.08.270203">
-        <p>정확한 텍스트 인식을 위해 검색하고 싶은<br>
-          텍스트를 평평한 곳에 두고 촬영해주세요.</p>
-      </div>
-      <button class="capture_btn" id="capture" onclick="clickCapturBtn(event, ${callback})"><i class="ph ph-camera"></i></button>
-      <!-- 
-      <div class="blurs">
-        <div class="blur top"></div>
-        <div class="blur left"></div>
-        <div class="blur bottom"></div>
-        <div class="blur right"></div>
-      </div>
-      -->
-      <video id="video" autoplay playsinline></video>
-      <canvas id="crop_canvas" style="display: none;"></canvas>
-      <canvas id="view_canvas" style="display: none;"></canvas>
-      <img id="photo" alt="Captured Photo" style="display: none;"/>
-    </div>
-  `
-} 
+// const camera_container_html = (callback) => {
+//   return `
+//     <div class="camera_container">
+//       <button class="off_camera" onclick="clickCloseCamera(event)">
+//         <i class="ph ph-x"></i>
+//       </button>
+//       <div class="blur"></div>
+//       <div class="focus_box">
+//         <img class="center_focus" src="/images/focus.svg?v=2024.08.270203">
+//         <p>정확한 텍스트 인식을 위해 검색하고 싶은<br>
+//           텍스트를 평평한 곳에 두고 촬영해주세요.</p>
+//       </div>
+//       <button class="capture_btn" id="capture" onclick="clickCapturBtn(event, ${callback})"><i class="ph ph-camera"></i></button>
+//       <!-- 
+//       <div class="blurs">
+//         <div class="blur top"></div>
+//         <div class="blur left"></div>
+//         <div class="blur bottom"></div>
+//         <div class="blur right"></div>
+//       </div>
+//       -->
+//       <video id="video" autoplay playsinline></video>
+//       <canvas id="crop_canvas" style="display: none;"></canvas>
+//       <canvas id="view_canvas" style="display: none;"></canvas>
+//       <img id="photo" alt="Captured Photo" style="display: none;"/>
+//     </div>
+//   `
+// } 
 
 // .modal.ocr_word .modal_content .modal_middle .preview img
 // 카메라 열기 버튼 클릭 시, React Native의 WebView에 메시지를 보냄
@@ -58,9 +58,11 @@ const clickOpenOcrCamera = () => {
     {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event, ocrCameraCallback)"`},
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
-  const callback = (src) => {
+  const callback = async (src) => {
     const imgElement = document.querySelector('.modal.ocr_word .modal_content .modal_middle .preview img');
     imgElement.src = src;
+    const ocr_data_list = await getOcr(src, ['eng']);
+    alert(JSON.stringify(ocr_data_list))
   }
   openCamera('ocr', callback);
 }
@@ -152,20 +154,20 @@ const clickOpenOcrCamera = () => {
 
 
 
-const setFocus = () => {
-  const focusRect = document.querySelector('.center_focus').getBoundingClientRect();
-  document.querySelector('.blur.top').style.height = `${focusRect.top}px`;
+// const setFocus = () => {
+//   const focusRect = document.querySelector('.center_focus').getBoundingClientRect();
+//   document.querySelector('.blur.top').style.height = `${focusRect.top}px`;
 
-  document.querySelector('.blur.left').style.top = `${focusRect.top}px`;
-  document.querySelector('.blur.left').style.width = `${focusRect.left}px`;
-  document.querySelector('.blur.left').style.height = `${focusRect.height}px`;
+//   document.querySelector('.blur.left').style.top = `${focusRect.top}px`;
+//   document.querySelector('.blur.left').style.width = `${focusRect.left}px`;
+//   document.querySelector('.blur.left').style.height = `${focusRect.height}px`;
 
-  document.querySelector('.blur.bottom').style.height = `calc(${window.innerHeight}px - (${focusRect.height}px + ${focusRect.top}px))`;
+//   document.querySelector('.blur.bottom').style.height = `calc(${window.innerHeight}px - (${focusRect.height}px + ${focusRect.top}px))`;
 
-  document.querySelector('.blur.right').style.top = `${focusRect.top}px`;
-  document.querySelector('.blur.right').style.width = `calc(100% - (${focusRect.left + focusRect.width}px))`;
-  document.querySelector('.blur.right').style.height = `${focusRect.height}px`;
-};
+//   document.querySelector('.blur.right').style.top = `${focusRect.top}px`;
+//   document.querySelector('.blur.right').style.width = `calc(100% - (${focusRect.left + focusRect.width}px))`;
+//   document.querySelector('.blur.right').style.height = `${focusRect.height}px`;
+// };
 
 
 // window.addEventListener('resize', setFocus);
@@ -263,5 +265,5 @@ const clickCapturBtn = async (event, callback) => {
     },
   }
   await callback(original, view, crop);
-  clickCloseCamera();
+  // clickCloseCamera();
 }

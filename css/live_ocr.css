@@ -123,11 +123,13 @@
 .modal.ocr_word .modal_content .modal_middle .preview .highlighter.active{
   display: block;
 }
+
 .modal.ocr_word .modal_content .modal_middle .preview img{
-  height: 100%;
   width: 100%;
-  object-fit: none;
+  height: 100%;
+  /* object-fit: none; */
 }
+
 .ocr_word .search_list {
   position: absolute;
   bottom: 60px;
