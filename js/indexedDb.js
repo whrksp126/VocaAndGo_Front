@@ -331,7 +331,9 @@ function updateIndexedDbWord(id, updatedData) {
 
       // 업데이트할 데이터만 갱신
       for (const key in updatedData) {
+        console.log("KEY",key)
         if (updatedData.hasOwnProperty(key)) {
+          console.log("hasOwnProperty,",updatedData[key])
           wordData[key] = updatedData[key];
         }
       }

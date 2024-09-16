@@ -521,21 +521,30 @@ const setHighlightText = (text, keyword) => {
 }
 
 const getOcr = async (img, lngs) => {
-  // OCR 처리
   let ocr_data = [];
-  const result = await Tesseract.recognize(img, lngs.join('+'), {
-    // logger: m => console.log(m)
-  });
-  // 인식된 텍스트와 위치 정보를 콘솔에 출력
-  result.data.words.forEach(word => {
-    console.log(`Text: ${word.text}, Bounding Box: ${JSON.stringify(word.bbox)}`);
-    ocr_data.push({
-      text: word.text,
-      box : word.bbox
-    })
-  });
+  
+  try {    
+    // OCR 처리 시작
+    const result = await Tesseract.recognize(img, lngs.join('+'), {
+      // logger: m => console.log(m)
+    });
+
+    // 인식된 텍스트와 위치 정보를 콘솔에 출력
+    result.data.words.forEach(word => {
+      console.log(`Text: ${word.text}, Bounding Box: ${JSON.stringify(word.bbox)}`);
+      ocr_data.push({
+        text: word.text,
+        box: word.bbox
+      });
+    });
+    
+  } catch (error) {
+    console.error('OCR 처리 중 오류 발생:', error);
+  }
+
   return ocr_data;
-}
+};
+
 
 // GTTS 
 const generateSpeech = async (event, text, language) => {

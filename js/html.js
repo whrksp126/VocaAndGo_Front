@@ -100,7 +100,7 @@ const setVocabularyBookHtml = ({name, color}) =>{
 }
 
 // 단어 설정 모달 html
-const setWordModalHtml = async ({id, word, meaning, examples, description}) => {
+const setWordModalHtml = async ({id, word, meanings, examples, description}) => {
   const noteBooks = await getIndexedDbNotebooks();
   return `
     <ul>
@@ -125,7 +125,7 @@ const setWordModalHtml = async ({id, word, meaning, examples, description}) => {
       <li>
         <div class="input_text">
           <label>의미<strong>*</strong></label>
-          <input class="meaning" value="${meaning}" oninput="onInputMeaning(event)">
+          <input class="meaning" value="${meanings}" oninput="onInputMeaning(event)">
           <ul class="search_list"></ul>
           <span class="message"></span>
         </div>
@@ -134,44 +134,15 @@ const setWordModalHtml = async ({id, word, meaning, examples, description}) => {
         <div class="input_text">
           <div class="title_box">
             <label>예문</label>
-            <button><i class="ph ph-plus"></i></button>
           </div>
-          <div class="preview_container">
-            <div class="box">
-              <div class="top">
-                <h3>1</h3>
-                <div class="btns">
-                  <button><i class="ph ph-pencil-simple"></i></button>
-                  <button><i class="ph ph-trash"></i></button>
-                </div>
-              </div>
-              <div class="content">
-                <div class="origin">
-                  <span>Art may be used as a</span> <strong>vehicle</strong> <span>for propaganda.</span>
-                </div>
-                <div class="meaning">
-                  <span>예술이 정치 선전의 수단으로 이용될 수도 있다.</span>
-                </div>
-              </div>
-            </div>
-
+          <div class="preview_container ${examples.length > 0 ? 'active' : ""}">
+            ${examples?.map((example,index) => setExampleBoxHtml(index+1, word, example.origin, example.meaning)).join('')}
           </div>
-          <!-- 
-          ${examples?.map((example, index)=>{
-          const search_word_html = setHighlightText(example.origin, 'Hello');
-          return `
-          <p class="example_preview">
-            <strong>${index+1}.</strong> ${search_word_html} 
-            <br>
-            <span class="meaning">${example.meaning}</span>
-          </p>
-          `})}
-          -->
-          <div class="example_box">
+          <div class="example_box" data-index="${examples.length+1}">
             <div class="top">
               <h3>${examples.length+1}.</h3>
               <div class="btns">
-                <button><i class="ph ph-check-circle"></i></button>
+                <button onclick="clickSaveExampleBoxBtn(event)"><i class="ph ph-check-circle"></i></button>
               </div>
             </div>
             <div class="content">
@@ -190,6 +161,27 @@ const setWordModalHtml = async ({id, word, meaning, examples, description}) => {
         </div>
       </li>
     </ul>
+  `
+}
+const setExampleBoxHtml = (num, word, origin, meaning) => {
+  return `
+    <div class="box" data-index="${num}">
+      <div class="top">
+        <h3>${num}</h3>
+        <div class="btns">
+          <button onclick="clickEditExampleBoxBtn(event)"><i class="ph ph-pencil-simple"></i></button>
+          <button onclick="clickDeleteExampleBoxBtn(event)"><i class="ph ph-trash"></i></button>
+        </div>
+      </div>
+      <div class="content" data-origin="${origin}" data-meaning="${meaning}">
+        <div class="origin">
+          ${setHighlightText(origin, word)}
+        </div>
+        <div class="meaning">
+          <span>${meaning}</span>
+        </div>
+      </div>
+    </div>
   `
 }
 

@@ -377,12 +377,19 @@ footer nav ul li span{
   font-size: 14px;
   font-weight: 600;
 }
-.input_text .example_box .top .btns{}
+.input_text .example_box .top .btns{
+  display: flex;
+  align-items: center;
+}
 .input_text .example_box .top .btns i{
   font-size: 18px;
 }
 .input_text .example_box .top .btns i.ph-check-circle{
+  display: none;
   color: #42F98B;
+}
+.input_text .example_box.writing .top .btns i.ph-check-circle{
+  display: block;
 }
 .input_text .example_box .content {
   display: flex;

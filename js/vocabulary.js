@@ -1,6 +1,6 @@
 // 검색 시 사용할 전역 리스트 변수
 let SEARCH_LIST = [];
-let OCR_DATA = {};
+// let OCR_DATA = {};
 // 단어장 추가 버튼 클릭 시
 const clickAddWord = async (event) => {
   const ID = getValueFromURL("vocabulary_id");
@@ -9,74 +9,148 @@ const clickAddWord = async (event) => {
   modal.top.innerHTML = modalTopHtml(`단어 추가`, `
     <div></div>
     <h1>단어 추가</h1>
-    <button onclick="clickOpenOcrCamera(event, ocrCameraCallback)">
+    <button onclick="clickOpenOcrCamera(event, clickOpenOcrCamera)">
       <i class="ph ph-camera"></i>
     </button>
   `);
-  const DATA = {id: ID, word : "",meaning : "", examples : [],description : "",};
+  const DATA = {id: ID, word : "",meanings : "", examples : [],description : "",};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
     {class:"close gray", text: "취소", fun: ""},
     {class:"pink", text: "추가", fun: `onclick="clickModalsetWordBtn(event)"`}
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
-  setTimeout(()=>modal.container.classList.add('active'),300)
-}
-const ocrCameraCallback = (original, view, crop) => {
-  selectOcrWordFun(original, view, crop)
-}
-const selectOcrWordFun = async (original, view, crop) => {
-  // OCR 데이터 가져오기
-  
-  // const ocr_data_list = await getOcr(crop.img, ['eng', 'kor', 'jpn']);
-  const ocr_data_list = await getOcr(crop.img, ['eng']);
-
-  const url = `https://vocaandgo.ghmate.com/search/en`;
-  const method = 'GET';
-  for (const ocr_data of ocr_data_list) {
-    const data = { word: ocr_data.text };
-    try {
-      const result = await fetchDataAsync(url, method, data);
-      if (result.code != 200) {
-        console.error('검색 에러');
-      } else {
-        ocr_data.search_list = result.data;
-      }
-    } catch (error) {
-      console.error('API 요청 중 오류 발생:', error);
+  setTimeout(()=>modal.container.classList.add('active'),300);
+  const _exampleBox = modal.middle.querySelector(".example_box");
+  _exampleBox.addEventListener('input', function(event) {
+    const target = event.target;
+    if (target.matches('input.origin, input.meaning')) {
+      console.log(`${target.className} input changed:`, target.value);
+      _exampleBox.classList.toggle("writing", target.value.trim().length > 0);
     }
-  }
-  // TODO : 모달 변경
-
-  const modal = getDefaultModal();
-  modal.container.classList.add('ocr_word')
-  modal.top.innerHTML = modalTopHtml(`단어 선택`);
-  modal.middle.innerHTML = `
-    <div class="preview">
-      <img src="${view.img}">
-      <div class="highlighter"></div>
-    </div>
-    <ul class="search_list active"></ul>
-  `;
-  const _searchList = modal.middle.querySelector('.search_list');
-  let search_list = []
-  
-  ocr_data_list.forEach((ocr_data)=>{
-    if(ocr_data.search_list.length<=0) return 
-    ocr_data.search_list.forEach((search_data)=>{
-      if (search_data.word.toUpperCase() === ocr_data.text.toUpperCase()) {
-        search_data.box = ocr_data.box;
-        search_list = [...search_list, search_data]
-      }
-    })
-  })
-  OCR_DATA = {original, view, crop, search_list};
-  setSearchListEl(_searchList, search_list);
-  const btns = [
-    {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event, ocrCameraCallback)"`},
-  ]
-  modal.bottom.innerHTML = modalBottomHtml(btns);
+  });
 }
+
+// 예문 저장 버튼 클릭 시
+const clickSaveExampleBoxBtn = (event) => {
+  const __box = document.querySelectorAll(".preview_container .box");
+  const _exampleBox = document.querySelector(".example_box");
+  const _originInput = document.querySelector(".example_box input.origin");
+  const _meaningInput = document.querySelector(".example_box input.meaning");
+  const originInputValue = _originInput.value.trim();
+  const meaningInputValue = _meaningInput.value.trim();
+  if(originInputValue.length == 0) return alert("예문을 작성해 주세요");
+  if(meaningInputValue.length == 0) return alert("뜻을 작성해 주세요");
+  const exampleBoxIndex = Number(_exampleBox.dataset.index);
+  const wordInputValue = document.querySelector(".input_text .word").value.trim();
+  const html = setExampleBoxHtml(exampleBoxIndex, wordInputValue, originInputValue, meaningInputValue);
+  if(exampleBoxIndex > __box.length){ // 생성 중
+    const _previewContainer = document.querySelector(".preview_container");
+    _previewContainer.insertAdjacentHTML('beforeend', html);
+    _previewContainer.classList.add("active");
+
+  }else{ // 수정 중
+    const _box = document.querySelector(`.box[data-index="${exampleBoxIndex}"]`);
+    _box.insertAdjacentHTML("afterend", html);
+    _box.remove();
+  }
+  _originInput.value = "";
+  _meaningInput.value = "";
+  const __newBox = document.querySelectorAll(".preview_container .box");
+  __newBox.forEach((_box, index)=>{
+    _box.dataset.index = index + 1;
+    _box.querySelector("h3").innerHTML = index + 1;
+  })
+  _exampleBox.querySelector(".top h3").innerHTML = `${__newBox.length + 1}.`;
+  _exampleBox.dataset.index = __newBox.length + 1;
+}
+
+// 예문 수정 버튼 클릭 시
+const clickEditExampleBoxBtn = (event) => {
+  const _box = findParentTarget(event.target, ".box");
+  const boxIndex = Number(_box.dataset.index);
+  const originValue = _box.querySelector(".content").dataset.origin;
+  const meaningValue = _box.querySelector(".content").dataset.meaning;
+  const _exampleBox = document.querySelector(".example_box");
+  _exampleBox.dataset.index = boxIndex;
+  _exampleBox.querySelector(".top h3").innerHTML = `${boxIndex}`;
+  const _originInput = _exampleBox.querySelector("input.origin");
+  const _meaningInput = _exampleBox.querySelector("input.meaning");
+  _originInput.value = originValue;
+  _meaningInput.value = meaningValue;
+}
+// 예문 삭제 버튼 클릭 시
+const clickDeleteExampleBoxBtn = (event) => {
+  findParentTarget(event.target, ".box").remove();
+  const __box = document.querySelectorAll(".box");
+  __box.forEach((_box, index)=>{
+    _box.dataset.index = index + 1;
+    _box.querySelector("h3").innerHTML = index + 1;
+  })
+  if(__box.length == 0){
+    const _previewContainer = document.querySelector(".preview_container");
+    _previewContainer.classList.remove("active");
+  }
+  const _exampleBox = document.querySelector(".example_box");
+  _exampleBox.querySelector(".top h3").innerHTML = `${__box.length+1}.`;
+  _exampleBox.dataset.index = __box.length+1;
+
+}
+// const ocrCameraCallback = (original, view, crop) => {
+//   selectOcrWordFun(original, view, crop)
+// }
+// const selectOcrWordFun = async (original, view, crop) => {
+//   // OCR 데이터 가져오기
+  
+//   // const ocr_data_list = await getOcr(crop.img, ['eng', 'kor', 'jpn']);
+//   const ocr_data_list = await getOcr(crop.img, ['eng']);
+
+//   const url = `https://vocaandgo.ghmate.com/search/en`;
+//   const method = 'GET';
+//   for (const ocr_data of ocr_data_list) {
+//     const data = { word: ocr_data.text };
+//     try {
+//       const result = await fetchDataAsync(url, method, data);
+//       if (result.code != 200) {
+//         console.error('검색 에러');
+//       } else {
+//         ocr_data.search_list = result.data;
+//       }
+//     } catch (error) {
+//       console.error('API 요청 중 오류 발생:', error);
+//     }
+//   }
+//   // TODO : 모달 변경
+
+//   const modal = getDefaultModal();
+//   modal.container.classList.add('ocr_word')
+//   modal.top.innerHTML = modalTopHtml(`단어 선택`);
+//   modal.middle.innerHTML = `
+//     <div class="preview">
+//       <img src="${view.img}">
+//       <div class="highlighter"></div>
+//     </div>
+//     <ul class="search_list active"></ul>
+//   `;
+//   const _searchList = modal.middle.querySelector('.search_list');
+//   let search_list = []
+  
+//   ocr_data_list.forEach((ocr_data)=>{
+//     if(ocr_data.search_list.length<=0) return 
+//     ocr_data.search_list.forEach((search_data)=>{
+//       if (search_data.word.toUpperCase() === ocr_data.text.toUpperCase()) {
+//         search_data.box = ocr_data.box;
+//         search_list = [...search_list, search_data]
+//       }
+//     })
+//   })
+//   OCR_DATA = {original, view, crop, search_list};
+//   setSearchListEl(_searchList, search_list);
+//   const btns = [
+//     {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event, clickOpenOcrCamera)"`},
+//   ]
+//   modal.bottom.innerHTML = modalBottomHtml(btns);
+// }
 
 
 
@@ -91,7 +165,8 @@ const clickEditVocabularyBook = async (event) => {
   modal.container.classList.add('add_word');
   modal.top.innerHTML = modalTopHtml(`단어 수정`);
   const word = await getIndexedDbWordById(WORD_ID);
-  const DATA = {id: notebookId, word : word.word, meaning : word.meaning, example : word.example, description : word.description,};
+  console.log("word,",word)
+  const DATA = {id: notebookId, word : word.word, meanings : word.meaning, examples : word.example, description : word.description,};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
     {class:"close gray", text: "취소", fun: ""},
@@ -99,7 +174,14 @@ const clickEditVocabularyBook = async (event) => {
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
   setTimeout(()=>modal.container.classList.add('active'),300)
-
+  const _exampleBox = modal.middle.querySelector(".example_box");
+  _exampleBox.addEventListener('input', function(event) {
+    const target = event.target;
+    if (target.matches('input.origin, input.meaning')) {
+      console.log(`${target.className} input changed:`, target.value);
+      _exampleBox.classList.toggle("writing", target.value.trim().length > 0);
+    }
+  });
 }
 // 단어 삭제 버튼 클릭 시
 const clickDeleteWordBook = (event) => {
@@ -353,33 +435,9 @@ const clickSelectSearchedWord = (event) => {
   const _meaningInput = document.querySelector('.input_text .meaning');
   const _examplePreviewContainer = document.querySelector('.preview_container');
   const _exampleBox = document.querySelector('.example_box');
-  
-  // const _exampleInput = document.querySelector('.input_text .example');
-  // const _explanationInput = document.querySelector('.input_text .explanation');
   _wordInput.value = data.word;
   _meaningInput.value = data.meanings ? data.meanings.join(', ') : data.meaning;
-  _examplePreviewContainer.innerHTML = `
-  ${data.example.map(({exam_en, exam_ko}, index)=>`
-    <div class="box">
-      <div class="top">
-        <h3>${index + 1}</h3>
-        <div class="btns">
-          <button><i class="ph ph-pencil-simple"></i></button>
-          <button><i class="ph ph-trash"></i></button>
-        </div>
-      </div>
-      <div class="content" data-origin="${exam_en}" data-meaning="${exam_ko}">
-        <div class="origin">
-          ${setHighlightText(exam_en, data.word)}
-        </div>
-        <div class="meaning">
-          <span>${exam_ko}</span>
-        </div>
-      </div>
-    </div>
-
-  `).join('')}
-  `
+  _examplePreviewContainer.innerHTML = data.example.map(({exam_en, exam_ko}, index)=>setExampleBoxHtml(index + 1, data.word, exam_en, exam_ko)).join('')
   if(data.example.length > 0) _examplePreviewContainer.classList.add('active')
   _exampleBox.querySelector('h3').innerHTML = `${data.example.length + 1}.`;
   _exampleBox.querySelector('.origin').value = '';
@@ -388,67 +446,42 @@ const clickSelectSearchedWord = (event) => {
   const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
   _searchList.classList.remove('active'); 
 }
-// OCR 검색된 단어 선택 시
-const clickSelectOcrSearchedWord = (event, index) => {
-  const cur_img_rect = document.querySelector('.ocr_word .preview img').getBoundingClientRect();
-  const marker_x = -((OCR_DATA.view.visible.w / 2) - (cur_img_rect.width / 2)) + OCR_DATA.crop.visible.x + OCR_DATA.search_list[index].box.x0;
-  const marker_y = -((OCR_DATA.view.visible.h / 2) - (cur_img_rect.height / 2)) + OCR_DATA.crop.visible.y + OCR_DATA.search_list[index].box.y0;
-  const marker_w = OCR_DATA.search_list[index].box.x1 - OCR_DATA.search_list[index].box.x0;
-  const marker_h = OCR_DATA.search_list[index].box.y1 - OCR_DATA.search_list[index].box.y0;
-  
-  const _highlighter = document.querySelector('.preview .highlighter');
-  _highlighter.style.top = `${marker_y}px`;
-  _highlighter.style.left = `${marker_x}px`;
-  _highlighter.style.width = `${marker_w}px`;
-  _highlighter.style.height = `${marker_h}px`;
-  _highlighter.classList.add('active');
 
-
-  const modal = getDefaultModal();
-  modal.container.classList.add('ocr_word')
-  modal.top.innerHTML = modalTopHtml(`단어 추가`);
-  const __searchWord = modal.middle.querySelectorAll('.search_list li');
-  __searchWord.forEach((_searchWord)=>{
-    if(_searchWord.dataset.index != index){
-      _searchWord.classList.add("hidden");
-    }
-  })
-  const btns = [
-    {class:"gray", text: "다시 선택", fun: `onclick="clickSelectAgainOcrSearchedWord(event)"`},
-    {class:"pink", text: "추가", fun: `onclick="clickAddOcrSearchedWord(event)"`},
-  ]
-  modal.bottom.innerHTML = modalBottomHtml(btns);
-}
 // ocr 단어 선택 모달 다시 선택 클릭 시 
 const clickSelectAgainOcrSearchedWord = (event) => {
   const modal = getDefaultModal();
   const __searchWord = modal.middle.querySelectorAll('.search_list li');
   const _highlighter = document.querySelector('.preview .highlighter');
   __searchWord.forEach((_searchWord)=>{
+    _searchWord.classList.remove("active");
     _searchWord.classList.remove("hidden");
   })
   _highlighter.classList.remove('active');
-  modal.container.classList.add('ocr_word')
+  modal.container.classList.add('ocr_word');
   modal.top.innerHTML = modalTopHtml(`단어 선택`);
   const btns = [
-    {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event, ocrCameraCallback)"`},
+    {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event)"`},
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
 }
+
 // ocr 단어 선택 모달 추가 버튼 클릭 시
 const clickAddOcrSearchedWord = async (event) => {
   const modal = getDefaultModal();
-  const index = modal.middle.querySelector('.search_list li:not(.hidden)').dataset.index;
-  const search_word = OCR_DATA.search_list[index];
-  modal.container.classList.add('add_word')
+  const index = Number(modal.middle.querySelector('.search_list li:not(.hidden)').dataset.index);
+  const search_word = OCR_DATA[index].search;
+  console.log("search_word,",search_word)
+  modal.container.classList.remove('ocr_word')
+  modal.container.classList.add('add_word');
   modal.top.innerHTML = modalTopHtml(`단어 추가`, `
     <div></div>
     <h1>단어 추가</h1>
-    <button onclick="clickOpenOcrCamera(event, ocrCameraCallback)">
+    <button onclick="clickOpenOcrCamera(event, clickOpenOcrCamera)">
       <i class="ph ph-camera"></i>
     </button>
   `);
-  const DATA = {id: "", word : search_word.word, meaning : search_word.meanings.join(", "), example : "", description : ""};
+  
+  const DATA = {id: "", word : search_word.word, meanings : search_word.meanings.join(", "), examples : search_word.example, description : ""};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
     {class:"close gray", text: "취소", fun: ""},
