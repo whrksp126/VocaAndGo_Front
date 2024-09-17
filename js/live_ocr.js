@@ -19,7 +19,8 @@ const clickOpenOcrCamera = async (event) => {
     modal.bottom.innerHTML = modalBottomHtml(btns);
     OCR_DATA = (await getOcr(src, ['eng'])).filter(item => /^[a-zA-Z]{2,}$/.test(item.text));
     if(!OCR_DATA || OCR_DATA.length == 0) return;
-    const url = `https://vocaandgo.ghmate.com/search/en`;
+    // const url = `https://vocaandgo.ghmate.com/search/en`;
+    const url = `http://127.0.0.1:5000/search/en`;
     const method = 'GET';
     async function searchAndFilterWords(OCR_DATA) {
       try {
