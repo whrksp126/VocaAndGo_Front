@@ -46,15 +46,13 @@ const modalTopHtml = (title, html=null) => {
 
 // 모달 BOTTOM AND
 const modalBottomHtml = (btns=null) => {
-  return `
-    ${btns != null ?`
-    <div class="buttons">
-      ${btns.map((btn)=>`
-      <button class="${btn.class}" ${btn.fun}>${btn.text}</button>
-      `).join('')}
-    </div>
-    `:``}
-  `
+  return btns != null ? `
+  <div class="buttons">
+    ${btns.map((btn)=>`
+    <button class="${btn.class}" ${btn.fun}>${btn.text}</button>
+    `).join('')}
+  </div>
+  ` : ``;
 }
 
 
