@@ -82,8 +82,8 @@ const setVocabularyBookHtml = ({name, color}) =>{
               return `
             <li 
               style="--main-color: #${main};"
-              data-color="${main}" 
-              data-background="${background}" 
+              data-color="#${main}" 
+              data-background="#${background}" 
               class="color ${color.toUpperCase() == main.toUpperCase() ? "active" : ""}">
               <i class="ph-bold ph-check"></i>
               
@@ -196,7 +196,7 @@ const setVocabularyListHtml = async () => {
       <li 
         data-id="${vocabulary.id}"
         onclick="clickVocabularyItem(event,${vocabulary.id})"
-        style="--card-color: #${vocabulary.color.main}; --card-background: #${vocabulary.color.background}; --progress-color: #${vocabulary.color.main}4d; --progress-width:${progress}%;"
+        style="--card-color: ${vocabulary.color.main}; --card-background: ${vocabulary.color.background}; --progress-color: ${vocabulary.color.main}4d; --progress-width:${progress}%;"
         >
         <div class="top">
           <h3>${vocabulary.name}</h3>

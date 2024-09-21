@@ -17,6 +17,7 @@ main .container ul {
   grid-template-columns: repeat(2, 1fr); 
   grid-gap: 15px; 
   width: 100%;
+  height: max-content;
 }
 main .container ul li{
   display: flex;

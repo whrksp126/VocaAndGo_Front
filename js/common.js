@@ -224,7 +224,7 @@ const clickSaveVocabulary = async (event, htmlFun) => {
   const createdAt = new Date().toISOString();
   const data = {
     name: vocabulary_name, 
-    color: {main : _colorLi.dataset.color,background : _colorLi.dataset.background}, 
+    color: {main : _colorLi.dataset.color, background : _colorLi.dataset.background}, 
     createdAt: createdAt, 
     updatedAt: createdAt, 
     status: "active"

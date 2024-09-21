@@ -58,7 +58,7 @@ const setEditVocabularyListHtml = async () => {
        html += `
         <li 
           data-id="${noteBook.id}"
-          style="--card-color: #${noteBook.color.main}; --card-background: #${noteBook.color.background}; --progress-color: #${noteBook.color.main}4d; ">
+          style="--card-color: ${noteBook.color.main}; --card-background: ${noteBook.color.background}; --progress-color: ${noteBook.color.main}4d; ">
           <div class="top">
             <h3>${noteBook.name}</h3>
             <span>${learnedCount}/${totalWords}</span>

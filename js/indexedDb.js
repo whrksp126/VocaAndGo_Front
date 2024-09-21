@@ -171,8 +171,9 @@ function addIndexedDbNotebook(name, color, createdAt, updatedAt, status) {
     const request = store.add({ name, color, createdAt, updatedAt, status });
 
     request.onsuccess = function() {
-      console.log("단어장이 추가되었습니다.");
-      resolve();
+      const newId = request.result; 
+      console.log("단어장이 추가되었습니다. 새 ID:", newId);
+      resolve(newId);
     };
 
     request.onerror = function(event) {
@@ -238,24 +239,31 @@ function updateIndexedDbNotebook(id, name, color, updatedAt, status) {
   });
 }
 
-// 단어장 삭제 함수
-function deleteIndexedDbNotebook(id) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["notebooks"], "readwrite");
-    const store = transaction.objectStore("notebooks");
-
-    const request = store.delete(id);
-
-    request.onsuccess = function() {
-      console.log("단어장이 삭제되었습니다.");
-    };
-
-    request.onerror = function(event) {
-      console.error("단어장을 삭제하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
+async function deleteIndexedDbNotebook(id) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const words = await getIndexedDbWordsByNotebookId(id);
+      for (const word of words) {
+        await deleteIndexedDbWord(word.id);
+      }
+      const transaction = INDEXED_DB.transaction(["notebooks"], "readwrite");
+      const store = transaction.objectStore("notebooks");
+      const request = store.delete(id);
+      request.onsuccess = function () {
+        console.log("단어장이 삭제되었습니다.");
+        resolve(); // 단어장 삭제 성공 시 resolve
+      };
+      request.onerror = function (event) {
+        console.error("단어장을 삭제하는 중에 오류가 발생했습니다.:", event.target.errorCode);
+        reject(event.target.errorCode); // 단어장 삭제 오류 시 reject
+      };
+    } catch (error) {
+      console.error("단어 또는 단어장을 삭제하는 중 오류가 발생했습니다.", error);
+      reject(error); // 비동기 작업에서 발생한 오류 처리
+    }
   });
 }
+
 // 단어 추가 함수
 function addIndexedDbWord(notebookId, word, meaning, example, description, createdAt, updatedAt, status) {
   return new Promise((resolve, reject) => {
