@@ -54,7 +54,7 @@ function closeCamera(type){
 // 네이티브 보상형 전면 광고 열기
 function showRewardedAd (callback){
   if(getDevicePlatform() == "app"){
-    window?.ReactNativeWebView?.postMessage('showRewardedAd')
+    window?.ReactNativeWebView?.postMessage('show_rewarded_ad')
     const handleMessage = function(event) {
       try {
         const message = JSON.parse(event.data); 
