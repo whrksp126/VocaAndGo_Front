@@ -1,6 +1,6 @@
 let STORE_DATA = null;
 const getStoreData = async () => {
-  const url = `http://127.0.0.1:5000/search/bookstore`
+  const url = `https://vocaandgo.ghmate.com/search/bookstore`
   const method = 'GET';
   const result = await fetchDataAsync(url, method);
   if(result.code != 200) return null;
@@ -78,21 +78,30 @@ const clickAddStoreVocabulary = (event, id) => {
 }
 
 const clickAddVocabulary = async (event, id) => {
-  const vocabulary = STORE_DATA.find((item)=>item.id == id);
-  const createdAt = new Date().toISOString();
-  const vocabulary_id = await addIndexedDbNotebook(vocabulary.name, {main : vocabulary.color.main,background : vocabulary.color.background}, createdAt, createdAt, "active");
-  for(const data of vocabulary.words){
-    const new_data = {
-      notebookId : Number(vocabulary_id),
-      word : data.word,
-      meaning : data.meaning,
-      example : data.examples,
-      description : data.description,
-      status : 0,
-      updatedAt : createdAt
+  const callback = async (result) => {
+    if(result == "success"){
+      const vocabulary = STORE_DATA.find((item)=>item.id == id);
+      const createdAt = new Date().toISOString();
+      const vocabulary_id = await addIndexedDbNotebook(vocabulary.name, {main : vocabulary.color.main,background : vocabulary.color.background}, createdAt, createdAt, "active");
+      for(const data of vocabulary.words){
+        const new_data = {
+          notebookId : Number(vocabulary_id),
+          word : data.word,
+          meaning : data.meaning,
+          example : data.examples,
+          description : data.description,
+          status : 0,
+          updatedAt : createdAt
+        }
+        const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
+      }
+      window.location.href=`/html/vocabulary_list.html`;
     }
-    const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
+    if(result == "failure"){
+      alert("리워드 획득 실패");
+    }
   }
-  window.location.href=`/html/vocabulary_list.html`;
+  showRewardedAd(callback)
+  
 
 }
