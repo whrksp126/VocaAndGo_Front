@@ -82,7 +82,12 @@ const clickUpload = async (event) => {
 }
 
 // 단어장 다운로드  클릭 시
-const clickDownload = (event) => {
+const clickDownload = async (event) => {
+  const url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
+  const method = `POST`;
+  const data = notebooks;
+  const result = await fetchDataAsync(url, method, data);
+  console.log(result)
   // TODO : 구글 드라이브에 있는 단어장 데이터 요청 API
   // TODO : 받은 데이터 IndexedDb에 저장
 }
