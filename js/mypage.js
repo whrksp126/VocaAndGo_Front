@@ -85,7 +85,7 @@ const clickUpload = async (event) => {
 const clickDownload = async (event) => {
   const url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
   const method = `POST`;
-  const data = [];
+  const data = {};
   const result = await fetchDataAsync(url, method, data);
   console.log(result)
   // TODO : 구글 드라이브에 있는 단어장 데이터 요청 API
