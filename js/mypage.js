@@ -69,27 +69,39 @@ const changeExampleVisibleToggle = (event) => {
 
 // 단어장 업로드 클릭 시
 const clickUpload = async (event) => {
+  // TODO : 업로드 경고 모달
   const notebooks = await getIndexedDbNotebooks();
   for (const notebook of notebooks){
     notebook.words = await getIndexedDbWordsByNotebookId(notebook.id);
   };
-  console.log(JSON.stringify(notebooks))
   const url = `https://vocaandgo.ghmate.com/drive/backup`;
   const method = `POST`;
   const data = notebooks;
   const result = await fetchDataAsync(url, method, data);
-  console.log(result)
+  if(result.code == 200){
+    alert('단어장 업로드 완료');
+  };
 }
 
-// 단어장 다운로드  클릭 시
+// 단어장 다운로드 클릭 시
 const clickDownload = async (event) => {
+  // TODO : 다운로드 경고 모달
   const url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
   const method = `GET`;
-  const data = {};
-  const result = await fetchDataAsync(url, method, data);
-  console.log(result)
-  // TODO : 구글 드라이브에 있는 단어장 데이터 요청 API
-  // TODO : 받은 데이터 IndexedDb에 저장
+  const result = await fetchDataAsync(url, method, {});
+  
+  if(result.code != 200) return alert(`${result.msg}`)
+  const notebooks = await getIndexedDbNotebooks();
+  for(const notebook of notebooks){
+    await deleteIndexedDbNotebook(notebook.id);
+  };
+  for(const notebook of result.data){
+    const notebook_id = await addIndexedDbNotebook(notebook.name, data.color, data.createdAt, data.updatedAt, data.status);
+    for(const data of notebook.words){
+      await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status)
+    }
+  }  
+  alert('단어장 다운로드 완료')
 }
 
 document.addEventListener('DOMContentLoaded', function() {
