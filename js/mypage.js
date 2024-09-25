@@ -84,7 +84,7 @@ const clickUpload = async (event) => {
 // 단어장 다운로드  클릭 시
 const clickDownload = async (event) => {
   const url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
-  const method = `POST`;
+  const method = `GET`;
   const data = {};
   const result = await fetchDataAsync(url, method, data);
   console.log(result)
