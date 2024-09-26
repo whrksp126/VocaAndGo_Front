@@ -1,5 +1,5 @@
-// 사지선타 테스트 문제 html
-const setMcqHtml = (word, total, cur) => {
+// 예문 빈칸 입력 테스트 문제 html
+const setExampleFitbHtml = () => {
   let show_text = '';
   let show_hint = '';
   let show_option = [];
@@ -56,58 +56,26 @@ const setMcqHtml = (word, total, cur) => {
     </div>
   `
 }
-
-// 사지선다 테스트 페이지 문제 세팅
-const setMcqTestPage = () => {
-  const _items = document.querySelector('main .items')
+// 테스트 페이지 카드 세팅
+const setExampleBoxFitbTestPage = () => {
+  console.log(TEST_WORD_LIST)
+  const _cards = document.querySelector('main .cards')
   TEST_WORD_LIST.forEach((word, index)=>{
     if(word.isCorrect == undefined){
-      _items.insertAdjacentHTML('afterbegin', setMcqHtml(word, TEST_WORD_LIST.length, index+1))
+      // _cards.insertAdjacentHTML('afterbegin', setCardHtml(word, Number(URL_PARAMS.problem_nums), index+1))
+      _cards.insertAdjacentHTML('afterbegin', setExampleFitbHtml(word, TEST_WORD_LIST.length, index+1))
     }
-  });
-  const _first_item = document.querySelector('.items .item:last-child');
-  _first_item?.classList.add('active');
+  })
+  const _first_card = document.querySelector('.cards .card:last-child');;
+  _first_card?.classList.add('active');
   const _progressbarBox = document.querySelector('.progressbar_box');
   _progressbarBox.style.setProperty('--total-page', TEST_WORD_LIST.length);
+  _progressbarBox.style.setProperty('--cur-page', TEST_WORD_LIST.filter(data => data.isCorrect !== undefined).length);
 }
 
-// 옵션 클릭 시
-const clickMcqOption = (event, index) => {
-  const __item = document.querySelectorAll('.items .item');
-  const _currentItem = __item[__item.length - 1];
-  if(!_currentItem) return;
-  if(_currentItem.dataset.isdone) return;
-  findParentTarget(event.target, '.option_btn').classList.add('active');
-  const _nextItem = __item[__item.length - 2];
-  const isCorrect = Number(_currentItem.dataset.result) == Number(index) ;
-  _currentItem.classList.add(isCorrect ? 'correct' : 'incorrect');
-  _currentItem.querySelector('.card').classList.add('end');
-  const word_data = TEST_WORD_LIST.find(data => data.id == Number(_currentItem.dataset.id));
-  word_data.isCorrect = isCorrect ? 1 : 0;
-  setTimeout(()=>{
-    const _progressbarBox = document.querySelector('.progressbar_box');
-    let currentPage = parseInt(getComputedStyle(_progressbarBox).getPropertyValue('--cur-page')) || 0;
-    _progressbarBox.style.setProperty('--cur-page', currentPage + 1);
-    if (!_nextItem) {
-      setTimeout(()=>{
-        _currentItem.remove();
-        updateRecentLearningData("state", "after");
-        updateRecentLearningData("test_list", TEST_WORD_LIST);
-        setTestResultsHtml();
-      },500)
-    }else{
-      _currentItem.classList.add('end');
-      _currentItem.classList.remove('active');
-      _nextItem.classList.add('active');
-      updateRecentLearningData("test_list", TEST_WORD_LIST);
-      setTimeout(() => _currentItem.remove(), 300);
-    }
-  },500)
-  _currentItem.dataset.isdone = true;
-}
 
 const init = async () => {
-  const index_status = await waitIndexDbOpen();
+  const index_status = await waitIndexDbOpen()
   if(index_status == "on"){
     const state = await getRecentLearningData("state");
     if(state == 'before') {
@@ -122,11 +90,12 @@ const init = async () => {
       TEST_WORD_LIST = test_list;
       setTestResultsHtml();
     }
-    setMcqTestPage();
+    setExampleBoxFitbTestPage(TEST_WORD_LIST);
+    setCardTouchEvent();
   }
   if(index_status == "err"){
     alert("데이터 호출 err")
   }
+
 }
 init();
-

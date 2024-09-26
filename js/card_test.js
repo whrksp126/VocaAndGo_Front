@@ -30,11 +30,13 @@ const setCardHtml = (word, total, cur) => {
         <button class="marker click_event" onclick="clickMarker(event)">
           <img src="/images/marker_${word.status}.png?v=2024.08.270203">
         </button>
+        <!-- 
         <div class="page">
           <span class="cur">${cur}</span>
           <span>/</span>
           <span class="total">${total}</span>
         </div>
+        -->
         <button class="speaker click_event" onclick="generateSpeech(event,'${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
       </div>
     </div>
@@ -52,8 +54,11 @@ const setCardTestPage = () => {
   })
   const _first_card = document.querySelector('.cards .card:last-child');;
   _first_card?.classList.add('active');
-}
+  const _progressbarBox = document.querySelector('.progressbar_box');
+  _progressbarBox.style.setProperty('--total-page', TEST_WORD_LIST.length);
+  _progressbarBox.style.setProperty('--cur-page', TEST_WORD_LIST.filter(data => data.isCorrect !== undefined).length);
 
+}
 
 // OX 클릭 시
 const clickGrading = async (event, outcome) => {
@@ -67,6 +72,9 @@ const clickGrading = async (event, outcome) => {
   const word_data = TEST_WORD_LIST.find(data => data.id == Number(_currentCard.dataset.id));
   // word_data.result = outcome;
   word_data.isCorrect = outcome;
+  const _progressbarBox = document.querySelector('.progressbar_box');
+  let currentPage = parseInt(getComputedStyle(_progressbarBox).getPropertyValue('--cur-page')) || 0;
+  _progressbarBox.style.setProperty('--cur-page', currentPage + 1);
   if (!_nextCard) {
     _currentCard.remove();
     updateRecentLearningData("state", "after");

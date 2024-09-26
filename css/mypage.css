@@ -218,3 +218,27 @@ main ul.logout_box li div{
 .switch_box .btn_icon{
   background: #fff;
 }
+
+[data-page="vocabulary_backup"] main ul {
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  padding: 20px;
+}
+[data-page="vocabulary_backup"] main ul li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  border: 1px solid #FF8DD4;
+  border-radius: 8px;
+  color: #FF8DD4;
+}
+[data-page="vocabulary_backup"] main ul li i{
+  font-size: 20px;
+}
+[data-page="vocabulary_backup"] main ul li span{
+  font-size: 16px;
+  font-weight: 700;
+}

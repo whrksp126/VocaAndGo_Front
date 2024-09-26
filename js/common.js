@@ -272,8 +272,8 @@ const clickMarker = async (event) => {
 const clickStartTest = async (event, type, vocabulary_id=null) => {
   const vocabulary = getValueFromURL("vocabulary");
   const test_type = type;
-  const view_types = document.querySelector('.view_types button.active').dataset.type;
-  const word_types = document.querySelector('.word_types button.active').dataset.type;
+  const view_types = document.querySelector('.view_types button.active')?.dataset.type;
+  const word_types = document.querySelector('.word_types button.active')?.dataset.type;
   const problem_nums = Number(document.querySelector('.problem_nums input[type="number"]').value);
   let vocabulary_word_list = null;
   let urlParams = `vocabulary=${vocabulary}&test_type=${test_type}&view_types=${view_types}&word_types=${word_types}&problem_nums=${problem_nums}`;
@@ -316,6 +316,8 @@ const clickStartTest = async (event, type, vocabulary_id=null) => {
     }
     test_list = setTestWrodOptionList(vocabulary_word_list, problem_nums, randomMeanings);
     await updateRecentLearningData("test_list", test_list);
+  } else if(test_type == 'example_fitb'){
+    await updateRecentLearningData("test_list", setTestExampleList(vocabulary_word_list, problem_nums));
   }
   window.location.href=`/html/${type}_test.html?${urlParams}`
 }
@@ -345,6 +347,22 @@ const setTestWrodList = (vocabulary_word_list, problem_nums) => {
     [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
   }
   return tempArray.slice(0, problem_nums);
+}
+
+// 전체 단어 리스트에서 테스트할 예문만 추출
+const setTestExampleList = (vocabulary_word_list, problem_nums) => {
+  // TODO : 예문이 있는 단어 리스트만 뽑기
+  let tempArray = [...vocabulary_word_list];
+  for (let i = tempArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
+  }
+  tempArray = tempArray.slice(0, problem_nums);
+  console.log(tempArray)
+  for (let i = 0; i < problem_nums; i++) {
+
+  }
+  return tempArray;
 }
 
 // 전체 단어 리스트에서 테스트할 단어만 추출 후 옵션 추가

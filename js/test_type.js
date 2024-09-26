@@ -7,7 +7,7 @@ const clickTestType = async (event, type) => {
     const modal = openDefaultModal();
     modal.container.classList.add('setup_test');
     modal.top.innerHTML = modalTopHtml(`테스트 설정`);
-    modal.middle.innerHTML = setTextSetupHtml();
+    modal.middle.innerHTML = setTextSetupHtml(type);
   
     const btns = [
       {class:"close gray", text: "취소", fun: ""},

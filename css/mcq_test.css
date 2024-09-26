@@ -2,13 +2,32 @@ main {
   position: relative;
 }
 main .container {
+  display: flex;
+  flex-flow: column;
   height: calc(100vh  - var(--header-height));
   padding: 0;
+}
+main .container .progressbar_box{
+  padding: 0 16px;
+}
+main .container .progressbar_box .progressbar{
+  width: 100%;
+  height: 16px;
+  border-radius: 50px;
+  background: #ff8dd44d;
+  overflow: hidden;
+}
+main .container .progressbar_box .progressbar .active_bar{
+  width: calc(var(--cur-page) / (var(--total-page)) * 100%);
+  height: 100%;
+  border-radius: 50px;
+  background: #ff8dd4;
+  transition: all .3s;
 }
 .items{
   position: relative;
   width: 100%;
-  
+  height: calc(100% - 16px);
 }
 .items .item{
   position: absolute;

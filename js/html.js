@@ -214,9 +214,10 @@ const setVocabularyListHtml = async () => {
 }
 
 // 테스트 설정 HTML 
-const setTextSetupHtml = () => {
+const setTextSetupHtml = (type) => {
   return `
     <ul class="">
+      ${type == 'example_fitb' ? `` : `
       <li data-type="view_types" class="view_types">
         <h4>문제 유형</h4>
         <div class="radio_btns">
@@ -238,6 +239,8 @@ const setTextSetupHtml = () => {
           </button>
         </div>
       </li>
+      `}
+      
       <li data-type="word_types" class="word_types">
         <h4>단어 유형</h4>
         <div class="radio_btns">
