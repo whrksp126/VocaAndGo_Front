@@ -110,6 +110,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const theme_data = localStorage.getItem('theme');
   const example_visible = getExmapleStyleAlwaysVisible();
 
+  if(document.querySelector('body').dataset.page == 'account'){
+    const _userEmail = document.querySelector('.user_email');
+    _userEmail.innerHTML = user_data.email;
+  }
   if(document.querySelector('body').dataset.page == 'mypage'){
     const _userEmail = document.querySelector('.user_email');
     _userEmail.innerHTML = user_data.email;
