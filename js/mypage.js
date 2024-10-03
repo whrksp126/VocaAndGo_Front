@@ -73,6 +73,7 @@ const clickUpload = async (event) => {
   const notebooks = await getIndexedDbNotebooks();
   for (const notebook of notebooks){
     notebook.words = await getIndexedDbWordsByNotebookId(notebook.id);
+    notebook.words.forEach((word) => delete word.notebookId);
   };
   const url = `https://vocaandgo.ghmate.com/drive/backup`;
   const method = `POST`;
