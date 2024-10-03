@@ -97,7 +97,7 @@ const clickDownload = async (event) => {
     await deleteIndexedDbNotebook(notebook.id);
   };
   for(const notebook of result.data){
-    const notebook_id = await addIndexedDbNotebook(notebook.name, data.color, data.createdAt, data.updatedAt, data.status);
+    const notebook_id = await addIndexedDbNotebook(notebook.name, notebook.color, notebook.createdAt, notebook.updatedAt, notebook.status);
     for(const data of notebook.words){
       await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status)
     }
