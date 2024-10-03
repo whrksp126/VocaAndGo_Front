@@ -319,7 +319,7 @@ const clickStartTest = async (event, type, vocabulary_id=null) => {
   } else if(test_type == 'example_fitb'){
     await updateRecentLearningData("test_list", setTestExampleList(vocabulary_word_list, problem_nums));
   }
-  // window.location.href=`/html/${type}_test.html?${urlParams}`
+  window.location.href=`/html/${type}_test.html?${urlParams}`
 }
 
 // INDEXED_DB 단어장 단어 호출
