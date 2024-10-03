@@ -430,6 +430,7 @@ function addRecentLearningData(key, value) {
 
 // 최근 학습 수정
 function updateRecentLearningData(key, value) {
+  console.log(key, value)
   return new Promise((resolve, reject) => {
     const transaction = INDEXED_DB.transaction(["recentLearning"], "readwrite");
     const store = transaction.objectStore("recentLearning");

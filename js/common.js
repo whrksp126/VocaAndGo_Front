@@ -319,7 +319,7 @@ const clickStartTest = async (event, type, vocabulary_id=null) => {
   } else if(test_type == 'example_fitb'){
     await updateRecentLearningData("test_list", setTestExampleList(vocabulary_word_list, problem_nums));
   }
-  window.location.href=`/html/${type}_test.html?${urlParams}`
+  // window.location.href=`/html/${type}_test.html?${urlParams}`
 }
 
 // INDEXED_DB 단어장 단어 호출
@@ -351,18 +351,66 @@ const setTestWrodList = (vocabulary_word_list, problem_nums) => {
 
 // 전체 단어 리스트에서 테스트할 예문만 추출
 const setTestExampleList = (vocabulary_word_list, problem_nums) => {
-  // TODO : 예문이 있는 단어 리스트만 뽑기
-  let tempArray = [...vocabulary_word_list];
-  for (let i = tempArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
-  }
-  tempArray = tempArray.slice(0, problem_nums);
-  console.log(tempArray)
+  let tempArray = vocabulary_word_list.filter(({example}) => example);
+  let selectedArray = [];
   for (let i = 0; i < problem_nums; i++) {
-
+    const j = Math.floor(Math.random() * (tempArray.length - i));
+    selectedArray.push(tempArray[j]);
+    [tempArray[j], tempArray[tempArray.length - i - 1]] = [tempArray[tempArray.length - i - 1], tempArray[j]];
   }
-  return tempArray;
+  for (let i = 0; i < problem_nums; i++) {
+    console.log(highlightWordAndMeaning(selectedArray[i]))
+  }
+  return selectedArray;
+}
+
+function highlightWordAndMeaning(data) {
+  // example 리스트에서 랜덤한 항목 선택
+  const randomIndex = Math.floor(Math.random() * data.example.length);
+  const selectedExample = data.example[randomIndex];
+
+  const baseWord = data.word;
+  const originSentence = selectedExample.origin;
+  const exampleMeaning = selectedExample.meaning;
+  const meaningList = data.meaning;
+
+  let originResult = null;
+  let meaningResult = null;
+
+  // 정규 표현식을 이용해 baseWord의 어형 변화를 찾음
+  const wordRegex = new RegExp(`(${baseWord}(ed|s|ing)?)`, 'gi');
+
+  // originSentence에서 baseWord의 변형을 <strong>으로 감싸기
+  const highlightedOriginSentence = originSentence.replace(wordRegex, (match) => {
+      originResult = match;  // 매칭된 단어 저장
+      return `<strong>${match}</strong>`;
+  });
+
+  // strong 태그가 없는 부분을 span 태그로 감싸기
+  const finalOriginHtml = highlightedOriginSentence.split(/(<strong>.*?<\/strong>)/g)
+      .map(part => part.startsWith('<strong>') ? part : `<span>${part.trim()}</span>`)
+      .join(' ');
+
+  // example.meaning에서 meaningList의 단어들을 strong으로 감싸기
+  const highlightedMeaningSentence = meaningList.reduce((sentence, meaningWord) => {
+      const meaningRegex = new RegExp(`(${meaningWord})`, 'gi');
+      return sentence.replace(meaningRegex, (match) => {
+          meaningResult = match;  // meaning 단어 저장
+          return `<strong>${match}</strong>`;
+      });
+  }, exampleMeaning);
+
+  // meaning 부분도 나머지를 span 태그로 감싸기
+  const finalMeaningHtml = highlightedMeaningSentence.split(/(<strong>.*?<\/strong>)/g)
+      .map(part => part.startsWith('<strong>') ? part : `<span>${part.trim()}</span>`)
+      .join(' ');
+
+  // 결과로 html과 매칭된 단어 반환
+  return {
+      origin_html: finalOriginHtml.trim(),  // origin의 최종 HTML
+      meaning_html: finalMeaningHtml.trim(),  // meaning의 최종 HTML
+      result: originResult || meaningResult  // 매칭된 단어
+  };
 }
 
 // 전체 단어 리스트에서 테스트할 단어만 추출 후 옵션 추가
