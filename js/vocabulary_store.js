@@ -1,6 +1,7 @@
 let STORE_DATA = null;
 const getStoreData = async () => {
-  const url = `https://vocaandgo.ghmate.com/search/bookstore`
+  // const url = `https://vocaandgo.ghmate.com/search/bookstore`
+  const url = `http://127.0.0.1:5000/search/bookstore`
   const method = 'GET';
   const result = await fetchDataAsync(url, method);
   if(result.code != 200) return null;

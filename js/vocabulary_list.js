@@ -11,6 +11,23 @@ const clickAddVocabularyBook = (event, data={name:"", color:"FF8DD4"}) => {
   setTimeout(()=>modal.container.classList.add('active'),300)
   addEventClickColor();
 };
+
+const getDailyQuote = async () => {
+  try{
+    const url = 'https://vocaandgo.ghmate.com/mainpage';
+    const method = 'GET';
+    const fetchData = {};
+    const result = await fetchDataAsync(url, method, fetchData);
+    if(result.code != 200) return document.querySelector('main .daily_quote_container').remove();
+    const _dailyQuoteOrigin = document.querySelector('main .daily_quote_container .daily_quote .content .origin');
+    const _dailyQuoteMeaning = document.querySelector('main .daily_quote_container .daily_quote .content .meaning');
+    _dailyQuoteOrigin.innerHTML = result.data.sentence
+    _dailyQuoteMeaning.innerHTML = result.data.meaning
+  }catch{
+    document.querySelector('main .daily_quote_container').remove();
+  }
+}
+getDailyQuote();
 // const init = async () => {
 //   const notebooks = await getIndexedDbNotebooks();
 //   for(const notebook of notebooks){

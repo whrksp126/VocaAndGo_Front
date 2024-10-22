@@ -2,7 +2,53 @@ main {
   height: calc(100vh - var(--header-height) - var(--footer-height));
   overflow: auto;
 }
+main .daily_quote_container {
+  position: relative;
+  padding: 0 16px;
+}
+main .daily_quote_container .spring_box{
+  position: absolute;
+  top: -7px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 23px;
+  padding: 0 30px;
+}
+main .daily_quote_container .spring_box img{
+  width: 12px;
+}
+main .daily_quote_container .daily_quote{
+  display: flex;
+  flex-flow: column;
+  gap: 15px;
+  width: 100%;
+  margin-top: 7px;
+  padding: 20px;
+  padding-top: 30px;
+  border-radius: 12px;
+  background: #FFEFFA;
+}
 
+main .daily_quote_container .daily_quote h2{
+  font-size: 16px;
+  font-weight: 700;
+}
+main .daily_quote_container .daily_quote .content{
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+}
+main .daily_quote_container .daily_quote .content .origin{
+  font-size: 14px;
+  font-weight: 600;
+}
+main .daily_quote_container .daily_quote .content .meaning{
+  font-size: 12px;
+  font-weight: 400;
+}
 main .container {}
 main .container ul {
   display: flex;
