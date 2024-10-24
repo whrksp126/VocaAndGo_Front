@@ -14,7 +14,7 @@ const clickAddVocabularyBook = (event, data={name:"", color:"FF8DD4"}) => {
 
 const getDailyQuote = async () => {
   try{
-    const url = 'https://vocaandgo.ghmate.com/mainpage';
+    const url = 'https://vocaandgo.ghmate.com/mainpage/'
     const method = 'GET';
     const fetchData = {};
     const result = await fetchDataAsync(url, method, fetchData);
