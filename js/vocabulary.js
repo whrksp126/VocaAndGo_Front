@@ -302,6 +302,7 @@ const setVocabularyHtml = async (id) => {
   bodyStyle.setProperty('--card-color', `#FF8DD4`);
   bodyStyle.setProperty('--card-background', `#FFEFFA`);
   bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
+  console.log(words);
   for(let word of words){
      html += `
       <li 
@@ -333,7 +334,7 @@ const setVocabularyHtml = async (id) => {
         <div class="bottom">
           <div class="meaning">${word.meaning}</div>
           <div class="examples ${getExmapleStyleAlwaysVisible() ? "active" : ""}">
-            ${word.example.map(({origin, meaning})=>`
+            ${word.example?.map(({origin, meaning})=>`
             <div 
               class="example" 
               data-origin="${origin}" 
@@ -363,7 +364,9 @@ const onInputWord = async (event) => {
   if(word.length < 2) {
     _searchList.classList.remove('active'); 
     return
-  };
+  }else{
+
+  }
   await getSearchWordData(word);
   setSearchListEl(_searchList, SEARCH_LIST, word)
 }
@@ -408,7 +411,8 @@ const onInputMeaning = async (event) => {
 
 // 단어 검색 요청 
 const getSearchWordData = async (word) => {
-  const url = `https://vocaandgo.ghmate.com/search/partial/en`;
+  // const url = `https://vocaandgo.ghmate.com/search/partial/en`;
+  const url = ` http://127.0.0.1:5000/search/partial/en`;
   const method = 'GET';
   const data = {word : word};
   const result = await fetchDataAsync(url, method, data);
@@ -418,7 +422,8 @@ const getSearchWordData = async (word) => {
 }
 // 의미 검색 요청
 const getSearchMeaningData = async (word) => {
-  const url = `https://vocaandgo.ghmate.com/search/partial/ko`;
+  // const url = `https://vocaandgo.ghmate.com/search/partial/ko`;
+  const url = `http://127.0.0.1:5000/search/partial/ko`;
   const method = 'GET';
   const data = {word : word};
   const result = await fetchDataAsync(url, method, data);
