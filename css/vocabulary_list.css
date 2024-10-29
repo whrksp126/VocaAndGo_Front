@@ -35,11 +35,13 @@ main .daily_quote_container .daily_quote{
 main .daily_quote_container .daily_quote h2{
   font-size: 16px;
   font-weight: 700;
+  color: #111;
 }
 main .daily_quote_container .daily_quote .content{
   display: flex;
   flex-flow: column;
   gap: 10px;
+  color: #000;
 }
 main .daily_quote_container .daily_quote .content .origin{
   font-size: 14px;
