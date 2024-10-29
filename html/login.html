@@ -16,12 +16,17 @@
   <script src="/js/initStyle.js?v=2024.08.270203"></script>
 
   <link rel="stylesheet" href="/css/login.css?v=2024.08.270203">
+  <!-- lottie -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
+
   
 </head> 
 <body data-page="login">
   <div id="app">
     <div class="background">
       <img class="logo" src="/images/logo.png?v=2024.08.270203" alt="">
+      <!-- <div id="lottie-container" style="width: 300px; height: 300px;"></div> -->
+
       <div class="buttons">
         <button class="google_btn" onclick="clickGoogleLogin(event)">
           <img src="/images/google_logo.png?v=2024.08.270203" alt="">
@@ -33,7 +38,13 @@
   </div>
   <script src="/js/common.js?v=2024.08.270203"></script>
   <script>
-    
+    // lottie.loadAnimation({
+    //   container: document.getElementById('lottie-container'),
+    //   renderer: 'svg',
+    //   loop: false,
+    //   autoplay: true,
+    //   path: '/lottie/heyvoca logo-01.json' // JSON 파일 경로를 입력하세요.
+    // });
     document.addEventListener('DOMContentLoaded', (event) => {
       
       const user_data = JSON.parse(localStorage.getItem('user'));
