@@ -336,6 +336,7 @@ footer nav ul li span{
 .input_text .preview_container .box .top h3{
   font-size: 14px;
   font-weight: 600;
+  color: #000;
 }
 .input_text .preview_container .box .top .btns {
   display: flex;
@@ -353,6 +354,7 @@ footer nav ul li span{
 }
 .input_text .preview_container .box .content{
   font-weight: 400;
+  color: #111;
 }
 .input_text .preview_container .box .content .origin{
   font-size: 14px;

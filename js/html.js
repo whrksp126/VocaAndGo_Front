@@ -100,6 +100,7 @@ const setVocabularyBookHtml = ({name, color}) =>{
 // 단어 설정 모달 html
 const setWordModalHtml = async ({id, word, meanings, examples, description}) => {
   const noteBooks = await getIndexedDbNotebooks();
+  console.log("examples,",examples)
   return `
     <ul>
       <li>
@@ -134,7 +135,7 @@ const setWordModalHtml = async ({id, word, meanings, examples, description}) => 
             <label>예문</label>
           </div>
           <div class="preview_container ${examples.length > 0 ? 'active' : ""}">
-            ${examples?.map((example,index) => setExampleBoxHtml(index+1, word, example.origin, example.meaning)).join('')}
+            ${examples?.map((example,index) => setExampleBoxHtml(index+1, word, example.exam_en, example.exam_ko)).join('')}
           </div>
           <div class="example_box" data-index="${examples.length+1}">
             <div class="top">

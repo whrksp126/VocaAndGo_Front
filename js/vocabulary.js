@@ -440,6 +440,7 @@ const clickSelectSearchedWord = (event) => {
   const _exampleBox = document.querySelector('.example_box');
   _wordInput.value = data.word;
   _meaningInput.value = data.meanings ? data.meanings.join(', ') : data.meaning;
+  console.log("datamm",data)
   _examplePreviewContainer.innerHTML = data.example.map(({origin, meaning}, index)=>setExampleBoxHtml(index + 1, data.word, origin, meaning)).join('')
   if(data.example.length > 0) _examplePreviewContainer.classList.add('active')
   _exampleBox.querySelector('h3').innerHTML = `${data.example.length + 1}.`;
@@ -484,7 +485,8 @@ const clickAddOcrSearchedWord = async (event) => {
     </button>
   `);
   
-  const DATA = {id: "", word : search_word.word, meanings : search_word.meanings.join(", "), examples : search_word.example, description : ""};
+  console.log("search_word,",search_word)
+  const DATA = {id: "", word : search_word.word, meanings : search_word.meanings.join(", "), examples : search_word.examples, description : ""};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
     {class:"close gray", text: "취소", fun: ""},
