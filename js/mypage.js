@@ -78,10 +78,14 @@ const clickUpload = async (event) => {
   const url = `https://vocaandgo.ghmate.com/drive/backup`;
   const method = `POST`;
   const data = notebooks;
-  const result = await fetchDataAsync(url, method, data);
-  if(result.code == 200){
-    alert('단어장 업로드 완료');
-  };
+  try{
+    const result = await fetchDataAsync(url, method, data);
+    if(result.code == 200){
+      alert('단어장 업로드 완료');
+    };
+  }catch{
+    alert('단어장을 업로드하는 중에 오류가 발생했습니다.');
+  }
 }
 
 // 단어장 다운로드 클릭 시

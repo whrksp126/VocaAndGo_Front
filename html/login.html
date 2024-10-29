@@ -69,6 +69,7 @@
         name: getValueFromURL('name'),
         state: "login"
       };
+      alert(JSON.stringify(user));
       if(token){
         if(user_data?.token != user.token){
           // 이미 기록된 사용자가 있을 경우
