@@ -47,14 +47,6 @@
     });
     document.addEventListener('DOMContentLoaded', async (event) => {
       const user_data = JSON.parse(localStorage.getItem('user'));
-      const google_id = getValueFromURL('googleId');
-      const access_token = getValueFromURL('accessToken');
-      const refresh_token = getValueFromURL('refreshToken');
-      const email = getValueFromURL('email');
-      const name = getValueFromURL('name');
-      const status = getValueFromURL('status');
-      const type = getValueFromURL('type');
-      
       if(!user_data){
         localStorage.setItem('user', JSON.stringify({
           token : null,
@@ -66,13 +58,25 @@
       if(user_data?.state == "login"){
         window.location.href = '/html/vocabulary_list.html';
       }
+
+      const google_id = getValueFromURL('googleId');
+      if(!google_id) return;
+      
+      const access_token = getValueFromURL('accessToken');
+      const refresh_token = getValueFromURL('refreshToken');
+      const email = getValueFromURL('email');
+      const name = getValueFromURL('name');
+      const status = getValueFromURL('status');
+      const type = getValueFromURL('type');
+      
+
       const user = {
         google_id : google_id,
         name : name,
         email : email,
         status : 'login',
       };
-      if(!google_id) return;
+      
       if(user_data?.google_id != user.googleId){
         // 이미 기록된 사용자가 있을 경우
         // 데이터 삭제 경고, 백업 했는지 확인
