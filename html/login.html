@@ -95,7 +95,6 @@
           if(result.code != 200) return alert('로그인 중 오류가 발생하였습니다.');
         } catch (error) {
           alert('예기치 못한 오류가 발생하였습니다. 다시 시도해 주세요.');          
-          console.error('로그인 중 예외 발생:', error);
         }
       }
       localStorage.setItem('user', JSON.stringify(user));
