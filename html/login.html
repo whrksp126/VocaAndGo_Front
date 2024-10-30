@@ -49,9 +49,9 @@
       const user_data = JSON.parse(localStorage.getItem('user'));
       if(!user_data){
         localStorage.setItem('user', JSON.stringify({
-          token : null,
-          email : null,
+          google_id : null,
           name : null,
+          email : null,
           status : "logout",
         }))
       }
@@ -60,14 +60,22 @@
       }
 
       const google_id = getValueFromURL('googleId');
+      alert(`google_id: ${google_id}`)
+ 
       if(!google_id) return;
-      
+
       const access_token = getValueFromURL('accessToken');
       const refresh_token = getValueFromURL('refreshToken');
       const email = getValueFromURL('email');
       const name = getValueFromURL('name');
       const status = getValueFromURL('status');
       const type = getValueFromURL('type');
+      alert(`access_token: ${access_token}`)
+      alert(`refresh_token: ${refresh_token}`)
+      alert(`email: ${email}`)
+      alert(`name: ${name}`)
+      alert(`status: ${status}`)
+      alert(`type: ${type}`)
       
 
       const user = {
