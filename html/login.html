@@ -24,8 +24,8 @@
 <body data-page="login">
   <div id="app">
     <div class="background">
-      <img class="logo" src="/images/logo.png?v=2024.08.270203" alt="">
-      <!-- <div id="lottie-container" style="width: 300px; height: 300px;"></div> -->
+      <!-- <img class="logo" src="/images/logo.png?v=2024.08.270203" alt=""> -->
+      <div id="lottie-container" class="logo"></div>
 
       <div class="buttons">
         <button class="google_btn" onclick="clickGoogleLogin(event)">
@@ -38,60 +38,60 @@
   </div>
   <script src="/js/common.js?v=2024.08.270203"></script>
   <script>
-    // lottie.loadAnimation({
-    //   container: document.getElementById('lottie-container'),
-    //   renderer: 'svg',
-    //   loop: false,
-    //   autoplay: true,
-    //   path: '/lottie/heyvoca logo-01.json' // JSON 파일 경로를 입력하세요.
-    // });
+    lottie.loadAnimation({
+      container: document.getElementById('lottie-container'),
+      renderer: 'svg',
+      loop: false,
+      autoplay: true,
+      path: '/lottie/heyvoca logo-01.json' // JSON 파일 경로를 입력하세요.
+    });
     document.addEventListener('DOMContentLoaded', async (event) => {
       
-      const user_data = JSON.parse(localStorage.getItem('user'));
-      if(!user_data){
-        localStorage.setItem('user', JSON.stringify({
-          token : null,
-          email : null,
-          name : null,
-          status : "logout",
-        }))
-      }
-      if(user_data?.state == "login"){
-        window.location.href = '/html/vocabulary_list.html';
-      }
-      const google_id = getValueFromURL('googleId');
-      const access_token = getValueFromURL('accessToken');
-      const refresh_token = getValueFromURL('refreshToken');
-      const email = getValueFromURL('email');
-      const name = getValueFromURL('name');
-      const status = getValueFromURL('status');
-      const type = getValueFromURL('type');
-      const user = {
-        google_id : google_id,
-        name : name,
-        email : email,
-        status : 'login',
-      };
-      if(user_data?.google_id != user.googleId){
-        // 이미 기록된 사용자가 있을 경우
-        // 데이터 삭제 경고, 백업 했는지 확인
-        // deleteDatabase('HEY_VOCA_DB')
-      }
-      if(type == 'app'){
-        const url = 'https://vocaandgo.ghmate.com/login_google/callback/app'
-        const method = 'POST';
-        const fetchData = {
-          google_id : google_id,
-          access_token : access_token,
-          refresh_token : refresh_token,
-          email : email,
-          name : name
-        }
-        const result = await fetchDataAsync(url, method, fetchData);
-        if(result.code != 200) return alert('로그인 중 오류가 발생하였습니다.');
-      }
-      localStorage.setItem('user', JSON.stringify(user));
-      window.location.href = '/html/vocabulary_list.html';
+      // const user_data = JSON.parse(localStorage.getItem('user'));
+      // if(!user_data){
+      //   localStorage.setItem('user', JSON.stringify({
+      //     token : null,
+      //     email : null,
+      //     name : null,
+      //     status : "logout",
+      //   }))
+      // }
+      // if(user_data?.state == "login"){
+      //   window.location.href = '/html/vocabulary_list.html';
+      // }
+      // const google_id = getValueFromURL('googleId');
+      // const access_token = getValueFromURL('accessToken');
+      // const refresh_token = getValueFromURL('refreshToken');
+      // const email = getValueFromURL('email');
+      // const name = getValueFromURL('name');
+      // const status = getValueFromURL('status');
+      // const type = getValueFromURL('type');
+      // const user = {
+      //   google_id : google_id,
+      //   name : name,
+      //   email : email,
+      //   status : 'login',
+      // };
+      // if(user_data?.google_id != user.googleId){
+      //   // 이미 기록된 사용자가 있을 경우
+      //   // 데이터 삭제 경고, 백업 했는지 확인
+      //   // deleteDatabase('HEY_VOCA_DB')
+      // }
+      // if(type == 'app'){
+      //   const url = 'https://vocaandgo.ghmate.com/login_google/callback/app'
+      //   const method = 'POST';
+      //   const fetchData = {
+      //     google_id : google_id,
+      //     access_token : access_token,
+      //     refresh_token : refresh_token,
+      //     email : email,
+      //     name : name
+      //   }
+      //   const result = await fetchDataAsync(url, method, fetchData);
+      //   if(result.code != 200) return alert('로그인 중 오류가 발생하였습니다.');
+      // }
+      // localStorage.setItem('user', JSON.stringify(user));
+      // window.location.href = '/html/vocabulary_list.html';
     })
     const clickGoogleLogin = () => {
       const device_type = getDevicePlatform();

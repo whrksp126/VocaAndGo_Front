@@ -441,9 +441,9 @@ const clickSelectSearchedWord = (event) => {
   _wordInput.value = data.word;
   _meaningInput.value = data.meanings ? data.meanings.join(', ') : data.meaning;
   console.log("datamm",data)
-  _examplePreviewContainer.innerHTML = data.example.map(({origin, meaning}, index)=>setExampleBoxHtml(index + 1, data.word, origin, meaning)).join('')
-  if(data.example.length > 0) _examplePreviewContainer.classList.add('active')
-  _exampleBox.querySelector('h3').innerHTML = `${data.example.length + 1}.`;
+  _examplePreviewContainer.innerHTML = data.examples.map(({exam_en, exam_ko}, index)=>setExampleBoxHtml(index + 1, data.word, exam_en, exam_ko)).join('');
+  if(data.examples.length > 0) _examplePreviewContainer.classList.add('active');
+  _exampleBox.querySelector('h3').innerHTML = `${data.examples.length + 1}.`;
   _exampleBox.querySelector('.origin').value = '';
   _exampleBox.querySelector('.meaning').value = '';
   SEARCH_LIST = [];
