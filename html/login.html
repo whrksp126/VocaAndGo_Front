@@ -60,24 +60,14 @@
       }
 
       const google_id = getValueFromURL('googleId');
-      alert(`google_id: ${google_id}`)
  
       if(!google_id) return;
-
       const access_token = getValueFromURL('accessToken');
       const refresh_token = getValueFromURL('refreshToken');
       const email = getValueFromURL('email');
       const name = getValueFromURL('name');
       const status = getValueFromURL('status');
       const type = getValueFromURL('type');
-      alert(`access_token: ${access_token}`)
-      alert(`refresh_token: ${refresh_token}`)
-      alert(`email: ${email}`)
-      alert(`name: ${name}`)
-      alert(`status: ${status}`)
-      alert(`type: ${type}`)
-      
-
       const user = {
         google_id : google_id,
         name : name,
@@ -100,8 +90,13 @@
           email : email,
           name : name
         }
-        const result = await fetchDataAsync(url, method, fetchData);
-        if(result.code != 200) return alert('로그인 중 오류가 발생하였습니다.');
+        try{
+          const result = await fetchDataAsync(url, method, fetchData);
+          if(result.code != 200) return alert('로그인 중 오류가 발생하였습니다.');
+        } catch (error) {
+          alert('예기치 못한 오류가 발생하였습니다. 다시 시도해 주세요.');          
+          console.error('로그인 중 예외 발생:', error);
+        }
       }
       localStorage.setItem('user', JSON.stringify(user));
       window.location.href = '/html/vocabulary_list.html';
