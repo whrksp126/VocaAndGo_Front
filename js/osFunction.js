@@ -74,3 +74,24 @@ function showRewardedAd (callback){
     callback("success")
   }
 }
+
+
+// 액세스 토큰 조회
+function getAccessToken(callback){
+  window?.ReactNativeWebView?.postMessage('get_access_token');
+  const handleMessage = function(event) {
+    try {
+      const message = JSON.parse(event.data); 
+      if (message.type == 'access_token_return'){
+        if(message.data){
+          callback(message.data)
+        }
+        closeCamera(type);
+        document.removeEventListener('message', handleMessage);
+      }
+    } catch (error) {
+      console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다. : ${error}`);
+    }
+  };
+  document.addEventListener('message', handleMessage);
+}

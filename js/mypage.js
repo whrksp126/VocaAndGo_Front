@@ -70,23 +70,39 @@ const changeExampleVisibleToggle = (event) => {
 // 단어장 업로드 클릭 시
 const clickUpload = async (event) => {
   // TODO : 업로드 경고 모달
+  const device_type = getDevicePlatform();
   const notebooks = await getIndexedDbNotebooks();
-  for (const notebook of notebooks){
+  for (const notebook of notebooks) {
     notebook.words = await getIndexedDbWordsByNotebookId(notebook.id);
     notebook.words.forEach((word) => delete word.notebookId);
-  };
-  const url = `https://vocaandgo.ghmate.com/drive/backup`;
-  const method = `POST`;
-  const data = notebooks;
-  try{
-    const result = await fetchDataAsync(url, method, data);
-    if(result.code == 200){
-      alert('단어장 업로드 완료');
-    };
-  }catch{
-    alert('단어장을 업로드하는 중에 오류가 발생했습니다.');
   }
-}
+
+  // 업로드 요청 함수 정의
+  const uploadNotebooks = async (url, data) => {
+    try {
+      const result = await fetchDataAsync(url, 'POST', data);
+      if (result.code === 200) {
+        alert('단어장 업로드 완료');
+      } else {
+        alert(`업로드 실패: ${result.msg || '알 수 없는 오류가 발생했습니다.'}`);
+      }
+    } catch {
+      alert('단어장을 업로드하는 중에 오류가 발생했습니다.');
+    }
+  };
+
+  // URL과 데이터 설정
+  if (device_type === 'web') {
+    const url = `https://vocaandgo.ghmate.com/drive/backup`;
+    await uploadNotebooks(url, notebooks);
+  } else {
+    getAccessToken(async (accessToken) => {
+      const url = `https://vocaandgo.ghmate.com/drive/backup/app`;
+      const data = { notebooks: notebooks, access_token: accessToken };
+      await uploadNotebooks(url, data);
+    });
+  }
+};
 
 // 단어장 다운로드 클릭 시
 const clickDownload = async (event) => {
