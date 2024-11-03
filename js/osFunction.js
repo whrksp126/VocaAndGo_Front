@@ -37,6 +37,7 @@ function openCamera(type, callback){
           document.removeEventListener('message', handleMessage);
         }
       } catch (error) {
+        alert('메시지를 구문 분석하는 중에 오류가 발생했습니다.')
         console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다. : ${error}`);
       }
     };
