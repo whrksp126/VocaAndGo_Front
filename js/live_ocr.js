@@ -5,6 +5,7 @@ const clickOpenOcrCamera = async (event) => {
     const src = img_data.image;
     alert(JSON.stringify(img_data.ocr_list));
     OCR_DATA = await searchAndFilterWords(img_data.ocr_list);
+    alert(JSON.stringify(OCR_DATA))
     const modal = getDefaultModal();
     modal.container.classList.add('ocr_word')
     modal.top.innerHTML = modalTopHtml(`단어 선택`);
