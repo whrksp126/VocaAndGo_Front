@@ -30,7 +30,9 @@ const clickOpenOcrCamera = async (event) => {
     _searchList.classList.toggle('active', OCR_DATA.length > 0);
     _searchList.innerHTML = '';  
     OCR_DATA.forEach(({search, box},index)=>{
+      console.log('box 전 : ',OCR_DATA[index].box)
       OCR_DATA[index].box = convertOcrBox(box, ori_img_rect, cur_img_rect);
+      console.log('box 후 : ',OCR_DATA[index].box)
       const search_meaning_html = search.meanings.join(', ');
       _searchList.insertAdjacentHTML('beforeend', `
         <li onclick="clickSelectOcrSearchedWord(event, ${index})" data-index="${index}">
