@@ -102,6 +102,7 @@ const convertOcrBox = (originalBox, ori_img_rect, cur_img_rect) => {
   // OCR 검색된 단어 선택 시
 const clickSelectOcrSearchedWord = (event, index) => {
   const _highlighter = document.querySelector('.preview .highlighter');
+  console.log("OCR_DATA,",OCR_DATA)
   _highlighter.style.top = `${OCR_DATA[index].box.y0}px`;
   _highlighter.style.left = `${OCR_DATA[index].box.x0}px`;
   _highlighter.style.width = `${OCR_DATA[index].box.x1 - OCR_DATA[index].box.x0}px`;
