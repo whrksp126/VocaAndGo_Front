@@ -1,8 +1,10 @@
 let OCR_DATA = [];
 // 카메라 열기 버튼 클릭 시, React Native의 WebView에 메시지를 보냄
 const clickOpenOcrCamera = async (event) => {
-  OCR_DATA=[];
-  const callback = async (src) => {
+  const callback = async (img_data) => {
+    const src = img_data.image;
+    alert(JSON.stringify(img_data.ocr_list));
+    OCR_DATA = await searchAndFilterWords(img_data.ocr_list);
     const modal = getDefaultModal();
     modal.container.classList.add('ocr_word')
     modal.top.innerHTML = modalTopHtml(`단어 선택`);
@@ -17,36 +19,7 @@ const clickOpenOcrCamera = async (event) => {
       {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event)"`},
     ]
     modal.bottom.innerHTML = modalBottomHtml(btns);
-    OCR_DATA = (await getOcr(src, ['eng'])).filter(item => /^[a-zA-Z]{2,}$/.test(item.text));
-    if(!OCR_DATA || OCR_DATA.length == 0) return;
-    const url = `https://vocaandgo.ghmate.com/search/en`;
-    const method = 'GET';
-    async function searchAndFilterWords(OCR_DATA) {
-      try {
-        const fetchPromises = OCR_DATA.map(async (ocr_data) => {
-          const data = { word: ocr_data.text };
-          try {
-            const result = await fetchDataAsync(url, method, data);
-            if (result.code != 200) {
-              console.error('검색 에러');
-            } else {
-              if (result.data.length > 0) {
-                ocr_data.search = result.data[0];
-              }
-            }
-          } catch (error) {
-            console.error('API 요청 중 오류 발생:', error);
-          }
-          return ocr_data; 
-        });
-        let updatedOCRData = await Promise.all(fetchPromises);
-        updatedOCRData = updatedOCRData.filter(ocr_data => ocr_data.search);
-        return updatedOCRData;
-      } catch (error) {
-        console.error('전체 요청 처리 중 오류 발생:', error);
-      }
-    }
-    OCR_DATA = await searchAndFilterWords(OCR_DATA);
+    
     const imgElement = document.querySelector('.ocr_word .preview img');
     const cur_img_rect = imgElement.getBoundingClientRect();
     const ori_img_rect = {width : imgElement.naturalWidth, height:imgElement.naturalHeight}
@@ -69,10 +42,46 @@ const clickOpenOcrCamera = async (event) => {
     
   }
   if(getDevicePlatform() == 'web'){
+    getWebOcrData('/images/orc_dummy_img_6.png')
     callback('/images/orc_dummy_img_6.png')
   }
   if(getDevicePlatform() == 'app'){  
     openCamera('ocr', callback);
+  }
+}
+// 웹 OCR 조회
+const getWebOcrData = async (src) => {
+  return (await getOcr(src, ['eng'])).filter(item => /^[a-zA-Z]{2,}$/.test(item.text));
+  
+}
+// OCR 결과 사전 리스트로 필터링
+async function searchAndFilterWords(OCR_DATA) {
+  if(!OCR_DATA || OCR_DATA.length == 0) return;
+
+  const url = `https://vocaandgo.ghmate.com/search/en`;
+  const method = 'GET';
+  try {
+    const fetchPromises = OCR_DATA.map(async (ocr_data) => {
+      const data = { word: ocr_data.text };
+      try {
+        const result = await fetchDataAsync(url, method, data);
+        if (result.code != 200) {
+          console.error('검색 에러');
+        } else {
+          if (result.data.length > 0) {
+            ocr_data.search = result.data[0];
+          }
+        }
+      } catch (error) {
+        console.error('API 요청 중 오류 발생:', error);
+      }
+      return ocr_data; 
+    });
+    let updatedOCRData = await Promise.all(fetchPromises);
+    updatedOCRData = updatedOCRData.filter(ocr_data => ocr_data.search);
+    return updatedOCRData;
+  } catch (error) {
+    console.error('전체 요청 처리 중 오류 발생:', error);
   }
 }
 
