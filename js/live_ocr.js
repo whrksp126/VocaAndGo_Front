@@ -31,6 +31,7 @@ const clickOpenOcrCamera = async (event) => {
     _searchList.innerHTML = '';  
     OCR_DATA.forEach(({search, box},index)=>{
       console.log('box 전 : ',OCR_DATA[index].box)
+      console.log(ori_img_rect, cur_img_rect)
       OCR_DATA[index].box = convertOcrBox(box, ori_img_rect, cur_img_rect);
       console.log('box 후 : ',OCR_DATA[index].box)
       const search_meaning_html = search.meanings.join(', ');
