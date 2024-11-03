@@ -43,7 +43,7 @@ const clickOpenOcrCamera = async (event) => {
   }
   if(getDevicePlatform() == 'web'){
     const ocr_list = await getWebOcrData('/images/orc_dummy_img_6.png')
-    callback('/images/orc_dummy_img_6.png', ocr_list)
+    callback({image: '/images/orc_dummy_img_6.png',ocr_list: ocr_list});
   }
   if(getDevicePlatform() == 'app'){  
     openCamera('ocr', callback);
