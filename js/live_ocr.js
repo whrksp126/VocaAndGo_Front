@@ -55,13 +55,13 @@ const getWebOcrData = async (src) => {
   
 }
 // OCR 결과 사전 리스트로 필터링
-async function searchAndFilterWords(OCR_DATA) {
-  if(!OCR_DATA || OCR_DATA.length == 0) return;
+async function searchAndFilterWords(ocr_list) {
+  if(!ocr_list || ocr_list.length == 0) return;
 
   const url = `https://vocaandgo.ghmate.com/search/en`;
   const method = 'GET';
   try {
-    const fetchPromises = OCR_DATA.map(async (ocr_data) => {
+    const fetchPromises = ocr_list.map(async (ocr_data) => {
       const data = { word: ocr_data.text };
       try {
         const result = await fetchDataAsync(url, method, data);
