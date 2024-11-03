@@ -3,9 +3,6 @@ let OCR_DATA = [];
 const clickOpenOcrCamera = async (event) => {
   const callback = async (img_data) => {
     const src = img_data.image;
-    alert(JSON.stringify(img_data.ocr_list));
-    OCR_DATA = await searchAndFilterWords(img_data.ocr_list);
-    alert(JSON.stringify(OCR_DATA))
     const modal = getDefaultModal();
     modal.container.classList.add('ocr_word')
     modal.top.innerHTML = modalTopHtml(`단어 선택`);
@@ -20,7 +17,7 @@ const clickOpenOcrCamera = async (event) => {
       {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event)"`},
     ]
     modal.bottom.innerHTML = modalBottomHtml(btns);
-    
+    OCR_DATA = await searchAndFilterWords(img_data.ocr_list);
     const imgElement = document.querySelector('.ocr_word .preview img');
     const cur_img_rect = imgElement.getBoundingClientRect();
     const ori_img_rect = {width : imgElement.naturalWidth, height:imgElement.naturalHeight}
