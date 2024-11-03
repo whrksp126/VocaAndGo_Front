@@ -93,6 +93,7 @@ main .container ul li .bottom > .examples {
   opacity: 0;
   max-height: 0;
   height: 100%;
+  color: #111;
   transition: all .3s;
 }
 main .container ul li .bottom > .examples.active {
