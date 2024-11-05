@@ -93,3 +93,12 @@ function getAccessToken(callback){
   };
   document.addEventListener('message', handleMessage);
 }
+
+function getNativeTTS(text, language) {
+  const message = JSON.stringify({
+    type: 'tts',
+    text: text,
+    language: language 
+  });
+  window.ReactNativeWebView?.postMessage(message);
+}

@@ -614,15 +614,21 @@ const getOcr = async (img, lngs) => {
 
 // GTTS 
 const generateSpeech = async (event, text, language) => {
-  event.preventDefault();
-  const url = `https://vocaandgo.ghmate.com/tts/output`;
-  const method = 'GET';
-  const data = {text, language};
-  const result = await fetchDataAsync(url, method, data);
-  const audio_url = URL.createObjectURL(result);
-  const _audio = new Audio(audio_url); 
-  _audio.style.display = 'none'; 
-  document.body.appendChild(_audio);
-  _audio.onended = () => document.body.removeChild(_audio);
-  _audio.play(); 
+  if(getDevicePlatform() == 'web'){
+    event.preventDefault();
+    const url = `https://vocaandgo.ghmate.com/tts/output`;
+    const method = 'GET';
+    const data = {text, language};
+    const result = await fetchDataAsync(url, method, data);
+    const audio_url = URL.createObjectURL(result);
+    const _audio = new Audio(audio_url); 
+    _audio.style.display = 'none'; 
+    document.body.appendChild(_audio);
+    _audio.onended = () => document.body.removeChild(_audio);
+    _audio.play(); 
+  }
+  if(getDevicePlatform() == 'app'){  
+    const languageMap  = {'en' : 'en-US'}
+    getNativeTTS(text, languageMap[language])
+  }
 }
