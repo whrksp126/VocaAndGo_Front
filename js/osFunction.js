@@ -29,8 +29,7 @@ function openCamera(type, callback){
       try {
         const message = JSON.parse(event.data); 
         if (message.type == 'ocr_camera_return'){
-          alert(JSON.stringify(message.data.ocr_list))
-          // callback(message.data)
+          callback(message.data)
           closeCamera(type);
         //   document.removeEventListener('message', handleMessage);
         }
