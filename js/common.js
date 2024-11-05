@@ -628,7 +628,7 @@ const generateSpeech = async (event, text, language) => {
     _audio.play(); 
   }
   if(getDevicePlatform() == 'app'){  
-    const languageMap  = {'en' : 'en-US'}
+    const languageMap  = {'en' : 'en-US', 'ko' : 'ko-KR'}
     getNativeTTS(text, languageMap[language])
   }
 }

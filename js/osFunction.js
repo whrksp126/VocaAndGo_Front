@@ -93,7 +93,7 @@ function getAccessToken(callback){
   };
   document.addEventListener('message', handleMessage);
 }
-
+// TTS 
 function getNativeTTS(text, language) {
   const message = JSON.stringify({
     type: 'tts',
