@@ -94,6 +94,7 @@ const clickUpload = async (event) => {
   // URL과 데이터 설정
   if (device_type === 'web') {
     const url = `https://vocaandgo.ghmate.com/drive/backup`;
+    console.log("notebooks,",notebooks)
     await uploadNotebooks(url, notebooks);
   } else {
     getAccessToken(async (accessToken) => {
