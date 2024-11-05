@@ -2,7 +2,6 @@ let OCR_DATA = [];
 // 카메라 열기 버튼 클릭 시, React Native의 WebView에 메시지를 보냄
 const clickOpenOcrCamera = async (event) => {
   const callback = async (img_data) => {
-    alert(JSON.stringify(img_data.ocr_list))
     const modal = getDefaultModal();
     modal.container.classList.add('ocr_word')
     modal.top.innerHTML = modalTopHtml(`단어 선택`);
