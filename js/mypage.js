@@ -107,11 +107,22 @@ const clickUpload = async (event) => {
 // 단어장 다운로드 클릭 시
 const clickDownload = async (event) => {
   // TODO : 다운로드 경고 모달
-  const url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
-  const method = `GET`;
-  const result = await fetchDataAsync(url, method, {});
+  const device_type = getDevicePlatform();
   
+  const method = `GET`;
+  let url = '';
+  let fetchData = {};
+  if (device_type === 'web') {
+    url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
+  }else{
+    getAccessToken(async (accessToken) => {
+      fetchData.access_token = accessToken;
+    })
+    url = `https://vocaandgo.ghmate.com/drive/excel_to_json/app`;
+  }
+  const result = await fetchDataAsync(url, method, fetchData);
   if(result.code != 200) return alert(`${result.msg}`)
+  
   const notebooks = await getIndexedDbNotebooks();
   for(const notebook of notebooks){
     await deleteIndexedDbNotebook(notebook.id);
