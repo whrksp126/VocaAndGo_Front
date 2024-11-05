@@ -27,8 +27,8 @@ function openCamera(type, callback){
     window?.ReactNativeWebView?.postMessage('ocr_camera_open');
     const handleMessage = function(event) {
       try {
-        alert(event.data)
-        // const message = JSON.parse(event.data); 
+        const message = JSON.parse(event.data); 
+        alert(message.type)
         // if (message.type == 'ocr_camera_return'){
         //   if(message.data){
         //     alert(message.data)
