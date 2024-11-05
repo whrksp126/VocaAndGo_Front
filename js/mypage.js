@@ -117,7 +117,7 @@ const clickDownload = async (event) => {
     url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
   }else{
     getAccessToken(async (accessToken) => {
-      fetchData.access_token = accessToken;
+      fetchData['access_token'] = accessToken;
     })
     url = `https://vocaandgo.ghmate.com/drive/excel_to_json/app`;
   }
