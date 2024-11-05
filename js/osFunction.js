@@ -27,15 +27,16 @@ function openCamera(type, callback){
     window?.ReactNativeWebView?.postMessage('ocr_camera_open');
     const handleMessage = function(event) {
       try {
-        const message = JSON.parse(event.data); 
-        if (message.type == 'ocr_camera_return'){
-          if(message.data){
-            alert(message.data)
-            callback(message.data)
-          }
-          closeCamera(type);
-          document.removeEventListener('message', handleMessage);
-        }
+        alert(event.data)
+        // const message = JSON.parse(event.data); 
+        // if (message.type == 'ocr_camera_return'){
+        //   if(message.data){
+        //     alert(message.data)
+        //     callback(message.data)
+        //   }
+        //   closeCamera(type);
+        //   document.removeEventListener('message', handleMessage);
+        // }
       } catch (error) {
         alert('메시지를 구문 분석하는 중에 오류가 발생했습니다.')
         console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다. : ${error}`);
