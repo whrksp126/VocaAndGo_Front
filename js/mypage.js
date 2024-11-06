@@ -121,6 +121,8 @@ const clickDownload = async (event) => {
     })
     url = `https://vocaandgo.ghmate.com/drive/excel_to_json/app`;
   }
+  alert(url)
+  alert(fetchData['access_token'])
   const result = await fetchDataAsync(url, method, fetchData);
   if(result.code != 200) return alert(`${result.msg}`)
   
