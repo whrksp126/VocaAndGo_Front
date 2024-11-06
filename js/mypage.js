@@ -115,28 +115,42 @@ const clickDownload = async (event) => {
   let fetchData = {};
   if (device_type === 'web') {
     url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
+    const result = await fetchDataAsync(url, method, fetchData);
+    if(result.code != 200) return alert(`${result.msg}`)
+    const notebooks = await getIndexedDbNotebooks();
+    for(const notebook of notebooks){
+      await deleteIndexedDbNotebook(notebook.id);
+    };
+    for(const notebook of result.data){
+      const notebook_id = await addIndexedDbNotebook(notebook.name, notebook.color, notebook.createdAt, notebook.updatedAt, notebook.status);
+      for(const data of notebook.words){
+        await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status)
+      }
+    }  
+    alert('단어장 다운로드 완료')
   }else{
     getAccessToken(async (accessToken) => {
       fetchData['access_token'] = accessToken;
+      url = `https://vocaandgo.ghmate.com/drive/excel_to_json/app`;
+      const result = await fetchDataAsync(url, method, fetchData);
+      if(result.code != 200) return alert(`${result.msg}`)
+      const notebooks = await getIndexedDbNotebooks();
+      for(const notebook of notebooks){
+        await deleteIndexedDbNotebook(notebook.id);
+      };
+      for(const notebook of result.data){
+        const notebook_id = await addIndexedDbNotebook(notebook.name, notebook.color, notebook.createdAt, notebook.updatedAt, notebook.status);
+        for(const data of notebook.words){
+          await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status)
+        }
+      }  
+      alert('단어장 다운로드 완료')
     })
-    url = `https://vocaandgo.ghmate.com/drive/excel_to_json/app`;
   }
-  alert(url)
-  alert(fetchData['access_token'])
-  const result = await fetchDataAsync(url, method, fetchData);
-  if(result.code != 200) return alert(`${result.msg}`)
   
-  const notebooks = await getIndexedDbNotebooks();
-  for(const notebook of notebooks){
-    await deleteIndexedDbNotebook(notebook.id);
-  };
-  for(const notebook of result.data){
-    const notebook_id = await addIndexedDbNotebook(notebook.name, notebook.color, notebook.createdAt, notebook.updatedAt, notebook.status);
-    for(const data of notebook.words){
-      await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status)
-    }
-  }  
-  alert('단어장 다운로드 완료')
+  
+
+  
 }
 
 document.addEventListener('DOMContentLoaded', function() {
