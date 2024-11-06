@@ -97,11 +97,14 @@ const clickUpload = async (event) => {
     console.log("notebooks,",notebooks)
     await uploadNotebooks(url, notebooks);
   } else {
-    getAccessToken(async (accessToken) => {
+    try {
+      const accessToken = await getAccessToken();
       const url = `https://vocaandgo.ghmate.com/drive/backup/app`;
       const data = { notebooks: notebooks, access_token: accessToken };
       await uploadNotebooks(url, data);
-    });
+    } catch (error) {
+      console.error("액세스 토큰을 가져오는 중 오류:", error);
+    }
   }
 };
 
@@ -109,49 +112,42 @@ const clickUpload = async (event) => {
 const clickDownload = async (event) => {
   // TODO : 다운로드 경고 모달
   const device_type = getDevicePlatform();
-  
   const method = `GET`;
-  let url = '';
+  let url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
   let fetchData = {};
-  if (device_type === 'web') {
-    url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
-    const result = await fetchDataAsync(url, method, fetchData);
-    if(result.code != 200) return alert(`${result.msg}`)
-    const notebooks = await getIndexedDbNotebooks();
-    for(const notebook of notebooks){
-      await deleteIndexedDbNotebook(notebook.id);
-    };
-    for(const notebook of result.data){
-      const notebook_id = await addIndexedDbNotebook(notebook.name, notebook.color, notebook.createdAt, notebook.updatedAt, notebook.status);
-      for(const data of notebook.words){
-        await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status)
-      }
-    }  
-    alert('단어장 다운로드 완료')
-  }else{
-    getAccessToken(async (accessToken) => {
-      fetchData['access_token'] = accessToken;
-      url = `https://vocaandgo.ghmate.com/drive/excel_to_json/app`;
-      const result = await fetchDataAsync(url, method, fetchData);
-      if(result.code != 200) return alert(`${result.msg}`)
-      const notebooks = await getIndexedDbNotebooks();
-      for(const notebook of notebooks){
-        await deleteIndexedDbNotebook(notebook.id);
-      };
-      for(const notebook of result.data){
-        const notebook_id = await addIndexedDbNotebook(notebook.name, notebook.color, notebook.createdAt, notebook.updatedAt, notebook.status);
-        for(const data of notebook.words){
-          await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status)
-        }
-      }  
-      alert('단어장 다운로드 완료')
-    })
-  }
-  
-  
 
-  
-}
+  try {
+    // 모바일일 경우 액세스 토큰을 가져와 fetchData에 추가
+    if (device_type !== 'web') {
+      const accessToken = await getAccessToken();
+      fetchData['access_token'] = accessToken;
+      url += `/app`; // 모바일용 URL로 변경
+    }
+
+    // 서버에서 데이터 요청
+    const result = await fetchDataAsync(url, method, fetchData);
+    if (result.code !== 200) return alert(`${result.msg}`);
+
+    // IndexedDB에서 기존 단어장 삭제
+    const notebooks = await getIndexedDbNotebooks();
+    for (const notebook of notebooks) {
+      await deleteIndexedDbNotebook(notebook.id);
+    }
+
+    // 서버에서 받은 단어장 데이터 추가
+    for (const notebook of result.data) {
+      const notebook_id = await addIndexedDbNotebook(notebook.name, notebook.color, notebook.createdAt, notebook.updatedAt, notebook.status);
+      for (const data of notebook.words) {
+        await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status);
+      }
+    }
+
+    alert('단어장 다운로드 완료');
+  } catch (error) {
+    console.error("다운로드 중 오류 발생:", error);
+    alert("다운로드 실패: 오류가 발생했습니다.");
+  }
+};
 
 document.addEventListener('DOMContentLoaded', function() {
   const user_data = JSON.parse(localStorage.getItem('user'));
