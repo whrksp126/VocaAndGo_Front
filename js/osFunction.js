@@ -1,11 +1,12 @@
 // true 일때는 뒤로가기가 되고 아니면 토스트 한번 띄우고 종료;
 function is_backable() {
-  let isBackable = true
+  let isBackable = true;
   const IS_MAIN_PAGES = ['login', 'vocabulary_list', 'mypage'];
   const curPage = getLastPathFromURL();
   const isMainPage = IS_MAIN_PAGES.includes(curPage);
   const isModalOpen = document.querySelector('.modal');
   if(isMainPage && !isModalOpen) isBackable = false;
+  alert(isBackable);
   return isBackable;
 };
 
@@ -21,24 +22,29 @@ function getDevicePlatform() {
 }
 
 
-// 네이티브 카메라 모달 열기
-function openCamera(type, callback){
-  if(type == 'ocr'){
-    window?.ReactNativeWebView?.postMessage('ocr_camera_open');
-    const handleMessage = function(event) {
-      try {
-        const message = JSON.parse(event.data); 
-        if (message.type == 'ocr_camera_return'){
-          callback(message.data)
-          closeCamera(type);
-          document.removeEventListener('message', handleMessage);
+// 네이티브 카메라 모달 열기 - Promise로 변환
+function openCamera(type) {
+  return new Promise((resolve, reject) => {
+    if (type === 'ocr') {
+      window?.ReactNativeWebView?.postMessage('ocr_camera_open');
+      const handleMessage = function (event) {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === 'ocr_camera_return') {
+            resolve(message.data); // 이미지 데이터 반환
+            closeCamera(type);
+            document.removeEventListener('message', handleMessage);
+          }
+        } catch (error) {
+          console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다: ${error}`);
+          reject(error); // 오류 발생 시 reject
         }
-      } catch (error) {
-        console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다. : ${error}`);
-      }
-    };
-    document.addEventListener('message', handleMessage);
-  } 
+      };
+      document.addEventListener('message', handleMessage);
+    } else {
+      reject("지원되지 않는 카메라 유형입니다.");
+    }
+  });
 }
 
 // 네이티브 카메라 모달 닫기

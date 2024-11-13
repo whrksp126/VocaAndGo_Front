@@ -1,50 +1,50 @@
 let OCR_DATA = [];
 // 카메라 열기 버튼 클릭 시, React Native의 WebView에 메시지를 보냄
 const clickOpenOcrCamera = async (event) => {
-  const callback = async (img_data) => {
-    const modal = getDefaultModal();
-    modal.container.classList.add('ocr_word')
-    modal.top.innerHTML = modalTopHtml(`단어 선택`);
-    modal.middle.innerHTML = `
-      <div class="preview">
-        <img src="${img_data.image}">
-        <div class="highlighter"></div>
-      </div>
-      <ul class="search_list"></ul>
-    `;
-    const btns = [
-      {class:"gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event)"`},
-    ]
-    modal.bottom.innerHTML = modalBottomHtml(btns);
-    OCR_DATA = await searchAndFilterWords(img_data.ocr_list);
-    const imgElement = document.querySelector('.ocr_word .preview img');
-    const cur_img_rect = imgElement.getBoundingClientRect();
-    const ori_img_rect = {width : imgElement.naturalWidth, height:imgElement.naturalHeight}
+  let img_data;
+  try{
+    if (getDevicePlatform() === 'web') {
+      const ocr_list = await getWebOcrData('/images/orc_dummy_img_6.png');
+      img_data = { image: '/images/orc_dummy_img_6.png', ocr_list: ocr_list }
+    } else if (getDevicePlatform() === 'app') {
+      img_data = await openCamera('ocr');
+    }
+  }catch (error) {
+    console.error("카메라를 여는 중 오류 발생:", error);
+  }
+  const modal = getDefaultModal();
+  modal.container.classList.add('ocr_word');
+  modal.top.innerHTML = modalTopHtml(`단어 선택`);
+  modal.middle.innerHTML = `
+    <div class="preview">
+      <img src="${img_data.image}">
+      <div class="highlighter"></div>
+    </div>
+    <ul class="search_list"></ul>
+  `;
+  const btns = [
+    { class: "gray", text: "재촬영", fun: `onclick="clickOpenOcrCamera(event)"` },
+  ];
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  OCR_DATA = await searchAndFilterWords(img_data.ocr_list);
+  const imgElement = document.querySelector('.ocr_word .preview img');
+  const cur_img_rect = imgElement.getBoundingClientRect();
+  const ori_img_rect = { width: imgElement.naturalWidth, height: imgElement.naturalHeight };
 
-    const _searchList = modal.middle.querySelector('.search_list');
-    _searchList.classList.toggle('active', OCR_DATA.length > 0);
-    _searchList.innerHTML = '';  
-    OCR_DATA.forEach(({search, box},index)=>{
-      OCR_DATA[index].box = convertOcrBox(box, ori_img_rect, cur_img_rect);
-      const search_meaning_html = search.meanings.join(', ');
-      _searchList.insertAdjacentHTML('beforeend', `
-        <li onclick="clickSelectOcrSearchedWord(event, ${index})" data-index="${index}">
-          <div class="search_word">${search.word}</div>
-          <div class="search_meaning">${search_meaning_html}</div>
-        </li>
-      `);
-    })
-    
-    
-  }
-  if(getDevicePlatform() == 'web'){
-    const ocr_list = await getWebOcrData('/images/orc_dummy_img_6.png')
-    callback({image: '/images/orc_dummy_img_6.png',ocr_list: ocr_list});
-  }
-  if(getDevicePlatform() == 'app'){  
-    openCamera('ocr', callback);
-  }
-}
+  const _searchList = modal.middle.querySelector('.search_list');
+  _searchList.classList.toggle('active', OCR_DATA.length > 0);
+  _searchList.innerHTML = '';
+  OCR_DATA.forEach(({ search, box }, index) => {
+    OCR_DATA[index].box = convertOcrBox(box, ori_img_rect, cur_img_rect);
+    const search_meaning_html = search.meanings.join(', ');
+    _searchList.insertAdjacentHTML('beforeend', `
+      <li onclick="clickSelectOcrSearchedWord(event, ${index})" data-index="${index}">
+        <div class="search_word">${search.word}</div>
+        <div class="search_meaning">${search_meaning_html}</div>
+      </li>
+    `);
+  });
+};
 // 웹 OCR 조회
 const getWebOcrData = async (src) => {
   return (await getOcr(src, ['eng'])).filter(item => /^[a-zA-Z]{2,}$/.test(item.text));
