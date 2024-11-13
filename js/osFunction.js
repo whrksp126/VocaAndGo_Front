@@ -6,7 +6,6 @@ function is_backable() {
   const isMainPage = IS_MAIN_PAGES.includes(curPage);
   const isModalOpen = document.querySelector('.modal');
   if(isMainPage && !isModalOpen) isBackable = false;
-  alert(isBackable);
   return isBackable;
 };
 
