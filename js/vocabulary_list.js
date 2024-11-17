@@ -1,5 +1,5 @@
 // 단어장 추가 버튼 클릭 시
-const clickAddVocabularyBook = (event, data={name:"", color:"FF8DD4"}) => {
+const clickAddVocabularyBook = (event, data={name:"", color:"#FF8DD4"}) => {
   const modal = openDefaultModal();
   modal.top.innerHTML = modalTopHtml(`단어장 추가`);
   modal.middle.innerHTML = setVocabularyBookHtml(data)
@@ -81,10 +81,11 @@ const clickVocabularyItem = (event, id) => {
   window.location.href=`/html/vocabulary.html?vocabulary_id=${id}`
 }
 const setInitHtml = async () => {
-  const index_status = await waitIndexDbOpen();
+  // const index_status = await waitIndexDbOpen();
+  const index_status = await waitSqliteOpen();
   if(index_status == "on"){
     setUserNameHtml();
-    setVocabularyList();
+    await setVocabularyList();
   }
   if(index_status == "err"){
     alert("데이터 호출 err")

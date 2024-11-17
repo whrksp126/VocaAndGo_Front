@@ -59,11 +59,11 @@ const modalBottomHtml = (btns=null) => {
 // 단어장 생성 및 추가 모달 미들 HTML
 const setVocabularyBookHtml = ({name, color}) =>{
   const COLOR_LIST = [
-    {main: "FF8DD4", background : "FFEFFA"},
-    {main: "CD8DFF", background : "F6EFFF"},
-    {main: "74D5FF", background : "EAF6FF"},
-    {main: "42F98B", background : "E2FFE8"},
-    {main: "FFBD3C", background : "FFF6DF"}
+    {main: "#FF8DD4", background : "#FFEFFA"},
+    {main: "#CD8DFF", background : "#F6EFFF"},
+    {main: "#74D5FF", background : "#EAF6FF"},
+    {main: "#42F98B", background : "#E2FFE8"},
+    {main: "#FFBD3C", background : "#FFF6DF"}
   ]
   const html = `
     <ul>
@@ -81,9 +81,9 @@ const setVocabularyBookHtml = ({name, color}) =>{
             ${COLOR_LIST.map(({main, background})=>{ 
               return `
             <li 
-              style="--main-color: #${main};"
-              data-color="#${main}" 
-              data-background="#${background}" 
+              style="--main-color: ${main};"
+              data-color="${main}" 
+              data-background="${background}" 
               class="color ${color.toUpperCase() == main.toUpperCase() ? "active" : ""}">
               <i class="ph-bold ph-check"></i>
               
@@ -98,15 +98,15 @@ const setVocabularyBookHtml = ({name, color}) =>{
 }
 
 // 단어 설정 모달 html
-const setWordModalHtml = async ({id, word, meanings, examples, description}) => {
-  const noteBooks = await getIndexedDbNotebooks();
-  console.log("examples,",examples)
+const setWordModalHtml = async ({id, origin, meanings, examples, description}) => {
+  // const noteBooks = await getIndexedDbNotebooks();
+  const noteBooks = await getWordbook();
   return `
     <ul>
       <li>
         <div class="selete_box">
           <label>단어장</label>
-          <select name="단어장" class="vocabulary" id="" ${word != "" ? "" : "disabled"}>
+          <select name="단어장" class="vocabulary" id="" ${origin != "" ? "" : "disabled"}>
           ${noteBooks.map((data)=>{ return `
             <option value="${data.id}" ${Number(data.id) == Number(id) ? "selected" : ""}>${data.name}</option>
           `}).join('')}
@@ -116,7 +116,7 @@ const setWordModalHtml = async ({id, word, meanings, examples, description}) => 
       <li class="">
         <div class="input_text">
           <label>단어<strong>*</strong></label>
-          <input class="word" value="${word}" oninput="onInputWord(event)">
+          <input class="word" value="${origin}" oninput="onInputWord(event)">
           <ul class="search_list"></ul>
           <span class="message"></span>
         </div>
@@ -135,7 +135,7 @@ const setWordModalHtml = async ({id, word, meanings, examples, description}) => 
             <label>예문</label>
           </div>
           <div class="preview_container ${examples.length > 0 ? 'active' : ""}">
-            ${examples?.map((example,index) => setExampleBoxHtml(index+1, word, example.exam_en, example.exam_ko)).join('')}
+            ${examples?.map((example,index) => setExampleBoxHtml(index+1, origin, example.origin, example.meaning)).join('')}
           </div>
           <div class="example_box" data-index="${examples.length+1}">
             <div class="top">
@@ -163,6 +163,7 @@ const setWordModalHtml = async ({id, word, meanings, examples, description}) => 
   `
 }
 const setExampleBoxHtml = (num, word, origin, meaning) => {
+
   return `
     <div class="box" data-index="${num}">
       <div class="top">
@@ -186,10 +187,12 @@ const setExampleBoxHtml = (num, word, origin, meaning) => {
 
 // 단어장 리스트 html
 const setVocabularyListHtml = async () => {
-  const vocabulary_list = await getIndexedDbNotebooks();
+  // const vocabulary_list = await getIndexedDbNotebooks();
+  const vocabulary_list = await getWordbook();
   let html = ``;
   for(const vocabulary of vocabulary_list){
-    const words = await getIndexedDbWordsByNotebookId(vocabulary.id);
+    // const words = await getIndexedDbWordsByNotebookId(vocabulary.id);
+    const words = await getWordsByWordbook(vocabulary.id);
     const totalWords = words.length;
     const learnedCount = words.reduce((count, word) => {return word.status == 1 ? count + 1 : count}, 0);
     const progress = Math.round((learnedCount / totalWords) * 100) || 0;

@@ -231,10 +231,22 @@ const clickSaveVocabulary = async (event, htmlFun) => {
   }
   if(vocabulary_name.length <= 0) return alert('단어장 이름을 입력해 주세요.');
   if(_modal.dataset.id){
-    const result = await updateIndexedDbNotebook(Number(_modal.dataset.id), data.name, data.color, data.updatedAt, data.status);
-    // localStorageData.vocabulary_list = localStorageData.vocabulary_list.map(item => item.id === ID ? data : item);
+    const id = Number(_modal.dataset.id);
+    const name = vocabulary_name;
+    const color = {main : _colorLi.dataset.color, background : _colorLi.dataset.background};
+    const status = 0;
+    console.log(id, name, color, status)
+    const result = await updateWordbook(id, name, color, status);
+    console.log(result);
+    // const result = await updateIndexedDbNotebook(Number(_modal.dataset.id), data.name, data.color, data.updatedAt, data.status);
+    
   }else{
-    const result = await addIndexedDbNotebook(data.name, data.color, data.createdAt, data.updatedAt, data.status);
+    const name = vocabulary_name;
+    const color = {main : _colorLi.dataset.color, background : _colorLi.dataset.background};
+    const status = 0;
+    const result = await addWordbook(name, color, status);
+    console.log(result);
+    // const result = await addIndexedDbNotebook(data.name, data.color, data.createdAt, data.updatedAt, data.status);
   }
   const _ul = document.querySelector('main .container ul');
   _ul.innerHTML = await htmlFun();
@@ -261,7 +273,8 @@ const clickMarker = async (event) => {
   _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.08.270203`;
   _li.dataset.status = status;
   const word_id = Number(_li.dataset.id);
-  await updateIndexedDbWord(word_id, {status : status});
+  // await updateIndexedDbWord(word_id, {status : status});
+  const result = await updateWord(word_id, {status : status});
   if(['card_test', 'mcq_test'].includes(document.querySelector('body').dataset.page)){
     if(TEST_WORD_LIST)TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
   }

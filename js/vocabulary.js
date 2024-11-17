@@ -164,9 +164,9 @@ const clickEditVocabularyBook = async (event) => {
   modal.container.dataset.id = WORD_ID;
   modal.container.classList.add('add_word');
   modal.top.innerHTML = modalTopHtml(`단어 수정`);
-  const word = await getIndexedDbWordById(WORD_ID);
-  console.log("word,",word)
-  const DATA = {id: notebookId, word : word.word, meanings : word.meaning, examples : word.example, description : word.description,};
+  // const word = await getIndexedDbWordById(WORD_ID);
+  const result = await getWord(WORD_ID);
+  const DATA = {id: notebookId, origin : result.origin, meanings : result.meaning, examples : result.example, description : result.description,};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
     {class:"close gray", text: "취소", fun: ""},
@@ -226,19 +226,18 @@ const clickModalsetWordBtn = async (event) => {
   const createdAt = new Date().toISOString();
   const new_data = {
     notebookId : Number(vocabulary_id),
-    word : word,
+    origin : word,
     meaning : meaning,
     example : example,
     description : explanation,
-    status : 0,
-    updatedAt : new Date().toISOString()
   }
   if(word.length <= 0) return alert('단어는 필수 입력 사항입니다');
   if(meaning.length <= 0) return alert('의미는 필수 입력 사항입니다');
   if(_modal.dataset.id){
-    const result = await updateIndexedDbWord(word_id, new_data);
+    const result = await updateWord(word_id, new_data);
   }else{
-    const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
+    // const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
+    const result = await addWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, 0);
   }
   _modal.click();
   const _ul = document.querySelector('main .container ul');
@@ -249,7 +248,7 @@ const clickModalDeleteWordBook = async (event) => {
   const VOCABULARY_ID = Number(getValueFromURL("vocabulary_id"));
   const _modal = findParentTarget(event.target, '.modal');
   const WORD_ID = Number(_modal.dataset.id);
-  const reuslt = await deleteIndexedDbWord(WORD_ID);
+  const reuslt = await deleteWord(WORD_ID);
   _modal.click();
   const _ul = document.querySelector('main .container ul');
   _ul.innerHTML = await setVocabularyHtml(VOCABULARY_ID);
@@ -286,15 +285,17 @@ const clickModalDeleteSelectWordBook = async (event) => {
 
 // 단어장 명 세팅
 const setVocabularyNameHtml = async (id) => {
-  const noteBook = await getIndexedDbNotebookById(Number(id));
-  document.querySelector('header .container h2').innerHTML = noteBook.name;
+  // const noteBook = await getIndexedDbNotebookById(Number(id));
+  const result = await getWordbook(Number(id));
+  document.querySelector('header .container h2').innerHTML = result.name;
   
 }
 // 단어 리스트 세팅
 const setVocabularyHtml = async (id) => {
   let html = '';
-  const words = await getIndexedDbWordsByNotebookId(Number(id));
-  const noteBook = await getIndexedDbNotebookById(Number(id));
+  // const words = await getIndexedDbWordsByNotebookId(Number(id));
+  const words = await getWordsByWordbook(Number(id));
+  // const noteBook = await getIndexedDbNotebookById(Number(id));
   const bodyStyle = document.querySelector('body').style;
   // bodyStyle.setProperty('--card-color', `#${noteBook.color.main}`);
   // bodyStyle.setProperty('--card-background', `#${noteBook.color.background}`);
@@ -302,7 +303,6 @@ const setVocabularyHtml = async (id) => {
   bodyStyle.setProperty('--card-color', `#FF8DD4`);
   bodyStyle.setProperty('--card-background', `#FFEFFA`);
   bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
-  console.log(words);
   for(let word of words){
      html += `
       <li 
@@ -440,7 +440,6 @@ const clickSelectSearchedWord = (event) => {
   const _exampleBox = document.querySelector('.example_box');
   _wordInput.value = data.word;
   _meaningInput.value = data.meanings ? data.meanings.join(', ') : data.meaning;
-  console.log("datamm",data)
   _examplePreviewContainer.innerHTML = data.examples.map(({exam_en, exam_ko}, index)=>setExampleBoxHtml(index + 1, data.word, exam_en, exam_ko)).join('');
   if(data.examples.length > 0) _examplePreviewContainer.classList.add('active');
   _exampleBox.querySelector('h3').innerHTML = `${data.examples.length + 1}.`;
@@ -552,7 +551,8 @@ function matchStarting(word, splitKeyword) {
 
 
 const setInitHtml = async () => {
-  const index_status = await waitIndexDbOpen();
+  // const index_status = await waitIndexDbOpen();
+  const index_status = await waitSqliteOpen();
   if(index_status == "on"){
     const id = getValueFromURL("vocabulary_id");
     setVocabularyNameHtml(id);

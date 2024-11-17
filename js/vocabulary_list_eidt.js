@@ -17,10 +17,10 @@ const clickDeleteVocabularyBook = (event) => {
 }
 
 // 단어장 삭제 모달에서 삭제 버튼 클릭 시
-const clickModalDeleteVocabularyBook = (event) => {
+const clickModalDeleteVocabularyBook = async (event) => {
   const _modal = findParentTarget(event.target, '.modal');
   const id = Number(_modal.dataset.id);
-  deleteIndexedDbNotebook(id)
+  await deleteWordbook(id);
   _modal.click();
   setInitHtml()
 }
@@ -28,8 +28,9 @@ const clickModalDeleteVocabularyBook = (event) => {
 // 단어장 수정 클릭 시
 const clickEditVocabularyBook = async (event, data={name:"", color:"FF8DD4"}) => {
   const id = Number(findParentTarget(event.target, 'li').dataset.id);
-  const noteBook = await getIndexedDbNotebookById(id);
-  const DATA = {name: noteBook.name,color: noteBook.color.main};
+  // const noteBook = await getIndexedDbNotebookById(id);
+  const noteBook = await getWordbook(id);
+  const DATA = {name: noteBook.name, color: noteBook.color.main};
   const modal = openDefaultModal();
   modal.container.dataset.id = id;
   modal.top.innerHTML = modalTopHtml(`단어장 수정`);
@@ -49,10 +50,12 @@ const clickEditVocabularyBook = async (event, data={name:"", color:"FF8DD4"}) =>
 // 단어장 에디터 리스트에서 리스트 HTML 세팅
 const setEditVocabularyListHtml = async () => {
   let html = '';
-  const noteBooks = await getIndexedDbNotebooks();
+  // const noteBooks = await getIndexedDbNotebooks();
+  const noteBooks = await getWordbook();
   if(noteBooks.length > 0){
     for(let noteBook of noteBooks){
-      const words = await getIndexedDbWordsByNotebookId(noteBook.id);
+      // const words = await getIndexedDbWordsByNotebookId(noteBook.id);
+      const words = await getWordsByWordbook(noteBook.id);
       const totalWords = words.length;
       const learnedCount = words.reduce((count, word) => {return word.status === "learned" ? count + 1 : count}, 0);
        html += `
@@ -74,7 +77,8 @@ const setEditVocabularyListHtml = async () => {
   return html 
 }
 const setInitHtml = async () => {
-  const index_status = await waitIndexDbOpen();
+  // const index_status = await waitIndexDbOpen();
+  const index_status = await waitSqliteOpen();
   if(index_status == "on"){
     const _ul = document.querySelector('main .container ul');
     _ul.innerHTML = await setEditVocabularyListHtml();
