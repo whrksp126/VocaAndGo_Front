@@ -272,13 +272,12 @@ const clickMarker = async (event) => {
   let word_id;
   if(isTestPage){ // 테스트 페이지
     const word_data = TEST_WORD_LIST[Number(_li.dataset.index)]
-    status = word_data.status + 1;    
+    status = (word_data.status + 1) % 3;
     word_id = word_data.id;
   }else{ // 기본 페이지
-    status = Number(_li.dataset.status) + 1;
+    status = (Number(_li.dataset.status) + 1) % 3;
     word_id = Number(_li.dataset.id);
   }
-  if(status > 2) status = 0;
   _li.dataset.status = status;
   _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.08.270203`;
   const result = await updateWord(word_id, {status : status});
