@@ -99,6 +99,7 @@ const setVocabularyBookHtml = ({name, color}) =>{
 
 // 단어 설정 모달 html
 const setWordModalHtml = async ({id, origin, meanings, examples, description}) => {
+  console.log()
   // const noteBooks = await getIndexedDbNotebooks();
   const noteBooks = await getWordbook();
   return `
@@ -272,13 +273,13 @@ const setTextSetupHtml = (type) => {
 
 // 정답 확인 html
 const setShowAnswerHtml = async () => {
-  const test_list = await getRecentLearningData("test_list");
+  const recentStudy = await getRecentStudy();
   return `
     <ul>
-      ${test_list.map((data)=>{return `
+      ${recentStudy.test_list.map((data)=>{return `
       <li 
         data-id="${data.id}" 
-        data-noteid="${data.notebookId}" 
+        data-noteid="${data.wordbookId}" 
         data-isCorrect="${data.isCorrect}" 
         data-status="${data.status}"
         class="answer_card ${data.result}"
@@ -290,7 +291,7 @@ const setShowAnswerHtml = async () => {
           </div>
           <div class="texts">
             <span>${data.word}</span>
-            <p>${data.meaning}</p>
+            <p>${data.meaning.map(meaning=>meaning).join(', ')}</p>
           </div>
         </div>
         <button class="right" onclick="clickMarker(event)">
@@ -318,7 +319,7 @@ const setVocabularyPreviewHtml = (word_list) => {
         </div>
         <div class="right">
           <div class="btns">
-            <button class="sound_btn" onclick="generateSpeech(event, '${data.word}', 'en')">
+            <button class="sound_btn" onclick="generateSpeech('${data.word}', 'en')">
               <i class="ph-fill ph-speaker-high"></i>
             </button>
           </div>

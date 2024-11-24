@@ -24,7 +24,7 @@ header .container h2 {
   background: #FFEFFA;
   color: #111;
   overflow: hidden;
-  z-index: 1; 
+  /* z-index: 1;  */
 }
 .selete_vocabulary li.each{
   border: 1px solid #FF8DD4;

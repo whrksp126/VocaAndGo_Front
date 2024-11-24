@@ -1,5 +1,6 @@
 // 사지선타 테스트 문제 html
-const setMcqHtml = (word, total, cur) => {
+const setMcqHtml = (word, total, index) => {
+  const mcqIndex = index;
   let show_text = '';
   let show_hint = '';
   let show_option = [];
@@ -7,7 +8,7 @@ const setMcqHtml = (word, total, cur) => {
   let show_type = 1; // 0 : 단어, 1 : 의미;
   if(view_type == 'word') show_type = 0;
   if(view_type == 'meaning') show_type = 1;
-  if(view_type == 'cross') show_type = cur % 2 == 0 ? 1 : 0;
+  if(view_type == 'cross') show_type = mcqIndex+1 % 2 == 0 ? 1 : 0;
   if(view_type == 'random') show_type = Math.random() < 0.5 ? 0 : 1;
   show_text = show_type == 0 ? word.word : word.meaning;
   show_hint = show_type == 0 ? word.meaning : word.word;
@@ -16,14 +17,9 @@ const setMcqHtml = (word, total, cur) => {
   return `
     <div 
       class="item"
-      data-notebookId="${word.notebookId}"
+      data-index="${index}"
+      data-show="${show_type}"
       data-id="${word.id}"
-      data-meaning="${word.meaning}"
-      data-word="${word.word}"
-      data-description="${word.description}"
-      data-example="${word.example}"
-      data-status="${word.status}"
-      data-result="${word.result}"
     >
       <div class="card">
         <div class="granding">
@@ -38,12 +34,12 @@ const setMcqHtml = (word, total, cur) => {
           </button>
           <!-- 
           <div class="page">
-            <span class="cur">${cur}</span>
+            <span class="cur">${mcqIndex+1}</span>
             <span>/</span>
             <span class="total">${total}</span>
           </div>
           -->
-          <button class="speaker" onclick="generateSpeech(event, '${word.word}', 'en')">
+          <button class="speaker" onclick="generateSpeech('${word.word}', 'en')">
             <i class="ph-fill ph-speaker-high"></i>
           </button>
         </div>
@@ -60,15 +56,19 @@ const setMcqHtml = (word, total, cur) => {
 // 사지선다 테스트 페이지 문제 세팅
 const setMcqTestPage = () => {
   const _items = document.querySelector('main .items')
+  let currentPage = 0;
   TEST_WORD_LIST.forEach((word, index)=>{
     if(word.isCorrect == undefined){
-      _items.insertAdjacentHTML('afterbegin', setMcqHtml(word, TEST_WORD_LIST.length, index+1))
+      _items.insertAdjacentHTML('afterbegin', setMcqHtml(word, TEST_WORD_LIST.length, index))
+    }else{
+      currentPage += 1;
     }
   });
   const _first_item = document.querySelector('.items .item:last-child');
   _first_item?.classList.add('active');
   const _progressbarBox = document.querySelector('.progressbar_box');
   _progressbarBox.style.setProperty('--total-page', TEST_WORD_LIST.length);
+  _progressbarBox.style.setProperty('--cur-page', currentPage);
 }
 
 // 옵션 클릭 시
@@ -76,30 +76,36 @@ const clickMcqOption = (event, index) => {
   const __item = document.querySelectorAll('.items .item');
   const _currentItem = __item[__item.length - 1];
   if(!_currentItem) return;
+  const word_data = TEST_WORD_LIST[Number(_currentItem.dataset.index)]
   if(_currentItem.dataset.isdone) return;
   findParentTarget(event.target, '.option_btn').classList.add('active');
   const _nextItem = __item[__item.length - 2];
-  const isCorrect = Number(_currentItem.dataset.result) == Number(index) ;
+  const isCorrect = word_data.result == Number(index) ;
   _currentItem.classList.add(isCorrect ? 'correct' : 'incorrect');
   _currentItem.querySelector('.card').classList.add('end');
-  const word_data = TEST_WORD_LIST.find(data => data.id == Number(_currentItem.dataset.id));
   word_data.isCorrect = isCorrect ? 1 : 0;
-  setTimeout(()=>{
+  setTimeout(async ()=>{
     const _progressbarBox = document.querySelector('.progressbar_box');
     let currentPage = parseInt(getComputedStyle(_progressbarBox).getPropertyValue('--cur-page')) || 0;
     _progressbarBox.style.setProperty('--cur-page', currentPage + 1);
+    const recentStudy = await getRecentStudy();
     if (!_nextItem) {
-      setTimeout(()=>{
-        _currentItem.remove();
-        updateRecentLearningData("state", "after");
-        updateRecentLearningData("test_list", TEST_WORD_LIST);
+      setTimeout(async ()=>{
+        _currentItem.remove();        
+        await updateRecentStudy(recentStudy.id, {
+          state : 1,
+          test_list : TEST_WORD_LIST
+        });
         setTestResultsHtml();
       },500)
     }else{
       _currentItem.classList.add('end');
       _currentItem.classList.remove('active');
       _nextItem.classList.add('active');
-      updateRecentLearningData("test_list", TEST_WORD_LIST);
+      generateSpeech(TEST_WORD_LIST[Number(_nextItem.dataset.index)].word, 'en')
+      await updateRecentStudy(recentStudy.id, {
+        test_list : TEST_WORD_LIST
+      });
       setTimeout(() => _currentItem.remove(), 300);
     }
   },500)
@@ -107,22 +113,17 @@ const clickMcqOption = (event, index) => {
 }
 
 const init = async () => {
-  const index_status = await waitIndexDbOpen();
+  const index_status = await waitSqliteOpen();
   if(index_status == "on"){
-    const state = await getRecentLearningData("state");
-    if(state == 'before') {
-      await updateRecentLearningData("state", "during");
-      TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
+    const recentStudy = await getRecentStudy();
+    TEST_WORD_LIST = recentStudy.test_list;
+    if(recentStudy.state == 0){
+      setMcqTestPage();  
     }
-    if(state == 'during'){ 
-      TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
-    }
-    if(state == 'after'){
-      const test_list = await getRecentLearningData("test_list", TEST_WORD_LIST);
-      TEST_WORD_LIST = test_list;
+    if(recentStudy.state == 1){
       setTestResultsHtml();
     }
-    setMcqTestPage();
+    
   }
   if(index_status == "err"){
     alert("데이터 호출 err")

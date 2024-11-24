@@ -2,9 +2,10 @@
 const setVocabularyList = async () => {
   const _ul = document.querySelector('main .container ul');
   _ul.innerHTML = ``;
-  const noteBooks = await getIndexedDbNotebooks();
-  if(noteBooks.length > 0){
-    const html = await setVocabularyListHtml(noteBooks);
+  const wordbooks = await getWordbook();
+  // const noteBooks = await getIndexedDbNotebooks();
+  if(wordbooks.length > 0){
+    const html = await setVocabularyListHtml(wordbooks);
     _ul.innerHTML = html;
   }else{
     console.log('단어장 추가 유도 UI');
@@ -27,7 +28,7 @@ const clickVocabularyItem = async (event, id) => {
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
 
-  const vocabulary_word_list = await getVocabularyWordList(id);
+  const vocabulary_word_list = await getWordsByWordbook(id);
   const _numInp = modal.middle.querySelector('.problem_nums input[type="number"]');
   _numInp.setAttribute('min', 4)
   _numInp.setAttribute('max', vocabulary_word_list.length)
@@ -60,7 +61,7 @@ const clickEventBtn = (event) => {
 }
 
 const setInitHtml = async () => {
-  const index_status = await waitIndexDbOpen();
+  const index_status = await waitSqliteOpen();
   if(index_status == "on"){
     setVocabularyList();
   }

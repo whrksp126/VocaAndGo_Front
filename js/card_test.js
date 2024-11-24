@@ -1,5 +1,5 @@
 // 카드 테스트 card HTML
-const setCardHtml = (word, total, cur) => {
+const setCardHtml = (word, total, index) => {
   let show_text = '';
   let show_hint = '';
   const view_type = URL_PARAMS.view_types;
@@ -12,13 +12,9 @@ const setCardHtml = (word, total, cur) => {
   show_hint = show_type == 0 ? word.meaning : word.word;
   return `
     <div class="card" 
-      data-notebookId="${word.notebookId}"
+      data-show="${show_type}"
       data-id="${word.id}"
-      data-meaning="${word.meaning}"
-      data-word="${word.word}"
-      data-description="${word.description}"
-      data-example="${word.example}"
-      data-status="${word.status}"
+      data-index="${index}"
     >
       <div class="granding">
         <i class="ph-bold ph-circle"></i>
@@ -32,12 +28,12 @@ const setCardHtml = (word, total, cur) => {
         </button>
         <!-- 
         <div class="page">
-          <span class="cur">${cur}</span>
+          <span class="cur">${index + 1}</span>
           <span>/</span>
           <span class="total">${total}</span>
         </div>
         -->
-        <button class="speaker click_event" onclick="generateSpeech(event,'${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
+        <button class="speaker click_event" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
       </div>
     </div>
   `
@@ -48,16 +44,25 @@ const setCardTestPage = () => {
   const _cards = document.querySelector('main .cards')
   TEST_WORD_LIST.forEach((word, index)=>{
     if(word.isCorrect == undefined){
-      // _cards.insertAdjacentHTML('afterbegin', setCardHtml(word, Number(URL_PARAMS.problem_nums), index+1))
-      _cards.insertAdjacentHTML('afterbegin', setCardHtml(word, TEST_WORD_LIST.length, index+1))
+      _cards.insertAdjacentHTML('afterbegin', setCardHtml(word, TEST_WORD_LIST.length, index))
     }
   })
   const _first_card = document.querySelector('.cards .card:last-child');;
   _first_card?.classList.add('active');
   const _progressbarBox = document.querySelector('.progressbar_box');
   _progressbarBox.style.setProperty('--total-page', TEST_WORD_LIST.length);
-  _progressbarBox.style.setProperty('--cur-page', TEST_WORD_LIST.filter(data => data.isCorrect !== undefined).length);
-
+  const cur_page = TEST_WORD_LIST.filter(data => data.isCorrect !== undefined).length;
+  _progressbarBox.style.setProperty('--cur-page', cur_page);
+  const _curCard = document.querySelector('.card.active');
+  if(_curCard){
+    const index = Number(_curCard.dataset.index);
+    const show_type = _curCard.dataset.show;
+    if(show_type == 0){
+      generateSpeech(TEST_WORD_LIST[index].word, 'en')
+    }else{
+  
+    }
+  }
 }
 
 // OX 클릭 시
@@ -69,20 +74,31 @@ const clickGrading = async (event, outcome) => {
   _currentCard.classList.add(outcome ? 'correct' : 'incorrect');
   _currentCard.classList.add('end');
   _currentCard.classList.remove('active');
-  const word_data = TEST_WORD_LIST.find(data => data.id == Number(_currentCard.dataset.id));
-  // word_data.result = outcome;
+  const word_data = TEST_WORD_LIST[Number(_currentCard.dataset.index)];
   word_data.isCorrect = outcome;
   const _progressbarBox = document.querySelector('.progressbar_box');
   let currentPage = parseInt(getComputedStyle(_progressbarBox).getPropertyValue('--cur-page')) || 0;
   _progressbarBox.style.setProperty('--cur-page', currentPage + 1);
+  const recentStudy = await getRecentStudy();
   if (!_nextCard) {
     _currentCard.remove();
-    updateRecentLearningData("state", "after");
-    updateRecentLearningData("test_list", TEST_WORD_LIST);
+    await updateRecentStudy(recentStudy.id, {
+      state : 1,
+      test_list : TEST_WORD_LIST,
+    })
     setTestResultsHtml();
   } else {
     _nextCard.classList.add('active');
-    updateRecentLearningData("test_list", TEST_WORD_LIST);
+    await updateRecentStudy(recentStudy.id, {
+      test_list : TEST_WORD_LIST,
+    })
+    const show_type = Number(_nextCard.dataset.show); // 0 : 단어, 1 : 의미
+    const cur_data = TEST_WORD_LIST[Number(_nextCard.dataset.index)];
+    if(show_type == 0){
+      generateSpeech(cur_data.word, 'en')
+    }else{
+
+    }
     setTimeout(() => _currentCard.remove(), 300);
     setCardTouchEvent();
   }
@@ -183,23 +199,20 @@ const setCardTouchEvent = () => {
 
 
 const init = async () => {
-  const index_status = await waitIndexDbOpen()
+  // const index_status = await waitIndexDbOpen()
+  const index_status = await waitSqliteOpen();
   if(index_status == "on"){
-    const state = await getRecentLearningData("state");
-    if(state == 'before') {
-      await updateRecentLearningData("state", "during");
-      TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
+    const recentStudy = await getRecentStudy();
+    TEST_WORD_LIST = recentStudy.test_list;
+    if(recentStudy.state == 0){ // 학습 중
+      setCardTestPage();
+      setCardTouchEvent();
     }
-    if(state == 'during'){ 
-      TEST_WORD_LIST = await getRecentLearningData("test_list", TEST_WORD_LIST);
-    }
-    if(state == 'after'){
-      const test_list = await getRecentLearningData("test_list", TEST_WORD_LIST);
-      TEST_WORD_LIST = test_list;
+    if(recentStudy.state == 1) { // 학습 종료
       setTestResultsHtml();
     }
-    setCardTestPage(TEST_WORD_LIST);
-    setCardTouchEvent();
+    
+    
   }
   if(index_status == "err"){
     alert("데이터 호출 err")

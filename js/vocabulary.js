@@ -13,7 +13,7 @@ const clickAddWord = async (event) => {
       <i class="ph ph-camera"></i>
     </button>
   `);
-  const DATA = {id: ID, word : "",meanings : "", examples : [],description : "",};
+  const DATA = {id: ID, origin : "",meanings : "", examples : [], description : "",};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
     {class:"close gray", text: "취소", fun: ""},
@@ -218,6 +218,7 @@ const clickModalsetWordBtn = async (event) => {
   const prev_vocabulary_id = Number(getValueFromURL("vocabulary_id"));
   const _modal = findParentTarget(event.target, '.modal');
   const vocabulary_id = Number(_modal.querySelector('.vocabulary').value);
+  console.log(vocabulary_id)
   const word_id = Number(_modal.dataset.id);
   const word = _modal.querySelector('input.word').value.trim();
   const meaning = _modal.querySelector('input.meaning').value.split(',').map(item => item.trim()).filter(Boolean);
@@ -225,7 +226,7 @@ const clickModalsetWordBtn = async (event) => {
   const explanation = _modal.querySelector('input.explanation').value;
   const createdAt = new Date().toISOString();
   const new_data = {
-    notebookId : Number(vocabulary_id),
+    wordbook_id : Number(vocabulary_id),
     origin : word,
     meaning : meaning,
     example : example,
@@ -237,7 +238,7 @@ const clickModalsetWordBtn = async (event) => {
     const result = await updateWord(word_id, new_data);
   }else{
     // const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
-    const result = await addWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, 0);
+    const result = await addWord(new_data.wordbook_id, new_data.origin, new_data.meaning, new_data.example, new_data.description, 0);
   }
   _modal.click();
   const _ul = document.querySelector('main .container ul');
@@ -325,7 +326,7 @@ const setVocabularyHtml = async (id) => {
           </div>
           <div class="right">
             <div class="btns">
-              <button class="sound_btn" onclick="generateSpeech(event, '${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
+              <button class="sound_btn" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
               <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
               <button onclick="clickDeleteWordBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
             </div>
@@ -339,7 +340,7 @@ const setVocabularyHtml = async (id) => {
               class="example" 
               data-origin="${origin}" 
               data-meaning="${meaning}" 
-              onclick="generateSpeech(event, '${origin}', 'en')"
+              onclick="generateSpeech('${origin}', 'en')"
               >
               <div class="origin">
                 ${setHighlightText(origin, word.word)}
@@ -485,7 +486,7 @@ const clickAddOcrSearchedWord = async (event) => {
   `);
   
   console.log("search_word,",search_word)
-  const DATA = {id: "", word : search_word.word, meanings : search_word.meanings.join(", "), examples : search_word.examples, description : ""};
+  const DATA = {id: "", origin : search_word.word, meanings : search_word.meanings.join(", "), examples : search_word.examples, description : ""};
   modal.middle.innerHTML = await setWordModalHtml(DATA);
   const btns = [
     {class:"close gray", text: "취소", fun: ""},

@@ -15,7 +15,7 @@ const clickTestType = async (event, type) => {
     ]
     modal.bottom.innerHTML = modalBottomHtml(btns);
 
-    const vocabulary_word_list = await getVocabularyWordList();
+    const vocabulary_word_list = await getWordsByWordbook();
     const _numInp = modal.middle.querySelector('.problem_nums input[type="number"]');
     _numInp.setAttribute('min', 4)
     _numInp.setAttribute('max', vocabulary_word_list.length)

@@ -43,7 +43,7 @@ const setExampleFitbHtml = () => {
             <span class="total">${total}</span>
           </div>
           -->
-          <button class="speaker" onclick="generateSpeech(event, '${word.word}', 'en')">
+          <button class="speaker" onclick="generateSpeech('${word.word}', 'en')">
             <i class="ph-fill ph-speaker-high"></i>
           </button>
         </div>

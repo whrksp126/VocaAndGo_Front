@@ -266,17 +266,26 @@ const writeTestAppLog = (html) => {
 
 // 마커 클릭 시
 const clickMarker = async (event) => {
-
   const _li = findParentTarget(event.target, 'li') || findParentTarget(event.target, '.item') || findParentTarget(event.target, '.card');
-  let status = Number(_li.dataset.status) + 1;
+  const isTestPage = ['card_test', 'mcq_test'].includes(document.querySelector('body').dataset.page);
+  let status; 
+  let word_id;
+  if(isTestPage){ // 테스트 페이지
+    const word_data = TEST_WORD_LIST[Number(_li.dataset.index)]
+    status = word_data.status + 1;    
+    word_id = word_data.id;
+  }else{ // 기본 페이지
+    status = Number(_li.dataset.status) + 1;
+    word_id = Number(_li.dataset.id);
+  }
   if(status > 2) status = 0;
-  _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.08.270203`;
   _li.dataset.status = status;
-  const word_id = Number(_li.dataset.id);
-  // await updateIndexedDbWord(word_id, {status : status});
+  _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.08.270203`;
   const result = await updateWord(word_id, {status : status});
-  if(['card_test', 'mcq_test'].includes(document.querySelector('body').dataset.page)){
+  if(isTestPage){
     if(TEST_WORD_LIST)TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
+    const rescentStudy = await getRecentStudy();
+    await updateRecentStudy(rescentStudy.id, {test_list : TEST_WORD_LIST});
   }
 }
 
@@ -291,10 +300,10 @@ const clickStartTest = async (event, type, vocabulary_id=null) => {
   let vocabulary_word_list = null;
   let urlParams = `vocabulary=${vocabulary}&test_type=${test_type}&view_types=${view_types}&word_types=${word_types}&problem_nums=${problem_nums}`;
   if(vocabulary == 'all'){
-    vocabulary_word_list = await getVocabularyWordList();
+    vocabulary_word_list = await getWordsByWordbook();
   }
   if(vocabulary == 'each'){
-    vocabulary_word_list = await getVocabularyWordList(vocabulary_id);
+    vocabulary_word_list = await getWordsByWordbook(vocabulary_id);
     urlParams += `vocabulary_id=${vocabulary_id}`
   }
   if(word_types != 'all'){ // 헷갈리는 단어만 선택 시
@@ -303,11 +312,9 @@ const clickStartTest = async (event, type, vocabulary_id=null) => {
   if(vocabulary_word_list.length < 4){
     return alert('테스트는 4개 이상의 단어가 필요합니다!')
   }
-  await updateRecentLearningData("type", test_type);
-  await updateRecentLearningData("state", "before");
-  if(test_type == 'card'){
-    await updateRecentLearningData("test_list", setTestWrodList(vocabulary_word_list, problem_nums));
-  }else if(test_type == 'mcq'){
+  const recentStudy = await getRecentStudy();
+  
+  const createMcqTestList = () => {
     const meaningValues = vocabulary_word_list.map(item => item.meaning);
     const wordValues = vocabulary_word_list.map(item => item.word);
     const randomMeanings = [];
@@ -327,29 +334,23 @@ const clickStartTest = async (event, type, vocabulary_id=null) => {
       }
       randomMeanings.push(selectedMeanings);
     }
-    test_list = setTestWrodOptionList(vocabulary_word_list, problem_nums, randomMeanings);
-    await updateRecentLearningData("test_list", test_list);
-  } else if(test_type == 'example_fitb'){
-    await updateRecentLearningData("test_list", setTestExampleList(vocabulary_word_list, problem_nums));
+    return randomMeanings;
+  }
+
+  // 기존 학습 기록이 있고, state == 0 이면 해당 데이터 삭제!
+  if(recentStudy && recentStudy.state == 0) {
+    await deleteRecentStudy(recentStudy.id);
+  }
+  
+  if(test_type == 'card'){
+    await createRecentStudy("CARD", 0, urlParams, setTestWrodList(vocabulary_word_list, problem_nums));  
+  }else if(test_type == 'mcq'){
+    randomMeanings = createMcqTestList()
+    await createRecentStudy("MCQ", 0, urlParams, setTestWrodOptionList(vocabulary_word_list, problem_nums, randomMeanings))
+  }else if(test_type == 'example_fitb'){
+    // await updateRecentLearningData("test_list", setTestExampleList(vocabulary_word_list, problem_nums));
   }
   window.location.href=`/html/${type}_test.html?${urlParams}`
-}
-
-// INDEXED_DB 단어장 단어 호출
-const getVocabularyWordList = async (vocabulary_id=null) => {
-  const vocabulary_word_list = [];
-  if(vocabulary_id == null){
-    const noteBooks = await getIndexedDbNotebooks();
-    for(const noteBook of noteBooks){
-      const words = await getIndexedDbWordsByNotebookId(noteBook.id)
-      vocabulary_word_list.push(...words);
-    }
-  }else{
-    const words = await getIndexedDbWordsByNotebookId(vocabulary_id);
-    vocabulary_word_list.push(...words);
-  }
-
-  return vocabulary_word_list;
 }
 
 // 전체 단어 리스트에서 테스트할 단어만 추출
@@ -506,9 +507,10 @@ const clickRetestModalBtn = async (event) => {
 }
 
 // 원형 프로그래스 바 세팅
-const setProGressBar = () => {
-  const total = TEST_WORD_LIST.length;
-  const correct_num = TEST_WORD_LIST.filter(data => data.isCorrect).length;
+const setProGressBar = async () => {
+  const recentStudy = await getRecentStudy();
+  const total = recentStudy.test_list.length;
+  const correct_num = recentStudy.test_list.filter(data => data.isCorrect).length;
   const _probressBar = document.querySelector('.progress_bar');
   const bar = new ProgressBar.Circle(_probressBar, {
     trailColor: '#FFEFFA',
@@ -557,8 +559,10 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
   const updateMarkAndStatus = async (word_id, status) => {
     const _li = document.querySelector(`li[data-id="${word_id}"]`);
     _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.08.270203`;
-    await updateIndexedDbWord(word_id, { status });
+    await updateWord(word_id, status)
     TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
+    const recentStudy = await getRecentStudy();
+    await updateRecentStudy(recentStudy.id, {test_list : TEST_WORD_LIST});
   };
   for (let i = 0; i < TEST_WORD_LIST.length; i++) {
     const data = TEST_WORD_LIST[i];
@@ -580,14 +584,18 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
 
 // 다시 풀기 클릭 시
 const clickRetest = async (event) => {
-  await updateRecentLearningData("state", "during");
+  const recentStudy = await getRecentStudy();
+  
+  await updateRecentStudy(recentStudy.id, {state:0});
+  // await updateRecentLearningData("state", "during");
   const modal = getDefaultModal();
   const type = modal.middle.querySelector('button.active').dataset.type;
   if(type != "all"){
     TEST_WORD_LIST = TEST_WORD_LIST.filter((data)=>data.isCorrect == 0);  
   }
   TEST_WORD_LIST.forEach((data)=>data.isCorrect = undefined);
-  await updateRecentLearningData("test_list", TEST_WORD_LIST);
+  await updateRecentStudy(recentStudy.id, {test_list:TEST_WORD_LIST});
+  // await updateRecentLearningData("test_list", TEST_WORD_LIST);
   location.reload();
 }
 
@@ -626,9 +634,8 @@ const getOcr = async (img, lngs) => {
 
 
 // GTTS 
-const generateSpeech = async (event, text, language) => {
+const generateSpeech = async (text, language) => {
   if(getDevicePlatform() == 'web'){
-    event.preventDefault();
     const url = `https://vocaandgo.ghmate.com/tts/output`;
     const method = 'GET';
     const data = {text, language};

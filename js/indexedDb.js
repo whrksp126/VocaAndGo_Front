@@ -1,23 +1,22 @@
 let SQLITE_DB; // sql.js 데이터베이스 인스턴스
-
 const SQLITE_NAME = "heyvoca_sqlite";
 const SQLITE_KEY = "sqlite_db";
 const SQLITE_VERSION = 1;
 let SQLITE_STATUS = "off";
 
-// 인덱스 DB 호출 await
+// 인덱스 DB 호출 대기
 const waitSqliteOpen = () => {
   return new Promise((resolve) => {
     const intervalId = setInterval(() => {
       if (["on", "err"].includes(SQLITE_STATUS)) {
-        clearInterval(intervalId); // 조건을 만족하면 인터벌 중지
-        resolve(SQLITE_STATUS); // SQLITE_STATUS 값을 반환하며 Promise 해결
+        clearInterval(intervalId);
+        resolve(SQLITE_STATUS);
       }
-    }, 30);
+    }, 10);
   });
 };
 
-// IndexedDB에서 SQLite DB를 불러오기
+// IndexedDB에서 SQLite DB를 로드
 async function loadDB() {
   const request = indexedDB.open(SQLITE_NAME, SQLITE_VERSION);
 
@@ -29,82 +28,209 @@ async function loadDB() {
       const getRequest = store.get(SQLITE_KEY);
 
       getRequest.onsuccess = async () => {
-        
         if (getRequest.result) {
-          // 저장된 SQLite 데이터 로드
           SQLITE_DB = new SQL.Database(getRequest.result);
+          console.log("SQLite 데이터베이스가 로드되었습니다.");
+          await syncDatabase(); // 데이터베이스 동기화
         } else {
           console.warn("저장된 데이터가 없습니다. DB를 초기화합니다.");
-          await initDB(); // DB 초기화
+          await initDB();
         }
         SQLITE_STATUS = "on";
         resolve();
       };
 
       getRequest.onerror = (e) => {
-        console.error("IndexedDB 데이터 조회 중 오류가 발생했습니다.", e);
+        console.error("IndexedDB 데이터 조회 중 오류:", e);
         reject(e);
       };
     };
 
     request.onupgradeneeded = (event) => {
       const dbInstance = event.target.result;
-      dbInstance.createObjectStore(SQLITE_KEY); // 새로운 Object Store 생성
+      dbInstance.createObjectStore(SQLITE_KEY);
     };
 
     request.onerror = (e) => {
       SQLITE_STATUS = "err";
-      console.error("IndexedDB 열기 중 오류가 발생했습니다.", e);
+      console.error("IndexedDB 열기 중 오류:", e);
       reject(e);
     };
   });
 }
 
-// 새 DB를 초기화하고 기본 테이블 생성
+// 초기 DB 세팅
 async function initDB() {
   SQLITE_DB = new SQL.Database();
 
   // 외래 키 활성화
-  SQLITE_DB.exec("PRAGMA foreign_keys = ON;");
+  enableForeignKeys();
 
-  // Wordbook 테이블 생성
-  const createWordbookTable = `
-    CREATE TABLE IF NOT EXISTS Wordbook (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      color TEXT NOT NULL,         -- JSON 형태의 문자열로 색상 정보 저장
-      status INTEGER NOT NULL DEFAULT 0, -- 상태 (예: "active", "inactive")
-      createdAt TEXT NOT NULL,     -- 생성 시간
-      updatedAt TEXT NOT NULL      -- 수정 시간
-    );
-  `;
-  SQLITE_DB.exec(createWordbookTable);
+  // 최신 테이블 생성
+  await syncDatabase();
 
-  // Word 테이블 생성 (외래 키 설정)
-  const createWordTable = `
-    CREATE TABLE IF NOT EXISTS Word (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      wordbook_id INTEGER NOT NULL,    -- 단어장이 참조하는 ID
-      origin TEXT NOT NULL,            -- 단어 텍스트
-      meaning TEXT,                    -- JSON 형태의 의미 배열
-      example TEXT,                    -- JSON 형태의 예문 배열
-      description TEXT,                -- 설명 필드
-      status INTEGER NOT NULL DEFAULT 0, -- 상태 필드 (0 = 상태 없음, 1 = 헷갈리는 단어, 2 = 암기한 단어)
-      createdAt TEXT NOT NULL,         -- 생성 시간
-      updatedAt TEXT NOT NULL,         -- 수정 시간
-      FOREIGN KEY(wordbook_id) REFERENCES Wordbook(id) ON DELETE CASCADE
-    );
-  `;
-  SQLITE_DB.exec(createWordTable);
-
-  // IndexedDB에 저장
+  // 변경 내용을 IndexedDB에 저장
   await saveDB();
+}
+
+// 외래 키 활성화
+function enableForeignKeys() {
+  SQLITE_DB.exec("PRAGMA foreign_keys = ON;");
+}
+
+// 데이터베이스 동기화
+async function syncDatabase() {
+  const tableModels = getTableModels();
+  const existingTables = getExistingTables();
+
+  // 테이블 삭제
+  const tablesToDelete = getTablesToDelete(existingTables, tableModels);
+  deleteTables(tablesToDelete);
+
+  // 테이블 생성 및 동기화
+  for (const table of tableModels) {
+    const tableExists = existingTables.includes(table.name);
+    if (!tableExists) {
+      createTable(table);
+    } else {
+      await syncTableWithModel(table);
+    }
+  }
+}
+
+// 최신 테이블 모델 반환
+function getTableModels() {
+  return [
+    {
+      name: "Wordbook",
+      columns: [
+        { name: "id", type: "INTEGER PRIMARY KEY AUTOINCREMENT" },
+        { name: "name", type: "TEXT NOT NULL" },
+        { name: "color", type: "TEXT NOT NULL" },
+        { name: "status", type: "INTEGER NOT NULL DEFAULT 0" },
+        { name: "createdAt", type: "TEXT NOT NULL" },
+        { name: "updatedAt", type: "TEXT NOT NULL" },
+      ],
+    },
+    {
+      name: "Word",
+      columns: [
+        { name: "id", type: "INTEGER PRIMARY KEY AUTOINCREMENT" },
+        { name: "wordbook_id", type: "INTEGER NOT NULL" },
+        { name: "origin", type: "TEXT NOT NULL" },
+        { name: "meaning", type: "TEXT" },
+        { name: "example", type: "TEXT" },
+        { name: "description", type: "TEXT" },
+        { name: "status", type: "INTEGER NOT NULL DEFAULT 0" },
+        { name: "createdAt", type: "TEXT NOT NULL" },
+        { name: "updatedAt", type: "TEXT NOT NULL" },
+      ],
+    },
+    {
+      name: "RecentStudy",
+      columns: [
+        { name: "id", type: "INTEGER PRIMARY KEY AUTOINCREMENT" },
+        { name: "type", type: "TEXT NOT NULL" },
+        { name: "state", type: "INTEGER NOT NULL" }, // [0,1] : [학습 중, 학습 종료]
+        { name: "url_params", type: "TEXT NOT NULL" },
+        { name: "test_list", type: "TEXT NOT NULL" },
+        { name: "createdAt", type: "TEXT NOT NULL" },
+        { name: "updatedAt", type: "TEXT NOT NULL" },
+      ],
+    },
+  ];
+}
+
+// 현재 데이터베이스의 테이블 목록 가져오기
+function getExistingTables() {
+  const query = `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`;
+  const result = SQLITE_DB.exec(query);
+  return result[0]?.values.map((row) => row[0]) || [];
+}
+
+// 삭제해야 할 테이블 목록 반환
+function getTablesToDelete(existingTables, tableModels) {
+  const modelTableNames = tableModels.map((table) => table.name);
+  return existingTables.filter((tableName) => !modelTableNames.includes(tableName));
+}
+
+// 테이블 삭제
+function deleteTables(tablesToDelete) {
+  for (const tableName of tablesToDelete) {
+    dropTable(tableName);
+  }
+}
+
+// 테이블 삭제 쿼리 실행
+function dropTable(tableName) {
+  const query = `DROP TABLE IF EXISTS ${tableName};`;
+  SQLITE_DB.exec(query);
+  console.log(`${tableName} 테이블이 삭제되었습니다.`);
+}
+
+// 테이블 생성
+function createTable(table) {
+  const columnDefinitions = table.columns
+    .map((column) => `${column.name} ${column.type}`)
+    .join(", ");
+  const createTableQuery = `CREATE TABLE ${table.name} (${columnDefinitions});`;
+  SQLITE_DB.exec(createTableQuery);
+  console.log(`${table.name} 테이블이 생성되었습니다.`);
+}
+
+// 테이블과 모델 동기화
+async function syncTableWithModel(table) {
+  const query = `PRAGMA table_info(${table.name});`;
+  const result = SQLITE_DB.exec(query);
+
+  const existingColumns = result[0].values.map((row) => row[1]); // 현재 테이블의 컬럼 이름 목록
+  const modelColumns = table.columns.map((col) => col.name); // 모델에서 정의된 컬럼 이름 목록
+
+  // 컬럼 비교: 순서 및 누락 확인
+  const columnsMatch = JSON.stringify(existingColumns) === JSON.stringify(modelColumns);
+
+  if (!columnsMatch) {
+    console.log(`컬럼 순서 불일치 또는 누락된 컬럼이 있습니다. ${table.name} 테이블을 재구성합니다.`);
+    await recreateTableWithCorrectColumns(table);
+  } else {
+    console.log(`${table.name} 테이블은 최신 상태입니다.`);
+  }
+}
+
+// 테이블 재구성 함수: 컬럼 순서 최신화 및 데이터 유지
+async function recreateTableWithCorrectColumns(table) {
+  const tempTableName = `${table.name}_temp`;
+  const modelColumnNames = table.columns.map((col) => col.name).join(", ");
+
+  // 임시 테이블 생성: 모델 순서대로 데이터 복사
+  const createTempTableQuery = `
+    CREATE TABLE ${tempTableName} AS SELECT ${modelColumnNames} FROM ${table.name};
+  `;
+  SQLITE_DB.exec(createTempTableQuery);
+  console.log(`${tempTableName} 임시 테이블이 생성되었습니다.`);
+
+  // 기존 테이블 삭제
+  dropTable(table.name);
+
+  // 새 테이블 생성
+  createTable(table);
+
+  // 임시 테이블의 데이터 복사
+  const copyDataQuery = `
+    INSERT INTO ${table.name} (${modelColumnNames}) 
+    SELECT ${modelColumnNames} FROM ${tempTableName};
+  `;
+  SQLITE_DB.exec(copyDataQuery);
+  console.log(`임시 테이블 데이터를 ${table.name} 테이블로 복사했습니다.`);
+
+  // 임시 테이블 삭제
+  dropTable(tempTableName);
 }
 
 // IndexedDB에 SQLite DB 저장
 async function saveDB() {
-  const dbData = SQLITE_DB.export(); // SQLite DB를 Uint8Array로 추출
-  const request = indexedDB.open(SQLITE_NAME, 1);
+  const dbData = SQLITE_DB.export();
+  const request = indexedDB.open(SQLITE_NAME, SQLITE_VERSION);
 
   return new Promise((resolve, reject) => {
     request.onsuccess = (event) => {
@@ -120,6 +246,7 @@ async function saveDB() {
     request.onerror = reject;
   });
 }
+
 
 // Wordbook 데이터 추가
 async function addWordbook(name, color, status = 0) {
@@ -217,11 +344,11 @@ async function getWordbook(id = null) {
 // Word 데이터 추가
 async function addWord(wordbookId, origin, meaning = [], example = [], description = "", status = 0) {
   try {
+
     const currentTime = new Date().toISOString();
 
     const meaningJson = JSON.stringify(meaning);
     const exampleJson = JSON.stringify(example);
-
     const insertQuery = `
       INSERT INTO Word (wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -252,7 +379,6 @@ async function updateWord(id, updates = {}) {
     if (!existingWord) {
       throw new Error(`ID가 ${id}인 단어를 찾을 수 없습니다.`);
     }
-
     // 기존 데이터와 업데이트 데이터를 병합
     const updatedWord = {
       ...existingWord,
@@ -266,12 +392,13 @@ async function updateWord(id, updates = {}) {
     // 동적 필드 업데이트를 위한 쿼리
     const updateQuery = `
       UPDATE Word
-      SET origin = ?, meaning = ?, example = ?, description = ?, status = ?, updatedAt = ?
+      SET wordbook_id = ?, origin = ?, meaning = ?, example = ?, description = ?, status = ?, updatedAt = ?
       WHERE id = ?
     `;
     
     // SQLite 데이터 업데이트
     SQLITE_DB.run(updateQuery, [
+      updatedWord.wordbookId,
       updatedWord.origin,
       meaningJson,
       exampleJson,
@@ -371,6 +498,165 @@ async function deleteWordbookWithWords(id) {
   await saveDB();
 }
 
+// 최근 학습 기록 생성
+async function createRecentStudy(type, state, urlParams, testList) {
+  console.log(type, state, urlParams, testList)
+  try {
+    const currentTime = new Date().toISOString();
+    const insertQuery = `
+      INSERT INTO RecentStudy (type, state, url_params, test_list, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?);
+    `;
+
+    SQLITE_DB.run(insertQuery, [
+      type,
+      state,
+      urlParams,
+      JSON.stringify(testList), // test_list를 JSON으로 저장
+      currentTime,
+      currentTime,
+    ]);
+
+    console.log("RecentStudy 데이터가 성공적으로 추가되었습니다.");
+    await saveDB(); // 변경 내용을 IndexedDB에 저장
+    console.log("SAVE_DB 성공")
+    return await getRecentStudy();
+  } catch (error) {
+    console.error("RecentStudy 데이터 생성 중 오류:", error.message);
+    throw new Error("RecentStudy 데이터를 생성하는 데 실패했습니다.");
+  }
+}
+
+// 최근 학습 기록 수정
+async function updateRecentStudy(id, updates) {
+  try {
+    const currentTime = new Date().toISOString();
+
+    // 기존 데이터 조회
+    const existingData = await getRecentStudy(id);
+    if (!existingData) {
+      throw new Error(`ID가 ${id}인 데이터를 찾을 수 없습니다.`);
+    }
+
+    // 업데이트 데이터 병합
+    const updatedData = {
+      ...existingData,
+      ...updates,
+      updatedAt: currentTime,
+    };
+
+    const updateQuery = `
+      UPDATE RecentStudy
+      SET type = ?, state = ?, url_params = ?, test_list = ?, updatedAt = ?
+      WHERE id = ?;
+    `;
+
+    SQLITE_DB.run(updateQuery, [
+      updatedData.type,
+      updatedData.state,
+      updatedData.url_params,
+      JSON.stringify(updatedData.test_list), // test_list를 JSON으로 저장
+      updatedData.updatedAt,
+      id,
+    ]);
+
+    console.log("RecentStudy 데이터가 성공적으로 수정되었습니다.");
+    await saveDB(); // 변경 내용을 IndexedDB에 저장
+
+    getRecentStudy()
+  } catch (error) {
+    console.error("RecentStudy 데이터 수정 중 오류:", error.message);
+    throw new Error("RecentStudy 데이터를 수정하는 데 실패했습니다.");
+  }
+}
+
+// 최신 학습 기록 조회
+async function getRecentStudy(id = null) {
+  try {
+    let selectQuery;
+    let params = [];
+
+    if (id) {
+      // 특정 ID로 데이터 조회
+      selectQuery = `
+        SELECT * FROM RecentStudy WHERE id = ?;
+      `;
+      params = [id];
+    } else {
+      // 최신 데이터 조회
+      selectQuery = `
+        SELECT * FROM RecentStudy
+        ORDER BY updatedAt DESC
+        LIMIT 1;
+      `;
+    }
+
+    const result = SQLITE_DB.exec(selectQuery, params);
+    if (result.length > 0) {
+      const [row] = result[0].values;
+      const [id, type, state, url_params, test_list, createdAt, updatedAt] = row;
+      return {
+        id,
+        type,
+        state,
+        url_params,
+        test_list: JSON.parse(test_list), // JSON 데이터 복원
+        createdAt,
+        updatedAt,
+      };
+    } else {
+      console.warn(`데이터를 찾을 수 없습니다.`);
+      return null;
+    }
+  } catch (error) {
+    console.error("RecentStudy 데이터 조회 중 오류:", error.message);
+    throw new Error("RecentStudy 데이터를 조회하는 데 실패했습니다.");
+  }
+}
+
+// 최신 학습 기록 전체 조회
+async function getAllRecentStudies() {
+  try {
+    const selectQuery = `
+      SELECT * FROM RecentStudy;
+    `;
+
+    const result = SQLITE_DB.exec(selectQuery);
+    if (result.length > 0) {
+      return result[0].values.map(([id, type, state, url_params, test_list, createdAt, updatedAt]) => ({
+        id,
+        type,
+        state,
+        url_params,
+        test_list: JSON.parse(test_list), // JSON 데이터 복원
+        createdAt,
+        updatedAt,
+      }));
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("RecentStudy 전체 데이터 조회 중 오류:", error.message);
+    throw new Error("RecentStudy 데이터를 조회하는 데 실패했습니다.");
+  }
+}
+
+// 최신 학습 기록 삭제
+async function deleteRecentStudy(id) {
+  try {
+    const deleteQuery = `
+      DELETE FROM RecentStudy WHERE id = ?;
+    `;
+
+    SQLITE_DB.run(deleteQuery, [id]);
+    console.log(`ID가 ${id}인 RecentStudy 데이터가 삭제되었습니다.`);
+    await saveDB(); // 변경 내용을 IndexedDB에 저장
+  } catch (error) {
+    console.error("RecentStudy 데이터 삭제 중 오류:", error.message);
+    throw new Error("RecentStudy 데이터를 삭제하는 데 실패했습니다.");
+  }
+}
+
 // 초기 실행
 (async () => {
   // sql.js 로드
@@ -380,504 +666,4 @@ async function deleteWordbookWithWords(id) {
     window.SQL = SQL; // 전역에서 사용 가능하도록 설정
   });
   await loadDB();
-  const wordbooks = await getWordbook();
-  const words = await getWordsByWordbook();
 })();
-
-
-
-
-
-
-
-
-
-
-
-
-const INDEXED_DB_NAME = "HEY_VOCA_DB";
-const INDEXED_DB_VERSION = 1;
-let INDEXED_DB;
-let INDEXED_STATUS = "off";
-
-// 인덱스 DB 호출 await
-const waitIndexDbOpen = () => {
-  return new Promise((resolve) => {
-    const intervalId = setInterval(() => {
-      if (["on", "err"].includes(INDEXED_STATUS)) {
-        clearInterval(intervalId); // 조건을 만족하면 인터벌 중지
-        resolve(INDEXED_STATUS); // INDEXED_STATUS 값을 반환하며 Promise 해결
-      }
-    }, 30);
-  });
-};
-
-
-// 데이터베이스를 여는 요청
-const INDEXED_DB_REQUEST = indexedDB.open(INDEXED_DB_NAME, INDEXED_DB_VERSION);
-
-// INDEXED_DB_REQUEST.onerror = function(event) {
-//   INDEXED_STATUS = "err"
-//   console.error("데이터베이스 오류: ", event.target.errorCode);
-// };
-
-// INDEXED_DB_REQUEST.onsuccess = function(event) {
-//   INDEXED_DB = event.target.result;
-//   INDEXED_STATUS = "on"
-//   console.log("데이터베이스가 성공적으로 열렸습니다.");
-// };
-
-// INDEXED_DB_REQUEST.onupgradeneeded = function(event) {
-//   INDEXED_DB = event.target.result;
-//   INDEXED_STATUS = "on"
-//   console.log('데이터베이스가 처음으로 열렸습니다.')
-//   // 사용자 스토어 생성
-//   const userStore = INDEXED_DB.createObjectStore("users", { keyPath: "id", autoIncrement: true });
-//   // userStore.createIndex("email", "email", { unique: true });
-
-//   // 단어장 스토어 생성
-//   const notebookStore = INDEXED_DB.createObjectStore("notebooks", { keyPath: "id", autoIncrement: true });
-//   // notebookStore.createIndex("name", "name", { unique: true });
-//   // notebookStore.createIndex("color", "color", { unique: false });
-//   // notebookStore.createIndex("createdAt", "createdAt", { unique: false });
-//   // notebookStore.createIndex("updatedAt", "updatedAt", { unique: false });
-//   // notebookStore.createIndex("status", "status", { unique: false });
-
-//   // 단어 스토어 생성
-//   const wordStore = INDEXED_DB.createObjectStore("words", { keyPath: "id", autoIncrement: true });
-//   wordStore.createIndex("notebookId", "notebookId", { unique: false });
-//   // wordStore.createIndex("word", "word", { unique: false });
-//   // wordStore.createIndex("meaning", "meaning", { unique: false });
-//   // wordStore.createIndex("example", "example", { unique: false });
-//   // wordStore.createIndex("description", "description", { unique: false });
-//   // wordStore.createIndex("createdAt", "createdAt", { unique: false });
-//   // wordStore.createIndex("updatedAt", "updatedAt", { unique: false });
-//   // wordStore.createIndex("status", "status", { unique: false });
-
-//   // 최근 학습 스토어 생성
-//   const recentLearningStore = INDEXED_DB.createObjectStore("recentLearning");
-//   recentLearningStore.put(null, "type"); // card, mcq
-//   recentLearningStore.put(null, "state"); // "before", after
-//   recentLearningStore.put(null, "test_list"); // []
-
-//   // 더미 데이터 추가
-//   const isNewDatabase = event.oldVersion === 0;
-//   if (isNewDatabase) {
-//     userStore.transaction.oncomplete = function() {
-//       const userTransaction = INDEXED_DB.transaction("users", "readwrite");
-//       const userStore = userTransaction.objectStore("users");
-
-//       // 사용자 더미 데이터
-//       userStore.add({ name: "비회원", email: "구글 로그인이 필요합니다" });
-
-//       const notebookTransaction = INDEXED_DB.transaction("notebooks", "readwrite");
-//       const notebookStore = notebookTransaction.objectStore("notebooks");
-
-//       // 단어장 더미 데이터
-//       // const createdAt = new Date().toISOString();
-//       // notebookStore.add({ name: "초등 영단어", color: {main: "42F98B", background: "E2FFE8"}, createdAt, updatedAt: createdAt, status: "active" });
-//       // notebookStore.add({ name: "중등 영단어", color: {main: "FF8DD4", background: "FFEFFA"}, createdAt, updatedAt: createdAt, status: "active" });
-//       // notebookStore.add({ name: "고등 영단어", color: {main: "CD8DFF", background: "F6EFFF"}, createdAt, updatedAt: createdAt, status: "active" });
-//       // notebookStore.add({ name: "수능 영단어", color: {main: "74D5FF", background: "EAF6FF"}, createdAt, updatedAt: createdAt, status: "active" });
-//       // notebookStore.add({ name: "토익 영단어", color: {main: "FFBD3C", background: "FFF6DF"}, createdAt, updatedAt: createdAt, status: "active" });
-
-//       const wordTransaction = INDEXED_DB.transaction("words", "readwrite");
-//       const wordStore = wordTransaction.objectStore("words");
-
-//       // 단어 더미 데이터
-//       // wordStore.add({ notebookId: 1, word: "apple", meaning: ["사과"], example: [{origin : "I ate an apple.", meaning : "나는 사과를 먹었다."}], description: "먹는 사과", createdAt, updatedAt: createdAt, status: 0 });
-//       // wordStore.add({ notebookId: 1, word: "book", meaning: ["도서"], example: [{origin : "I read a book.", meaning : "나는 책을 읽었다."}], description: "읽는 책", createdAt, updatedAt: createdAt, status: 1 });
-//     };
-//   }
-// };
-
-// 사용자 추가 함수
-function addIndexedDbUser(name, email) {
-  const transaction = INDEXED_DB.transaction(["users"], "readwrite");
-  const store = transaction.objectStore("users");
-
-  const request = store.add({ name, email });
-
-  request.onsuccess = function() {
-    console.log("사용자가 성공적으로 추가되었습니다.");
-  };
-
-  request.onerror = function(event) {
-    console.error("사용자를 추가하는 중에 오류가 발생했습니다.: ", event.target.errorCode);
-  };
-}
-
-// 사용자 조회 함수
-function getIndexedDbUsers() {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["users"], "readonly");
-    const store = transaction.objectStore("users");
-
-    const request = store.getAll();
-
-    request.onsuccess = function(event) {
-      resolve(event.target.result[0]);
-    };
-
-    request.onerror = function(event) {
-      console.error("사용자를 가져오는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-
-
-// 사용자 업데이트 함수
-function updateIndexedDbUser(id, name, email) {
-  const transaction = INDEXED_DB.transaction(["users"], "readwrite");
-  const store = transaction.objectStore("users");
-
-  const request = store.put({ id, name, email });
-
-  request.onsuccess = function() {
-    console.log("사용자가 업데이트되었습니다.");
-  };
-
-  request.onerror = function(event) {
-    console.error("사용자를 업데이트하는 중에 오류가 발생했습니다.: ", event.target.errorCode);
-  };
-}
-
-// 사용자 삭제 함수
-function deleteIndexedDbUser(id) {
-  const transaction = INDEXED_DB.transaction(["users"], "readwrite");
-  const store = transaction.objectStore("users");
-
-  const request = store.delete(id);
-
-  request.onsuccess = function() {
-    console.log("사용자가 삭제되었습니다.");
-  };
-
-  request.onerror = function(event) {
-    console.error("사용자를 삭제하는 중에 오류가 발생했습니다.: ", event.target.errorCode);
-  };
-}
-
-// 단어장 추가 함수
-function addIndexedDbNotebook(name, color, createdAt, updatedAt, status) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["notebooks"], "readwrite");
-    const store = transaction.objectStore("notebooks");
-
-    const request = store.add({ name, color, createdAt, updatedAt, status });
-
-    request.onsuccess = function() {
-      const newId = request.result; 
-      console.log("단어장이 추가되었습니다. 새 ID:", newId);
-      resolve(newId);
-    };
-
-    request.onerror = function(event) {
-      console.error("단어장을 추가하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-// 단어장 조회 함수
-function getIndexedDbNotebooks() {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["notebooks"], "readonly");
-    const store = transaction.objectStore("notebooks");
-    const request = store.getAll();
-    request.onsuccess = function(event) {
-      resolve(event.target.result);
-    };
-    request.onerror = function(event) {
-      console.error("단어장을 가져오는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-// 특정 id의 단어장 조회 함수
-function getIndexedDbNotebookById(id) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["notebooks"], "readonly");
-    const store = transaction.objectStore("notebooks");
-
-    const request = store.get(id);
-
-    request.onsuccess = function(event) {
-      if (event.target.result) {
-        resolve(event.target.result);
-      } else {
-        reject(`No notebook found with id: ${id}`);
-      }
-    };
-
-    request.onerror = function(event) {
-      console.error(`단어장을 가져오는 중에 오류가 발생했습니다.: ${event.target.errorCode}`);
-      reject(event.target.errorCode);
-    };
-  });
-}
-// 단어장 업데이트 함수
-function updateIndexedDbNotebook(id, name, color, updatedAt, status) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["notebooks"], "readwrite");
-    const store = transaction.objectStore("notebooks");
-
-    const request = store.put({ id, name, color, updatedAt, status });
-
-    request.onsuccess = function() {
-      console.log("단어장이 업데이트되었습니다.");
-      resolve();
-    };
-
-    request.onerror = function(event) {
-      console.error("단어장을 업데이트하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-
-async function deleteIndexedDbNotebook(id) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const words = await getIndexedDbWordsByNotebookId(id);
-      for (const word of words) {
-        await deleteIndexedDbWord(word.id);
-      }
-      const transaction = INDEXED_DB.transaction(["notebooks"], "readwrite");
-      const store = transaction.objectStore("notebooks");
-      const request = store.delete(id);
-      request.onsuccess = function () {
-        console.log("단어장이 삭제되었습니다.");
-        resolve(); // 단어장 삭제 성공 시 resolve
-      };
-      request.onerror = function (event) {
-        console.error("단어장을 삭제하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-        reject(event.target.errorCode); // 단어장 삭제 오류 시 reject
-      };
-    } catch (error) {
-      console.error("단어 또는 단어장을 삭제하는 중 오류가 발생했습니다.", error);
-      reject(error); // 비동기 작업에서 발생한 오류 처리
-    }
-  });
-}
-
-// 단어 추가 함수
-function addIndexedDbWord(notebookId, word, meaning, example, description, createdAt, updatedAt, status) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["words"], "readwrite");
-    const store = transaction.objectStore("words");
-
-    const request = store.add({ notebookId, word, meaning, example, description, createdAt, updatedAt, status });
-
-    request.onsuccess = function() {
-      console.log("단어가 성공적으로 추가되었습니다");
-      resolve();
-    };
-
-    request.onerror = function(event) {
-      console.error("단어를 추가하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-// 단어 조회 함수
-function getIndexedDbWordsByNotebookId(notebookId) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["words"], "readonly");
-    const store = transaction.objectStore("words");
-    const index = store.index("notebookId");
-
-    const request = index.getAll(notebookId);
-
-    request.onsuccess = function(event) {
-      resolve(event.target.result);
-    };
-
-    request.onerror = function(event) {
-      console.error("단어를 가져오는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-// 특정 ID의 단어 조회 함수
-function getIndexedDbWordById(id) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["words"], "readonly");
-    const store = transaction.objectStore("words");
-
-    const request = store.get(id);
-
-    request.onsuccess = function(event) {
-      resolve(event.target.result);
-    };
-
-    request.onerror = function(event) {
-      console.error("단어를 가져오는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-
-// 단어 업데이트 함수
-function updateIndexedDbWord(id, updatedData) {
-  // id, notebookId, word, meaning, example, description, updatedAt, status
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["words"], "readwrite");
-    const store = transaction.objectStore("words");
-
-    const getRequest = store.get(id);
-
-    getRequest.onsuccess = function(event) {
-      const wordData = event.target.result;
-      if (!wordData) {
-        reject(`ID ${id}에 해당하는 단어를 찾을 수 없습니다.`);
-        return;
-      }
-
-      // 업데이트할 데이터만 갱신
-      for (const key in updatedData) {
-        console.log("KEY",key)
-        if (updatedData.hasOwnProperty(key)) {
-          console.log("hasOwnProperty,",updatedData[key])
-          wordData[key] = updatedData[key];
-        }
-      }
-
-      const updateRequest = store.put(wordData);
-
-      updateRequest.onsuccess = function() {
-        console.log("단어가 성공적으로 업데이트되었습니다.");
-        resolve();
-      };
-
-      updateRequest.onerror = function(event) {
-        console.error("단어를 업데이트하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-        reject(event.target.errorCode);
-      };
-    };
-
-    getRequest.onerror = function(event) {
-      console.error("단어를 가져오는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-
-// 단어 삭제 함수
-function deleteIndexedDbWord(id) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["words"], "readwrite");
-    const store = transaction.objectStore("words");
-
-    const request = store.delete(id);
-
-    request.onsuccess = function() {
-      console.log("단어가 성공적으로 삭제되었습니다.");
-      resolve();
-    };
-
-    request.onerror = function(event) {
-      console.error("단어 삭제 오류: ", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-
-// 최근 학습 조회
-function getRecentLearningData(key) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["recentLearning"], "readonly");
-    const store = transaction.objectStore("recentLearning");
-
-    const request = store.get(key);
-
-    request.onsuccess = function(event) {
-      if (event.target.result !== undefined) {
-        resolve(event.target.result);
-      } else {
-        reject("데이터가 없습니다.");
-      }
-    };
-
-    request.onerror = function(event) {
-      console.error("데이터를 가져오는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-
-// 최근 학습 추가 
-function addRecentLearningData(key, value) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["recentLearning"], "readwrite");
-    const store = transaction.objectStore("recentLearning");
-
-    const request = store.put(value, key);
-
-    request.onsuccess = function(event) {
-      resolve(event.target.result);
-    };
-
-    request.onerror = function(event) {
-      console.error("데이터를 추가하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-
-// 최근 학습 수정
-function updateRecentLearningData(key, value) {
-  console.log(key, value)
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["recentLearning"], "readwrite");
-    const store = transaction.objectStore("recentLearning");
-
-    const request = store.put(value, key);
-
-    request.onsuccess = function(event) {
-      resolve(event.target.result);
-    };
-
-    request.onerror = function(event) {
-      console.error("데이터를 수정하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-
-// 최근 학습 삭제
-function deleteRecentLearningData(key) {
-  return new Promise((resolve, reject) => {
-    const transaction = INDEXED_DB.transaction(["recentLearning"], "readwrite");
-    const store = transaction.objectStore("recentLearning");
-
-    const request = store.delete(key);
-
-    request.onsuccess = function(event) {
-      resolve();
-    };
-
-    request.onerror = function(event) {
-      console.error("데이터를 삭제하는 중에 오류가 발생했습니다.:", event.target.errorCode);
-      reject(event.target.errorCode);
-    };
-  });
-}
-
-
-// IndexedDB 데이터베이스 삭제 함수
-function deleteDatabase(dbName) {
-  const request = indexedDB.deleteDatabase(dbName);
-
-  request.onsuccess = () => {
-    console.log(`Database ${dbName} deleted successfully`);
-  };
-
-  request.onerror = (event) => {
-    console.error(`Error deleting database ${dbName}:`, event.target.error);
-  };
-
-  request.onblocked = () => {
-    console.log(`Delete blocked for database ${dbName}`);
-  };
-}
