@@ -71,12 +71,11 @@ const changeExampleVisibleToggle = (event) => {
 const clickUpload = async (event) => {
   // TODO : 업로드 경고 모달
   const device_type = getDevicePlatform();
-  const notebooks = await getIndexedDbNotebooks();
-  for (const notebook of notebooks) {
-    notebook.words = await getIndexedDbWordsByNotebookId(notebook.id);
-    notebook.words.forEach((word) => delete word.notebookId);
+  const wordbooks = await getWordbook();
+  for (const wordbook of wordbooks) {
+    wordbook.words = await getWordsByWordbook(wordbook.id);
+    wordbook.words.forEach((word) => delete word.wordbookId);
   }
-
   // 업로드 요청 함수 정의
   const uploadNotebooks = async (url, data) => {
     try {
@@ -94,13 +93,13 @@ const clickUpload = async (event) => {
   // URL과 데이터 설정
   if (device_type === 'web') {
     const url = `https://vocaandgo.ghmate.com/drive/backup`;
-    console.log("notebooks,",notebooks)
-    await uploadNotebooks(url, notebooks);
+    console.log("wordbooks,",wordbooks)
+    await uploadNotebooks(url, wordbooks);
   } else {
     try {
       const accessToken = await getAccessToken();
       const url = `https://vocaandgo.ghmate.com/drive/backup/app`;
-      const data = { notebooks: notebooks, access_token: accessToken };
+      const data = { notebooks: wordbooks, access_token: accessToken };
       await uploadNotebooks(url, data);
     } catch (error) {
       console.error("액세스 토큰을 가져오는 중 오류:", error);
