@@ -289,21 +289,14 @@ async function addWordbook(name, color, status = 0) {
   const colorJson = JSON.stringify(color);
   const paramse  = [name, colorJson, status, currentTime, currentTime]
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(insertQuery, paramse)
-
+    const result = await setSqliteQuery(insertQuery, paramse);
+    return getWordbook(result.insertId);
   }else{
     try {
-      // SQLite 메모리 DB에 데이터 추가
       SQLITE_DB.run(insertQuery, paramse);
-  
-      // 마지막으로 삽입된 ID 가져오기
       const result = SQLITE_DB.exec("SELECT last_insert_rowid() AS id");
       const id = result[0].values[0][0];
-  
-      // 변경 내용을 IndexedDB에 저장
       await saveDB();
-  
-      // 추가된 데이터 반환
       return await getWordbook(id);
     } catch (error) {
       console.error("Wordbook 추가 중 오류 발생:", error.message);
@@ -324,12 +317,12 @@ async function updateWordbook(id, name, color, status) {
   `;
   const paramse = [name, colorJson, status, currentTime, id]
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(updateQuery, paramse)
+    await setSqliteQuery(updateQuery, paramse);
+    return await getWordbook(id);
   }else{
     try {
       SQLITE_DB.run(updateQuery, paramse);
       await saveDB();
-
       return await getWordbook(id);
     } catch (error) {
       console.error("Wordbook 수정 중 오류 발생:", error.message);
@@ -354,7 +347,6 @@ async function deleteWordbook(id) {
 async function getWordbook(id = null) {
   let selectQuery;
   let params = [];
-
   if (id) {
     // 특정 단어장 조회
     selectQuery = "SELECT * FROM Wordbook WHERE id = ?";
@@ -428,13 +420,11 @@ async function updateWord(id, updates = {}) {
   if (!existingWord) {
     throw new Error(`ID가 ${id}인 단어를 찾을 수 없습니다.`);
   }
-  // 기존 데이터와 업데이트 데이터를 병합
   const updatedWord = {
     ...existingWord,
-    ...updates, // 새로운 데이터로 덮어쓰기
-    updatedAt: currentTime, // 항상 updatedAt 갱신
+    ...updates, 
+    updatedAt: currentTime, 
   };
-  // JSON 필드 변환
   const meaningJson = JSON.stringify(updatedWord.meaning);
   const exampleJson = JSON.stringify(updatedWord.example);
   const updateQuery = `
@@ -442,16 +432,7 @@ async function updateWord(id, updates = {}) {
     SET wordbook_id = ?, origin = ?, meaning = ?, example = ?, description = ?, status = ?, updatedAt = ?
     WHERE id = ?
   `;
-  const params = [
-    updatedWord.wordbookId,
-    updatedWord.origin,
-    meaningJson,
-    exampleJson,
-    updatedWord.description,
-    updatedWord.status,
-    updatedWord.updatedAt,
-    id,
-  ]
+  const params = [ updatedWord.wordbookId, updatedWord.origin, meaningJson, exampleJson, updatedWord.description, updatedWord.status, updatedWord.updatedAt, id,]
   if(getDevicePlatform() == "app"){
     await setSqliteQuery(updateQuery, params)
     return await getWord(id);
