@@ -1,0 +1,42 @@
+{
+  "version" : 1,
+  "table_models" : [
+    {
+      "name": "Wordbook",
+      "columns": [
+        { "name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT" },
+        { "name": "name", "type": "TEXT NOT NULL" },
+        { "name": "color", "type": "TEXT NOT NULL" },
+        { "name": "status", "type": "INTEGER NOT NULL DEFAULT 0" },
+        { "name": "createdAt", "type": "TEXT NOT NULL" },
+        { "name": "updatedAt", "type": "TEXT NOT NULL" }
+      ]
+    },
+    {
+      "name": "Word",
+      "columns": [
+        { "name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT" },
+        { "name": "wordbook_id", "type": "INTEGER NOT NULL" },
+        { "name": "origin", "type": "TEXT NOT NULL" },
+        { "name": "meaning", "type": "TEXT" },
+        { "name": "example", "type": "TEXT" },
+        { "name": "description", "type": "TEXT" },
+        { "name": "status", "type": "INTEGER NOT NULL DEFAULT 0" },
+        { "name": "createdAt", "type": "TEXT NOT NULL" },
+        { "name": "updatedAt", "type": "TEXT NOT NULL" }
+      ]
+    },
+    {
+      "name": "RecentStudy",
+      "columns": [
+        { "name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT" },
+        { "name": "type", "type": "TEXT NOT NULL" },
+        { "name": "state", "type": "INTEGER NOT NULL" },
+        { "name": "url_params", "type": "TEXT NOT NULL" },
+        { "name": "test_list", "type": "TEXT NOT NULL" },
+        { "name": "createdAt", "type": "TEXT NOT NULL" },
+        { "name": "updatedAt", "type": "TEXT NOT NULL" }
+      ]
+    }
+  ]
+}

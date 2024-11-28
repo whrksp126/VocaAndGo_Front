@@ -245,8 +245,6 @@ const clickSaveVocabulary = async (event, htmlFun) => {
     const color = {main : _colorLi.dataset.color, background : _colorLi.dataset.background};
     const status = 0;
     const result = await addWordbook(name, color, status);
-    console.log(result);
-    // const result = await addIndexedDbNotebook(data.name, data.color, data.createdAt, data.updatedAt, data.status);
   }
   const _ul = document.querySelector('main .container ul');
   _ul.innerHTML = await htmlFun();

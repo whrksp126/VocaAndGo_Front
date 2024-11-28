@@ -102,6 +102,7 @@ function getAccessToken() {
     document.addEventListener('message', handleMessage);
   });
 }
+
 // TTS 
 function getNativeTTS(text, language) {
   const message = JSON.stringify({
@@ -110,4 +111,34 @@ function getNativeTTS(text, language) {
     language: language 
   });
   window.ReactNativeWebView?.postMessage(message);
+}
+
+// 웹에서 쿼리와 데이터를 JSON으로 구성하여 앱으로 전달
+function setSqliteQuery(query, params = []) {
+  const queryData = {
+    type: "set_sqlite_query",
+    query: query,
+    params: params,
+  };
+  return new Promise((resolve, reject) => {
+    // WebView로 메시지 전송
+    window.ReactNativeWebView?.postMessage(JSON.stringify(queryData));
+    const handleMessage = function (event) {
+      try {
+        const message = JSON.parse(event.data);
+        if (message.type === 'sqlite_query_return') {
+          if(message.success){
+            resolve(message.result); 
+          }else{
+            reject(message.error); 
+          }
+          document.removeEventListener('message', handleMessage);
+        }
+      } catch (error) {
+        console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다: ${error}`);
+        reject(error); // 오류 발생 시 reject
+      }
+    };
+    document.addEventListener('message', handleMessage);
+  })
 }
