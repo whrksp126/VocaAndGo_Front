@@ -126,7 +126,6 @@ function setSqliteQuery(query, params = []) {
     const handleMessage = function (event) {
       try {
         const message = JSON.parse(event.data);
-        alert(message.type)
         if (message.type === 'sqlite_query_return') {
           if(message.success){
             resolve(message.result); 
