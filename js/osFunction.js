@@ -146,12 +146,13 @@ function setSqliteQuery(query, params = []) {
 
 // SQLite 상태 조회 - Promise로 변환
 function getSqliteStatus() {
+  alert('getSqliteStatus')
   return new Promise((resolve, reject) => {
     window?.ReactNativeWebView?.postMessage('get_sqlite_status');
     const handleMessage = function(event) {
       try {
         const message = JSON.parse(event.data); 
-        if (message.type === 'sqlite_statue_return') {
+        if (message.type === 'sqlite_status_return') {
           if (message.data) {
             resolve(message.data);
           } else {
