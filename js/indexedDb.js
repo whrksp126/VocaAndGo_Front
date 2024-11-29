@@ -27,13 +27,14 @@ async function loadDB() {
 
   }else{
     const response = await fetch('../json/sqlite_model.json');
+    
     if (!response.ok) {
       throw new Error(`Failed to load JSON: ${response.status}`);
     }
 
     const result = await response.json(); 
     SQLITE_VERSION = result.version; 
-    TABLE_MODELS = result.data
+    TABLE_MODELS = result.table_models
     const request = indexedDB.open(SQLITE_NAME, SQLITE_VERSION);
   
     return new Promise((resolve, reject) => {

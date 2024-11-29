@@ -218,7 +218,6 @@ const clickModalsetWordBtn = async (event) => {
   const prev_vocabulary_id = Number(getValueFromURL("vocabulary_id"));
   const _modal = findParentTarget(event.target, '.modal');
   const vocabulary_id = Number(_modal.querySelector('.vocabulary').value);
-  console.log(vocabulary_id)
   const word_id = Number(_modal.dataset.id);
   const word = _modal.querySelector('input.word').value.trim();
   const meaning = _modal.querySelector('input.meaning').value.split(',').map(item => item.trim()).filter(Boolean);
