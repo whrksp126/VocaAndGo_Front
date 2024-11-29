@@ -6,9 +6,9 @@ let SQLITE_STATUS = "off";
 let TABLE_MODELS = null;
 
 // 인덱스 DB 호출 대기
-const waitSqliteOpen = () => {
+const waitSqliteOpen = async () => {
   if(getDevicePlatform() == "app"){
-
+    return await getSqliteStatus();
   }else{
     return new Promise((resolve) => {
       const intervalId = setInterval(() => {

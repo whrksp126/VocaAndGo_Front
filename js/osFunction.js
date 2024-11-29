@@ -142,3 +142,28 @@ function setSqliteQuery(query, params = []) {
     document.addEventListener('message', handleMessage);
   })
 }
+
+
+// SQLite 상태 조회 - Promise로 변환
+function getSqliteStatus() {
+  return new Promise((resolve, reject) => {
+    window?.ReactNativeWebView?.postMessage('get_sqlite_status');
+    const handleMessage = function(event) {
+      try {
+        const message = JSON.parse(event.data); 
+        if (message.type === 'sqlite_statue_return') {
+          if (message.data) {
+            resolve(message.data);
+          } else {
+            reject('토큰 데이터가 없습니다.');
+          }
+          document.removeEventListener('message', handleMessage);
+        }
+      } catch (error) {
+        console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다: ${error}`);
+        reject(error); // 오류 발생 시 reject
+      }
+    };
+    document.addEventListener('message', handleMessage);
+  });
+}
