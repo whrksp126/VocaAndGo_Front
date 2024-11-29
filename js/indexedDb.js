@@ -282,10 +282,7 @@ async function saveDB() {
 
 // Wordbook 데이터 추가
 async function addWordbook(name, color, status = 0) {
-  const insertQuery = `
-    INSERT INTO Wordbook (name, color, status, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?)
-  `;
+  const insertQuery = `INSERT INTO Wordbook (name, color, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`;
   const currentTime = new Date().toISOString();
   const colorJson = JSON.stringify(color);
   const paramse  = [name, colorJson, status, currentTime, currentTime]
