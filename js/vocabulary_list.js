@@ -81,7 +81,6 @@ const clickVocabularyItem = (event, id) => {
   window.location.href=`/html/vocabulary.html?vocabulary_id=${id}`
 }
 const setInitHtml = async () => {
-  // const index_status = await waitIndexDbOpen();
   const index_status = await waitSqliteOpen();
   if(index_status == "on"){
     setUserNameHtml();
