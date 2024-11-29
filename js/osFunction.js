@@ -122,7 +122,6 @@ function setSqliteQuery(query, params = []) {
   };
   return new Promise((resolve, reject) => {
     // WebView로 메시지 전송
-    alert('3')
     window.ReactNativeWebView?.postMessage(JSON.stringify(queryData));
     const handleMessage = function (event) {
       try {
