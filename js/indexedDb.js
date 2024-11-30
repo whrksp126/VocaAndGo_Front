@@ -355,11 +355,7 @@ async function getWordbook(id = null) {
   }
   if(getDevicePlatform() == "app"){
     const result = await setSqliteQuery(selectQuery, params)
-    const rows = [];
-    for (let i = 0; i < result.rows.length; i++) {
-      rows.push(result.rows.item(i));
-    }
-    alert(JSON.stringify(rows))
+    alert(JSON.stringify(result))
     if (result?.rows?.length > 0) {
       const data = result.rows.map(({ id, name, color, status, createdAt, updatedAt }) => ({
         id,
