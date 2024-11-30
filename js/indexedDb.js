@@ -288,6 +288,7 @@ async function addWordbook(name, color, status = 0) {
   const paramse  = [name, colorJson, status, currentTime, currentTime]
   if(getDevicePlatform() == "app"){
     const result = await setSqliteQuery(insertQuery, paramse);
+    alert(JSON.stringify(result))
     return await getWordbook(result.insertId);
   }else{
     try {
