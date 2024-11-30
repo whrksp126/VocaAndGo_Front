@@ -473,6 +473,7 @@ async function getWordsByWordbook(wordbookId = null) {
   if(getDevicePlatform() == "app"){
     const result = await setSqliteQuery(selectQuery, params);
     if (result?.rowsLength > 0) {
+      alert(JSON.stringify(result.rows))
       return result.rows.map(({ id, wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt }) => ({
         id,
         wordbookId: wordbook_id,
@@ -512,7 +513,6 @@ async function getWord(id) {
   const params = [id];
 
   const formatResult = (row) => {
-    alert(JSON.stringify(row))
     const { id, wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt } = row;
     return {
       id,
