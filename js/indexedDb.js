@@ -528,6 +528,7 @@ async function getWord(id) {
 
   if (getDevicePlatform() === "app") {
     const result = await setSqliteQuery(selectQuery, params);
+    alert(JSON.stringify(result))
     if (result?.rowsLength > 0) {
       return formatResult(result.rows[0]);
     } else {
