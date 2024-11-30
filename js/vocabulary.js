@@ -238,6 +238,7 @@ const clickModalsetWordBtn = async (event) => {
   }else{
     // const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
     const result = await addWord(new_data.wordbook_id, new_data.origin, new_data.meaning, new_data.example, new_data.description, 0);
+    alert('여기로 넘어와?')
   }
   _modal.click();
   const _ul = document.querySelector('main .container ul');
