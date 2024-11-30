@@ -528,18 +528,8 @@ async function getWord(id) {
 
   if (getDevicePlatform() === "app") {
     const result = await setSqliteQuery(selectQuery, params);
-    if (result?.rows?.length > 0) {
-      return formatResult({
-        id: result.rows[0].word_id,
-        wordbook_id : result.rows[0].wordbook_id,
-        origin : result.rows[0].origin,
-        meaning : result.rows[0].meaning,
-        example : result.rows[0].example,
-        description : result.rows[0].description,
-        status : result.rows[0].status,
-        createdAt: result.rows[0].createdAt,
-        updatedAt : result.rows[0].updatedAt,
-      });
+    if (result?.rowsLength > 0) {
+      return formatResult(result.rows[0]);
     } else {
       console.warn(`ID가 ${id}인 단어를 찾을 수 없습니다.`);
       return null;
