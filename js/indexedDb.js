@@ -282,14 +282,12 @@ async function saveDB() {
 
 // Wordbook 데이터 추가
 async function addWordbook(name, color, status = 0) {
-  alert('addWordbook 함');
   const insertQuery = `INSERT INTO Wordbook (name, color, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`;
   const currentTime = new Date().toISOString();
   const colorJson = JSON.stringify(color);
   const paramse  = [name, colorJson, status, currentTime, currentTime]
   if(getDevicePlatform() == "app"){
     const result = await setSqliteQuery(insertQuery, paramse);
-    alert(`addWordbook : ${JSON.stringify(result)}`)
     return await getWordbook(result.insertId);
   }else{
     try {
@@ -356,9 +354,7 @@ async function getWordbook(id = null) {
     selectQuery = "SELECT * FROM Wordbook";
   }
   if(getDevicePlatform() == "app"){
-    alert(`ID : ${params}`)
     const result = await setSqliteQuery(selectQuery, params)
-    alert(`getWordbook : ${JSON.stringify(result)}`)
     if (result?.rows?.length > 0) {
       const data = result.rows._array.map(({ id, name, color, status, createdAt, updatedAt }) => ({
         id,
