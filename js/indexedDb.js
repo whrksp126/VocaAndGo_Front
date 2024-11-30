@@ -355,8 +355,8 @@ async function getWordbook(id = null) {
   }
   if(getDevicePlatform() == "app"){
     const result = await setSqliteQuery(selectQuery, params)
-    if (result?.rows?.length > 0) {
-      const data = result.rows._array.map(({ id, name, color, status, createdAt, updatedAt }) => ({
+    if (result?.length > 0) {
+      const data = result.map(({ id, name, color, status, createdAt, updatedAt }) => ({
         id,
         name,
         color: color ? JSON.parse(color) : {},
