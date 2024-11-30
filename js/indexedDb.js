@@ -512,6 +512,7 @@ async function getWord(id) {
   const params = [id];
 
   const formatResult = (row) => {
+    alert(JSON.stringify(row))
     const { id, wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt } = row;
     return {
       id,
@@ -528,7 +529,7 @@ async function getWord(id) {
 
   if (getDevicePlatform() === "app") {
     const result = await setSqliteQuery(selectQuery, params);
-    alert(JSON.stringify(result))
+    
     if (result?.rowsLength > 0) {
       return formatResult(result.rows[0]);
     } else {
