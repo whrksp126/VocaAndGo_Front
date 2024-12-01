@@ -555,7 +555,7 @@ const setInitHtml = async () => {
   const index_status = await waitSqliteOpen();
   if(index_status == "on"){
     const id = getValueFromURL("vocabulary_id");
-    setVocabularyNameHtml(id);
+    await setVocabularyNameHtml(id);
     const _ul = document.querySelector('main .container ul');
     _ul.innerHTML = await setVocabularyHtml(id);
   }
