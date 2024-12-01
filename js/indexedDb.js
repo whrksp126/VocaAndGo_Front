@@ -472,8 +472,8 @@ async function getWordsByWordbook(wordbookId = null) {
   }
   if(getDevicePlatform() == "app"){
     const result = await setSqliteQuery(selectQuery, params);
+    alert(JSON.stringify(result))
     if (result?.rowsLength > 0) {
-      alert(JSON.stringify(result.rows))
       return result.rows.map(({ id, wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt }) => ({
         id,
         wordbookId: wordbook_id,
