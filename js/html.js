@@ -274,15 +274,17 @@ const setTextSetupHtml = (type) => {
 // 정답 확인 html
 const setShowAnswerHtml = async () => {
   const recentStudy = await getRecentStudy();
+
   return `
     <ul>
-      ${recentStudy.test_list.map((data)=>{return `
+      ${recentStudy.test_list.map((data, index)=>{return `
       <li 
         data-id="${data.id}" 
         data-noteid="${data.wordbookId}" 
         data-isCorrect="${data.isCorrect}" 
         data-status="${data.status}"
-        class="answer_card ${data.result}"
+        data-index="${index}"
+        class="answer_card"
         >
         <div class="left">
           <div>
