@@ -296,7 +296,6 @@ const setVocabularyHtml = async (id) => {
   let html = '';
   // const words = await getIndexedDbWordsByNotebookId(Number(id));
   const words = await getWordsByWordbook(Number(id));
-  alert(JSON.stringify(words))
   // const noteBook = await getIndexedDbNotebookById(Number(id));
   const bodyStyle = document.querySelector('body').style;
   // bodyStyle.setProperty('--card-color', `#${noteBook.color.main}`);
