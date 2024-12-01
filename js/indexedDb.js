@@ -671,8 +671,8 @@ async function getRecentStudy(id = null) {
 
   if (getDevicePlatform() === "app") {
     const result = await setSqliteQuery(selectQuery, params);
-    if (result?.rows?.length > 0) {
-      return formatResult(result.rows._array[0]);
+    if (result?.rowsLength > 0) {
+      return formatResult(result.rows[0]);
     } else {
       console.warn(`데이터를 찾을 수 없습니다.`);
       return null;
@@ -711,8 +711,8 @@ async function getAllRecentStudies() {
   if (getDevicePlatform() === "app") {
     // 앱에서 데이터 조회
     const result = await setSqliteQuery(selectQuery);
-    if (result?.rows?.length > 0) {
-      return result.rows._array.map(({ id, type, state, url_params, test_list, createdAt, updatedAt }) => ({
+    if (result?.rowsLength > 0) {
+      return result.rows.map(({ id, type, state, url_params, test_list, createdAt, updatedAt }) => ({
         id,
         type,
         state,
