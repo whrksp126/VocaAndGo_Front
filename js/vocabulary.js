@@ -608,7 +608,7 @@ const setInitHtml = async () => {
             {
               name: 'offset',
               options: {
-                offset: [10, 10], // [x축 이동, y축 이동]
+                offset: [20, 10], // [x축 이동, y축 이동]
               },
             },
           ],
