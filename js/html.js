@@ -190,30 +190,66 @@ const setExampleBoxHtml = (num, word, origin, meaning) => {
 const setVocabularyListHtml = async () => {
   // const vocabulary_list = await getIndexedDbNotebooks();
   const vocabulary_list = await getWordbook();
+  console.log(vocabulary_list)
   let html = ``;
-  for(const vocabulary of vocabulary_list){
-    // const words = await getIndexedDbWordsByNotebookId(vocabulary.id);
-    const words = await getWordsByWordbook(vocabulary.id);
-    const totalWords = words.length;
-    const learnedCount = words.reduce((count, word) => {return word.status == 1 ? count + 1 : count}, 0);
-    const progress = Math.round((learnedCount / totalWords) * 100) || 0;
-    html += `
-      <li 
-        data-id="${vocabulary.id}"
-        onclick="clickVocabularyItem(event,${vocabulary.id})"
-        style="--card-color: ${vocabulary.color.main}; --card-background: ${vocabulary.color.background}; --progress-color: ${vocabulary.color.main}4d; --progress-width:${progress}%;"
-        >
-        <div class="top">
-          <h3>${vocabulary.name}</h3>
-          <span>${learnedCount}/${totalWords}</span>
-        </div>
-        <div class="progress_bar">
-          <div class="cur_bar">
-            <span class="${progress > 13 ? "" : "right"}">${progress}%</span>
+  if(vocabulary_list.length > 0){
+    for(const vocabulary of vocabulary_list){
+      // const words = await getIndexedDbWordsByNotebookId(vocabulary.id);
+      const words = await getWordsByWordbook(vocabulary.id);
+      const totalWords = words.length;
+      const learnedCount = words.reduce((count, word) => {return word.status == 1 ? count + 1 : count}, 0);
+      const progress = Math.round((learnedCount / totalWords) * 100) || 0;
+      html += `
+        <li 
+          data-id="${vocabulary.id}"
+          onclick="clickVocabularyItem(event,${vocabulary.id})"
+          style="--card-color: ${vocabulary.color.main}; --card-background: ${vocabulary.color.background}; --progress-color: ${vocabulary.color.main}4d; --progress-width:${progress}%;"
+          >
+          <div class="top">
+            <h3>${vocabulary.name}</h3>
+            <span>${learnedCount}/${totalWords}</span>
           </div>
-        </div>
-      </li>
+          <div class="progress_bar">
+            <div class="cur_bar">
+              <span class="${progress > 13 ? "" : "right"}">${progress}%</span>
+            </div>
+          </div>
+        </li>
+      `
+    }
+  }else{
+    const user_data = JSON.parse(localStorage.getItem('user'));
+    html += `
+    <li class="empty_message">
+      <div class="top">
+        <i class="ph ph-spinner"></i>
+      </div>
+      <div class="middle">
+        <span>아직 추가된 단어장이 없어요!</span><strong>${user_data.name}의 단어장</strong><span>을 추가해보세요🤗</span>
+      </div>
+    </li>
     `
+    const _addVocabularyBookBtn = document.querySelector('.add_vocabulary_book_btn');
+    _addVocabularyBookBtn.setAttribute("data-tippy-content", "눌러서 단어장 추가");
+    
+    const tooltipInstance = tippy('.add_vocabulary_book_btn', {
+      trigger: 'manual',
+      arrow: true,
+      animation: 'shift-away',
+      theme: 'ff8dd4',
+      onHide(instance) {
+        // 툴팁이 숨겨질 때 작업
+        console.log('툴팁이 숨겨졌습니다!');
+      },
+    });
+    
+    // 초기 툴팁 보여주기
+    tooltipInstance[0].show();
+    
+    // 버튼 클릭 시 툴팁 숨기기
+    _addVocabularyBookBtn.addEventListener('click', () => {
+      tooltipInstance[0].hide();
+    });
   }
   return html;
 }

@@ -31,7 +31,7 @@
         <h2></h2>
         <div class="btns">
           <button onclick="clickEditWord(event)"><i class="ph ph-pencil-simple"></i></button>
-          <button onclick="clickAddWord(event)"><i class="ph ph-plus"></i></button>
+          <button class="add_vocabulary_btn" onclick="clickAddWord(event)"><i class="ph ph-plus"></i></button>
         </div>
       </div>
     </header>
@@ -41,6 +41,12 @@
       </div>
     </main>
   </div>
+
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/shift-away.css" />
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+
   <script src="/js/common.js?v=2024.08.270203"></script>
   <script src="/js/vocabulary.js?v=2024.08.270203"></script>
   <script src="/js/live_ocr.js?v=2024.08.270203"></script>

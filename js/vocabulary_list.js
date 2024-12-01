@@ -75,6 +75,7 @@ const setVocabularyList = async () => {
   _ul.innerHTML = ``;
   const html = await setVocabularyListHtml();
   _ul.innerHTML = html;
+  
 }
 // 단어장 클릭 시
 const clickVocabularyItem = (event, id) => {
@@ -85,6 +86,7 @@ const setInitHtml = async () => {
   if(index_status == "on"){
     setUserNameHtml();
     await setVocabularyList();
+
   }
   if(index_status == "err"){
     alert("데이터 호출 err")

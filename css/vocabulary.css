@@ -66,10 +66,16 @@ main .container ul li .top .right {
 }
 main .container ul li .top .right .btns{
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 main .container ul li .top .right .btns button{
   display: block;
+}
+main .container ul li .top .right .btns button.marker_btn{
+  width: 18px;
+}
+main .container ul li .top .right .btns button.marker_btn img{
+  width: 14px;
 }
 main .container ul li .top .right .btns button.delete_btn{
   color: red;
@@ -130,6 +136,35 @@ main .container ul li .input_checkbox input[type="checkbox"]{
 main .container ul li .input_checkbox i{
   display: none;
 }
+main .container ul li.empty_message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 210px;
+  background: none;
+  transform: translate(-50%, -50%);
+}
+main .container ul li.empty_message .top{
+  justify-content: center;
+}
+main .container ul li.empty_message .top i{
+  font-size: 70px;
+  color: #FFD2EF;
+}
+main .container ul li.empty_message .middle{
+  font-size: 16px;
+  text-align: center;
+}
+main .container ul li.empty_message .middle span{
+  white-space: normal; 
+  word-break: keep-all;
+}
+main .container ul li.empty_message .middle strong{
+  color: #FF8DD4;
+  font-weight: 700;
+  white-space: normal; 
+  word-break: keep-all; 
+}
 [data-page="vocabulary_edit"] main .container ul li{
   padding-left: 45px;
 }
@@ -137,6 +172,9 @@ main .container ul li .input_checkbox i{
   display: block;
 }
 [data-page="vocabulary_edit"] main .container ul li .top .right .btns button.sound_btn{
+  display: none;
+}
+[data-page="vocabulary_edit"] main .container ul li .top .right .btns button.marker_btn{
   display: none;
 }
 [data-page="vocabulary_edit"] main .container ul li .top .right .btns button.edit_btn,

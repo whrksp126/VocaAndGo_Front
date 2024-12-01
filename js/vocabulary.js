@@ -303,56 +303,90 @@ const setVocabularyHtml = async (id) => {
   bodyStyle.setProperty('--card-color', `#FF8DD4`);
   bodyStyle.setProperty('--card-background', `#FFEFFA`);
   bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
-  for(let word of words){
-     html += `
-      <li 
-        data-id="${word.id}"
-        data-status="${word.status}"
-      >
-        <div class="input_checkbox">
-          <input type="checkbox" id="${word.id}">
-          <label for="${word.id}">
-            <i class="ph ph-square"></i>
-            <i class="ph-fill ph-check-square"></i>
-          </label>
-        </div>
-        <div class="top">
-          <div class="left">
-            <div class="word">${word.word}</div>
-            <button class="marker" onclick="clickMarker(event)">
-              <img src="/images/marker_${word.status}.png?v=2024.08.270203">
-            </button>
+  if(words.length > 0){
+    for(let word of words){
+       html += `
+        <li 
+          data-id="${word.id}"
+          data-status="${word.status}"
+        >
+          <div class="input_checkbox">
+            <input type="checkbox" id="${word.id}">
+            <label for="${word.id}">
+              <i class="ph ph-square"></i>
+              <i class="ph-fill ph-check-square"></i>
+            </label>
           </div>
-          <div class="right">
-            <div class="btns">
-              <button class="sound_btn" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
-              <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
-              <button onclick="clickDeleteWordBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
+          <div class="top">
+            <div class="left">
+              <div class="word">${word.word}</div>
+              
             </div>
-          </div>
-        </div>
-        <div class="bottom">
-          <div class="meaning">${word.meaning}</div>
-          <div class="examples ${getExmapleStyleAlwaysVisible() ? "active" : ""}">
-            ${word.example?.map(({origin, meaning})=>`
-            <div 
-              class="example" 
-              data-origin="${origin}" 
-              data-meaning="${meaning}" 
-              onclick="generateSpeech('${origin}', 'en')"
-              >
-              <div class="origin">
-                ${setHighlightText(origin, word.word)}
-              </div>
-              <div class="meaning">
-                <span>${meaning}</span>
+            <div class="right">
+              <div class="btns">
+                <button class="marker marker_btn" onclick="clickMarker(event)"><img src="/images/marker_${word.status}.png?v=2024.08.270203"></button>
+                <button class="sound_btn" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
+                <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
+                <button onclick="clickDeleteWordBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
               </div>
             </div>
-            `).join('')}
           </div>
-        </div>
-      </li>
+          <div class="bottom">
+            <div class="meaning">${word.meaning}</div>
+            <div class="examples ${getExmapleStyleAlwaysVisible() ? "active" : ""}">
+              ${word.example?.map(({origin, meaning})=>`
+              <div 
+                class="example" 
+                data-origin="${origin}" 
+                data-meaning="${meaning}" 
+                onclick="generateSpeech('${origin}', 'en')"
+                >
+                <div class="origin">
+                  ${setHighlightText(origin, word.word)}
+                </div>
+                <div class="meaning">
+                  <span>${meaning}</span>
+                </div>
+              </div>
+              `).join('')}
+            </div>
+          </div>
+        </li>
+      `
+    }
+  }else{
+    html += `
+    <li class="empty_message">
+      <div class="top">
+        <i class="ph ph-spinner"></i>
+      </div>
+      <div class="middle">
+        <span>아직 추가된 단어가 없어요!</span><strong>단어</strong><span>를 추가해보세요 🤗</span>
+      </div>
+    </li>
     `
+
+    const _addVocabularyBookBtn = document.querySelector('.add_vocabulary_btn');
+    _addVocabularyBookBtn.setAttribute("data-tippy-content", "눌러서 단어 추가");
+    
+    const tooltipInstance = tippy('.add_vocabulary_btn', {
+      trigger: 'manual',
+      arrow: true,
+      animation: 'shift-away',
+      theme: 'ff8dd4',
+      onHide(instance) {
+        // 툴팁이 숨겨질 때 작업
+        console.log('툴팁이 숨겨졌습니다!');
+      },
+    });
+    
+    // 초기 툴팁 보여주기
+    tooltipInstance[0].show();
+    
+    // 버튼 클릭 시 툴팁 숨기기
+    _addVocabularyBookBtn.addEventListener('click', () => {
+      tooltipInstance[0].hide();
+    });
   }
   return html;
 }
@@ -558,6 +592,41 @@ const setInitHtml = async () => {
     await setVocabularyNameHtml(id);
     const _ul = document.querySelector('main .container ul');
     _ul.innerHTML = await setVocabularyHtml(id);
+    const words = await getWordsByWordbook(Number(id));
+    if(words.length == 1){
+      const _addVocabularyBookBtn = document.querySelector('.marker_btn');
+      _addVocabularyBookBtn.setAttribute("data-tippy-content", "암기했다면 클릭!");
+
+      const tooltipInstance = tippy('.marker_btn', {
+        trigger: 'manual',
+        arrow: true,
+        placement: 'bottom-end',
+        animation: 'shift-away',
+        theme: 'ff8dd4',
+        popperOptions: {
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                offset: [10, 10], // [x축 이동, y축 이동]
+              },
+            },
+          ],
+        },
+        onHide(instance) {
+          // 툴팁이 숨겨질 때 작업
+          console.log('툴팁이 숨겨졌습니다!');
+        },
+      });
+
+      // 초기 툴팁 보여주기
+      tooltipInstance[0].show();
+
+      // 버튼 클릭 시 툴팁 숨기기
+      _addVocabularyBookBtn.addEventListener('click', () => {
+        tooltipInstance[0].hide();
+      });
+    }
   }
   if(index_status == "err"){
     alert("데이터 호출 err")

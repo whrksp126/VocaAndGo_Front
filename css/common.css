@@ -780,7 +780,26 @@ footer nav ul li span{
 /* 다시 풀기 모달  */
 /* ************** */
 
-
+/* ***** */
+/* tippy */
+.tippy-box[data-theme~='ff8dd4'] {
+  background-color: #FF8DD4; 
+  color: #fff; 
+  border-radius: 10px;
+  padding: 5px 10px;
+  font-size: 14px; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+}
+.tippy-box[data-theme~='ff8dd4'] .tippy-arrow {
+  color: #FF8DD4; 
+  width: 8px;
+  height: 8px;
+}
+.tippy-box[data-theme~='ff8dd4'] .tippy-arrow::before {
+  transform: scale(0.6, 1.2) translate(-8px, 0);
+}
+/* tippy */
+/* ***** */
 
 #logEl {
   position: fixed;
