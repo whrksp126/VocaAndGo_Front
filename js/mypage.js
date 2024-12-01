@@ -128,16 +128,26 @@ const clickDownload = async (event) => {
     if (result.code !== 200) return alert(`${result.msg}`);
 
     // IndexedDB에서 기존 단어장 삭제
-    const notebooks = await getIndexedDbNotebooks();
-    for (const notebook of notebooks) {
-      await deleteIndexedDbNotebook(notebook.id);
+    // const notebooks = await getIndexedDbNotebooks();
+    // for (const notebook of notebooks) {
+    //   await deleteIndexedDbNotebook(notebook.id);
+    // }
+    const existing_wordbooks = await getWordbook();
+    for (const wordbook of existing_wordbooks) {
+      await deleteWordbook(wordbook.id);
     }
 
     // 서버에서 받은 단어장 데이터 추가
-    for (const notebook of result.data) {
-      const notebook_id = await addIndexedDbNotebook(notebook.name, notebook.color, notebook.createdAt, notebook.updatedAt, notebook.status);
-      for (const data of notebook.words) {
-        await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status);
+    // for (const notebook of result.data) {
+    //   const notebook_id = await addIndexedDbNotebook(notebook.name, notebook.color, notebook.createdAt, notebook.updatedAt, notebook.status);
+    //   for (const data of notebook.words) {
+    //     await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status);
+    //   }
+    // }
+    for (const wordbook of result.data) {
+      const wordbook_data = await addWordbook(wordbook.name, wordbook.color, wordbook.status);
+      for (const data of wordbook.words) {
+        await addWord(wordbook_data.id, data.word, data.meaning, data.example, data.description, data.status);
       }
     }
 
