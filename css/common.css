@@ -80,7 +80,16 @@ header .container .btns button{
   font-weight: 700;
   color: var(--111-color);
 }
-
+.react header .container .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.react header .container .left h2 {
+  position: inherit;
+  transform: inherit;
+  
+}
 
 
 footer {
