@@ -82,11 +82,12 @@ const clickAddStoreVocabulary = (event, id) => {
 const clickAddVocabulary = async (event, id) => {
   const callback = async (result) => {
     if(result == "success"){
+
+      
       const vocabulary = STORE_DATA.find((item)=>item.id == id);
       const createdAt = new Date().toISOString();
       const color = JSON.parse(vocabulary.color);
       const wordbook = await addWordbook(vocabulary.name, {main : color.main,background : color.background});
-      // const vocabulary_id = await addIndexedDbNotebook(vocabulary.name, {main : vocabulary.color.main,background : vocabulary.color.background}, createdAt, createdAt, "active");
       for(const data of vocabulary.words){
         const new_data = {
           notebookId : Number(wordbook.id),
@@ -98,8 +99,13 @@ const clickAddVocabulary = async (event, id) => {
           updatedAt : createdAt
         }
         const result = await addWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description)
-        // const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
       }
+      
+      const url = 'https://vocaandgo.ghmate.com/search/bookstore/download';
+      const method = 'POST';
+      const fetchData = {id : id};
+      const result = await fetchDataAsync(url, method, fetchData);
+
       window.location.href=`/html/vocabulary_list.html`;
     }
     if(result == "failure"){
