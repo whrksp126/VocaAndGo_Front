@@ -92,6 +92,7 @@ header .container h2 {
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
   mask-composite: exclude;
+  pointer-events: none;
 }
 .selete_vocabulary li.all .top h3 div{
   font-size: 10px;
