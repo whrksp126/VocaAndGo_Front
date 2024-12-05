@@ -11,15 +11,19 @@ const initHtml = async () => {
   STORE_DATA = await getStoreData();
   // STORE_DATA = vocabulary_store_dummy_data;
   if(!STORE_DATA) return alert('서점 데이터 호출 중 에러');
+  console.log("STORE_DATA,",STORE_DATA)
   document.querySelector("main .container ul").innerHTML = `
-  ${STORE_DATA.map((data)=>`
+  ${STORE_DATA.map((data)=>{
+    const color = JSON.parse(data.color);
+    console.log(color)
+    return `
     <li 
       class="" 
       data-id="${data.id}" 
       style="
-        --main-color: ${data.color.main}; 
-        --sub-color: ${data.color.sub}; 
-        --background-color: ${data.color.background};
+        --main-color: ${color.main}; 
+        --sub-color: ${color.sub}; 
+        --background-color: ${color.background};
       "
       onclick="clickVocabularyPreview(event)"
       >
@@ -39,7 +43,7 @@ const initHtml = async () => {
         </button>
       </div>
     </li>
-  `).join('')}
+    `}).join('')}
   `
 }
 
@@ -47,6 +51,7 @@ initHtml();
 
 // 서점 단어장 미리보기 클릭 시
 const clickVocabularyPreview = (event) => {
+  
   const id = Number(findParentTarget(event.target, "li").dataset.id);
   const words = STORE_DATA.find((data)=>data.id == id).words || [];
   const modal = openDefaultModal();
