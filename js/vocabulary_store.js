@@ -100,11 +100,13 @@ const clickAddVocabulary = async (event, id) => {
         }
         const result = await addWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description)
       }
-      
+
+      // 단어장 다운로드 수 증가
       const url = 'https://vocaandgo.ghmate.com/search/bookstore/download';
       const method = 'POST';
       const fetchData = {id : id};
       const result = await fetchDataAsync(url, method, fetchData);
+
 
       window.location.href=`/html/vocabulary_list.html`;
     }
