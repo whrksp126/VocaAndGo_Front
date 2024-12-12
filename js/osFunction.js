@@ -175,7 +175,11 @@ function setConfirm(data) {
   if(getDevicePlatform() == "app"){
     return new Promise((resolve, reject) => {
       // WebView로 메시지 전송
-      window.ReactNativeWebView?.postMessage(JSON.stringify({type : 'confirm', data : data}));
+      window.ReactNativeWebView?.postMessage(JSON.stringify({
+        type : 'confirm', 
+        message : data.text,
+        btns : data.btns
+      }));
       const handleMessage = function (event) {
         try {
           const message = JSON.parse(event.data);
