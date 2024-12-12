@@ -24,7 +24,7 @@ const setCardHtml = (word, total, index) => {
       <span class="word hint">${show_hint}</span>
       <div class="bottom">
         <button class="marker click_event" onclick="clickMarker(event)">
-          <img src="/images/marker_${word.status}.png?v=2024.12.130110">
+          <img src="/images/marker_${word.status}.png?v=2024.12.130122">
         </button>
         <!-- 
         <div class="page">
