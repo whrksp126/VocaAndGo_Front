@@ -102,7 +102,10 @@ const clickMcqOption = (event, index) => {
       _currentItem.classList.add('end');
       _currentItem.classList.remove('active');
       _nextItem.classList.add('active');
-      generateSpeech(TEST_WORD_LIST[Number(_nextItem.dataset.index)].word, 'en')
+      const viewTypes = getValueFromURL('view_types');
+      if(viewTypes == 'word'){
+        generateSpeech(TEST_WORD_LIST[Number(_nextItem.dataset.index)].word, 'en')
+      }
       await updateRecentStudy(recentStudy.id, {
         test_list : TEST_WORD_LIST
       });

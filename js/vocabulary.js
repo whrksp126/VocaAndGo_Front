@@ -230,6 +230,15 @@ const clickModalsetWordBtn = async (event) => {
     meaning : meaning,
     example : example,
     description : explanation,
+  };
+  
+  const result = await getWordByOrigin(vocabulary_id, word);
+  if(result) {
+    const confirm = await setConfirm({
+      text : "단어장에 같은 단어가 있어요. 그래도 추가할까요?",
+      btns : [{text : "취소", text : "추가",}], 
+    })
+    if(!confirm) return
   }
   if(word.length <= 0) return alert('단어는 필수 입력 사항입니다');
   if(meaning.length <= 0) return alert('의미는 필수 입력 사항입니다');
@@ -243,6 +252,7 @@ const clickModalsetWordBtn = async (event) => {
   const _ul = document.querySelector('main .container ul');
   _ul.innerHTML = await setVocabularyHtml(prev_vocabulary_id);
 }
+
 // 단어 삭제 모달에서 삭제 클릭 시
 const clickModalDeleteWordBook = async (event) => {
   const VOCABULARY_ID = Number(getValueFromURL("vocabulary_id"));
@@ -251,6 +261,7 @@ const clickModalDeleteWordBook = async (event) => {
   const reuslt = await deleteWord(WORD_ID);
   _modal.click();
   const _ul = document.querySelector('main .container ul');
+
   _ul.innerHTML = await setVocabularyHtml(VOCABULARY_ID);
 }
 
@@ -275,7 +286,7 @@ const clickModalDeleteSelectWordBook = async (event) => {
   const VOCABULARY_ID = getValueFromURL("vocabulary_id");
   const __selectWord = document.querySelectorAll('main .container ul li .input_checkbox input[type="checkbox"]:checked');
   for(let _selectWord of __selectWord){
-    const result = await deleteIndexedDbWord(Number(_selectWord.id));
+    const result = await deleteWord(Number(_selectWord.id));
   }
   const _modal = findParentTarget(event.target, '.modal');
   _modal.click();
@@ -303,6 +314,7 @@ const setVocabularyHtml = async (id) => {
   bodyStyle.setProperty('--card-color', `#FF8DD4`);
   bodyStyle.setProperty('--card-background', `#FFEFFA`);
   bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
+  console.log("words,",words)
   if(words.length > 0){
     for(let word of words){
        html += `
@@ -365,28 +377,30 @@ const setVocabularyHtml = async (id) => {
       </div>
     </li>
     `
-
-    const _addVocabularyBookBtn = document.querySelector('.add_vocabulary_btn');
-    _addVocabularyBookBtn.setAttribute("data-tippy-content", "눌러서 단어 추가");
-    
-    const tooltipInstance = tippy('.add_vocabulary_btn', {
-      trigger: 'manual',
-      arrow: true,
-      animation: 'shift-away',
-      theme: 'ff8dd4',
-      onHide(instance) {
-        // 툴팁이 숨겨질 때 작업
-        console.log('툴팁이 숨겨졌습니다!');
-      },
-    });
-    
-    // 초기 툴팁 보여주기
-    tooltipInstance[0].show();
-    
-    // 버튼 클릭 시 툴팁 숨기기
-    _addVocabularyBookBtn.addEventListener('click', () => {
-      tooltipInstance[0].hide();
-    });
+    const url = window.location.href; 
+    const parsedUrl = new URL(url); 
+    const pathname = parsedUrl.pathname; 
+    const htmlFileName = pathname.split('/').pop(); 
+    if(htmlFileName != "vocabulary_edit.html"){
+      const _addVocabularyBookBtn = document.querySelector('.add_vocabulary_btn');
+      _addVocabularyBookBtn.setAttribute("data-tippy-content", "눌러서 단어 추가");
+      const tooltipInstance = tippy('.add_vocabulary_btn', {
+        trigger: 'manual',
+        arrow: true,
+        animation: 'shift-away',
+        theme: 'ff8dd4',
+        onHide(instance) {
+          // 툴팁이 숨겨질 때 작업
+          console.log('툴팁이 숨겨졌습니다!');
+        },
+      });
+      // 초기 툴팁 보여주기
+      tooltipInstance[0].show();
+      // 버튼 클릭 시 툴팁 숨기기
+      _addVocabularyBookBtn.addEventListener('click', () => {
+        tooltipInstance[0].hide();
+      });
+    }
   }
   return html;
 }
@@ -394,16 +408,18 @@ const setVocabularyHtml = async (id) => {
 // 단어 입력 시
 const onInputWord = async (event) => {
   const word = event.target.value.trim();
+  if (/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(word)) {
+    return event.target.value = word.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g, '')
+  }
   const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
-  if(word.length < 2) {
-    _searchList.classList.remove('active'); 
-    return
-  }else{
-
+  if (word.length < 2) {
+    _searchList.classList.remove('active');
+    return;
   }
   await getSearchWordData(word);
-  setSearchListEl(_searchList, SEARCH_LIST, word)
-}
+  setSearchListEl(_searchList, SEARCH_LIST, word);
+};
+
 
 // 검색 리스트 엘리먼트 세팅
 const setSearchListEl = (_el, search_list, word) => {
@@ -592,40 +608,47 @@ const setInitHtml = async () => {
     await setVocabularyNameHtml(id);
     const _ul = document.querySelector('main .container ul');
     _ul.innerHTML = await setVocabularyHtml(id);
-    const words = await getWordsByWordbook(Number(id));
-    if(words.length == 1){
-      const _addVocabularyBookBtn = document.querySelector('.marker_btn');
-      _addVocabularyBookBtn.setAttribute("data-tippy-content", "암기했다면 클릭!");
 
-      const tooltipInstance = tippy('.marker_btn', {
-        trigger: 'manual',
-        arrow: true,
-        placement: 'bottom-end',
-        animation: 'shift-away',
-        theme: 'ff8dd4',
-        popperOptions: {
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                offset: [20, 10], // [x축 이동, y축 이동]
+    const url = window.location.href; 
+    const parsedUrl = new URL(url); 
+    const pathname = parsedUrl.pathname; 
+    const htmlFileName = pathname.split('/').pop(); 
+    
+    if(htmlFileName != "vocabulary_edit.html"){
+      const words = await getWordsByWordbook(Number(id));
+      if(words.length == 1){
+        const _addVocabularyBookBtn = document.querySelector('.marker_btn');
+        _addVocabularyBookBtn.setAttribute("data-tippy-content", "암기했다면 클릭!");
+        const tooltipInstance = tippy('.marker_btn', {
+          trigger: 'manual',
+          arrow: true,
+          placement: 'bottom-end',
+          animation: 'shift-away',
+          theme: 'ff8dd4',
+          popperOptions: {
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [20, 10], // [x축 이동, y축 이동]
+                },
               },
-            },
-          ],
-        },
-        onHide(instance) {
-          // 툴팁이 숨겨질 때 작업
-          console.log('툴팁이 숨겨졌습니다!');
-        },
-      });
-
-      // 초기 툴팁 보여주기
-      tooltipInstance[0].show();
-
-      // 버튼 클릭 시 툴팁 숨기기
-      _addVocabularyBookBtn.addEventListener('click', () => {
-        tooltipInstance[0].hide();
-      });
+            ],
+          },
+          onHide(instance) {
+            // 툴팁이 숨겨질 때 작업
+            console.log('툴팁이 숨겨졌습니다!');
+          },
+        });
+  
+        // 초기 툴팁 보여주기
+        tooltipInstance[0].show();
+  
+        // 버튼 클릭 시 툴팁 숨기기
+        _addVocabularyBookBtn.addEventListener('click', () => {
+          tooltipInstance[0].hide();
+        });
+      }
     }
   }
   if(index_status == "err"){

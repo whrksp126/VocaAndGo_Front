@@ -168,3 +168,33 @@ function getSqliteStatus() {
     document.addEventListener('message', handleMessage);
   });
 }
+
+
+// 네이티브 cofirm 세팅
+function setConfirm(data) {
+  if(getDevicePlatform() == "app"){
+    return new Promise((resolve, reject) => {
+      // WebView로 메시지 전송
+      window.ReactNativeWebView?.postMessage(JSON.stringify({type : 'confirm', data : data}));
+      const handleMessage = function (event) {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === 'confirm_return') {
+            if(message.success){
+              resolve(message.result); 
+            }else{
+              reject(message.error); 
+            }
+            document.removeEventListener('message', handleMessage);
+          }
+        } catch (error) {
+          console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다: ${error}`);
+          reject(error); // 오류 발생 시 reject
+        }
+      };
+      document.addEventListener('message', handleMessage);
+    })
+  }else{
+    return confirm(data.text);
+  }
+}

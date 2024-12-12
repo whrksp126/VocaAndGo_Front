@@ -735,6 +735,7 @@ footer nav ul li span{
 .answer_card .left .texts{
   display: flex;
   flex-flow: column;
+  flex: 1;
   gap: 10px;
   color: #111;
 }
@@ -776,6 +777,9 @@ footer nav ul li span{
   gap: 10px;
 }
 .modal.show_answer .modal_content .modal_middle > ul li{}
+.modal.show_answer .modal_content .modal_middle > ul li .left{
+  flex: 1;
+}
 /* 정답 보기 모달  */
 /* ************** */
 

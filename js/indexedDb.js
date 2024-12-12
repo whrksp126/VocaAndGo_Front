@@ -506,6 +506,58 @@ async function getWordsByWordbook(wordbookId = null) {
   }
 };
 
+// 특정 단어장 ID와 origin으로 단어 조회
+async function getWordByOrigin(wordbookId, origin) {
+  const selectQuery = `
+    SELECT * FROM Word 
+    WHERE wordbook_id = ? AND origin = ?
+  `;
+  const params = [wordbookId, origin];
+
+  if (getDevicePlatform() === "app") {
+    const result = await setSqliteQuery(selectQuery, params);
+    if (result?.rowsLength > 0) {
+      // 첫 번째 결과 반환
+      const word = result.rows[0];
+      return {
+        id: word.id,
+        wordbookId: word.wordbook_id,
+        word: word.origin,
+        meaning: word.meaning ? JSON.parse(word.meaning) : [],
+        example: word.example ? JSON.parse(word.example) : [],
+        description: word.description,
+        status: word.status,
+        createdAt: word.createdAt,
+        updatedAt: word.updatedAt,
+      };
+    }
+    return null; // 단어를 찾을 수 없는 경우
+  } else {
+    try {
+      const result = SQLITE_DB.exec(selectQuery, params);
+      if (result.length > 0 && result[0].values.length > 0) {
+        // 첫 번째 결과 반환
+        const [id, wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt] = result[0].values[0];
+        return {
+          id,
+          wordbookId: wordbook_id,
+          word: origin,
+          meaning: meaning ? JSON.parse(meaning) : [],
+          example: example ? JSON.parse(example) : [],
+          description,
+          status,
+          createdAt,
+          updatedAt,
+        };
+      }
+      return null; // 단어를 찾을 수 없는 경우
+    } catch (error) {
+      console.error("단어 조회 중 오류 발생:", error.message);
+      throw new Error("단어를 조회하는 데 실패했습니다.");
+    }
+  }
+}
+
 // 단일 Word 데이터 조회
 async function getWord(id) {
   const selectQuery = `SELECT * FROM Word WHERE id = ?`;

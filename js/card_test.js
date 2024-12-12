@@ -65,44 +65,66 @@ const setCardTestPage = () => {
   }
 }
 
+// 플래그 변수 추가
+let isProcessing = false;
+
 // OX 클릭 시
 const clickGrading = async (event, outcome) => {
+  // 클릭 이벤트 연속 방지
+  if (isProcessing) return;
+  isProcessing = true;
+
   const __card = document.querySelectorAll('.cards .card');
   const _currentCard = __card[__card.length - 1];
-  if(!_currentCard) return;
+  if (!_currentCard) {
+    isProcessing = false; // 카드가 없으면 플래그 해제
+    return;
+  }
   const _nextCard = __card[__card.length - 2];
   _currentCard.classList.add(outcome ? 'correct' : 'incorrect');
   _currentCard.classList.add('end');
   _currentCard.classList.remove('active');
+
   const word_data = TEST_WORD_LIST[Number(_currentCard.dataset.index)];
   word_data.isCorrect = outcome;
+
   const _progressbarBox = document.querySelector('.progressbar_box');
   let currentPage = parseInt(getComputedStyle(_progressbarBox).getPropertyValue('--cur-page')) || 0;
   _progressbarBox.style.setProperty('--cur-page', currentPage + 1);
+
   const recentStudy = await getRecentStudy();
+
   if (!_nextCard) {
     _currentCard.remove();
     await updateRecentStudy(recentStudy.id, {
-      state : 1,
-      test_list : TEST_WORD_LIST,
-    })
+      state: 1,
+      test_list: TEST_WORD_LIST,
+    });
     setTestResultsHtml();
+    isProcessing = false; // 작업 완료 후 플래그 해제
   } else {
     _nextCard.classList.add('active');
     await updateRecentStudy(recentStudy.id, {
-      test_list : TEST_WORD_LIST,
-    })
+      test_list: TEST_WORD_LIST,
+    });
+
     const show_type = Number(_nextCard.dataset.show); // 0 : 단어, 1 : 의미
     const cur_data = TEST_WORD_LIST[Number(_nextCard.dataset.index)];
-    if(show_type == 0){
-      generateSpeech(cur_data.word, 'en')
-    }else{
 
+    if (show_type == 0) {
+      generateSpeech(cur_data.word, 'en');
     }
-    setTimeout(() => _currentCard.remove(), 300);
+
+    // 카드 제거 후 플래그 해제
+    setTimeout(() => {
+      _currentCard.remove();
+      isProcessing = false; // 300ms 후 플래그 해제
+    }, 300);
+
     setCardTouchEvent();
   }
-}
+};
+
 // 첫번째 카드에 터치 이벤트 적용
 const setCardTouchEvent = () => {
   const _card = document.querySelector('.cards .card.active');

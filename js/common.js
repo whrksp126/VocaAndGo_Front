@@ -279,6 +279,7 @@ const clickMarker = async (event) => {
   _li.dataset.status = status;
   _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.12.121923`;
   const result = await updateWord(word_id, {status : status});
+  console.log(result)
   if(isTestPage){
     if(TEST_WORD_LIST)TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
     const rescentStudy = await getRecentStudy();
@@ -556,7 +557,9 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
   const updateMarkAndStatus = async (word_id, status) => {
     const _li = document.querySelector(`li[data-id="${word_id}"]`);
     _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.12.121923`;
-    await updateWord(word_id, status)
+    
+    const result = await updateWord(word_id, {status: status});
+    console.log(result, status)
     TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
     const recentStudy = await getRecentStudy();
     await updateRecentStudy(recentStudy.id, {test_list : TEST_WORD_LIST});
@@ -584,15 +587,15 @@ const clickRetest = async (event) => {
   const recentStudy = await getRecentStudy();
   
   await updateRecentStudy(recentStudy.id, {state:0});
-  // await updateRecentLearningData("state", "during");
   const modal = getDefaultModal();
   const type = modal.middle.querySelector('button.active').dataset.type;
   if(type != "all"){
-    TEST_WORD_LIST = TEST_WORD_LIST.filter((data)=>data.isCorrect == 0);  
+    const is_correct_word_list = TEST_WORD_LIST.filter((data)=>data.isCorrect == 0);
+    if(is_correct_word_list.length == 0) return alert("틀린 문제가 없습니다💯");
+    TEST_WORD_LIST = is_correct_word_list;
   }
   TEST_WORD_LIST.forEach((data)=>data.isCorrect = undefined);
   await updateRecentStudy(recentStudy.id, {test_list:TEST_WORD_LIST});
-  // await updateRecentLearningData("test_list", TEST_WORD_LIST);
   location.reload();
 }
 
@@ -630,22 +633,40 @@ const getOcr = async (img, lngs) => {
 };
 
 
-// GTTS 
+
+// GTTS 함수
 const generateSpeech = async (text, language) => {
-  if(getDevicePlatform() == 'web'){
+  if (getDevicePlatform() === 'web') {
     const url = `https://vocaandgo.ghmate.com/tts/output`;
     const method = 'GET';
-    const data = {text, language};
+    const data = { text, language };
     const result = await fetchDataAsync(url, method, data);
-    const audio_url = URL.createObjectURL(result);
-    const _audio = new Audio(audio_url); 
-    _audio.style.display = 'none'; 
-    document.body.appendChild(_audio);
-    _audio.onended = () => document.body.removeChild(_audio);
-    _audio.play(); 
+    const audioUrl = URL.createObjectURL(result);
+
+    // 오디오 재생
+    playAudio(audioUrl);
   }
-  if(getDevicePlatform() == 'app'){  
-    const languageMap  = {'en' : 'en-US', 'ko' : 'ko-KR'}
-    getNativeTTS(text, languageMap[language])
+
+  if (getDevicePlatform() === 'app') {
+    const languageMap = { en: 'en-US', ko: 'ko-KR' };
+    getNativeTTS(text, languageMap[language]);
   }
-}
+};
+let CURRENT_TTS_AUDIO = null;
+const playAudio = (audioUrl) => {
+  if (CURRENT_TTS_AUDIO) {
+    CURRENT_TTS_AUDIO.pause();
+    CURRENT_TTS_AUDIO.currentTime = 0;
+    document.body.removeChild(CURRENT_TTS_AUDIO);
+    CURRENT_TTS_AUDIO = null;
+  }
+  const _audio = new Audio(audioUrl);
+  _audio.style.display = 'none';
+  document.body.appendChild(_audio);
+  CURRENT_TTS_AUDIO = _audio;
+  _audio.onended = () => {
+    document.body.removeChild(_audio);
+    CURRENT_TTS_AUDIO = null;
+  };
+  _audio.play();
+};
