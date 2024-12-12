@@ -236,7 +236,7 @@ const clickModalsetWordBtn = async (event) => {
   if(result) {
     const confirm = await setConfirm({
       text : "단어장에 같은 단어가 있어요. 그래도 추가할까요?",
-      btns : [{text : "취소", text : "추가",}], 
+      btns : [{text : "취소"},{text : "추가",}], 
     })
     if(!confirm) return
   }
