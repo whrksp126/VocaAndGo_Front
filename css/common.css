@@ -777,6 +777,16 @@ footer nav ul li span{
   gap: 10px;
 }
 .modal.show_answer .modal_content .modal_middle > ul li{}
+.modal.show_answer .modal_content .modal_middle > ul li[data-status="0"]{
+  background: #F5F5F5;
+}
+.modal.show_answer .modal_content .modal_middle > ul li[data-status="1"]{
+  background: #FFEFFA;
+}
+.modal.show_answer .modal_content .modal_middle > ul li[data-status="2"]{
+  background: #F6EFFF;
+
+}
 .modal.show_answer .modal_content .modal_middle > ul li .left{
   flex: 1;
 }

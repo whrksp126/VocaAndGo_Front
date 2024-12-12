@@ -30,6 +30,15 @@ main .container ul li{
   border-radius: 12px;
   width: 100%;
 }
+main .container ul li[data-status="0"]{
+  background: #F5F5F5;
+}
+main .container ul li[data-status="1"]{
+  background: #FFEFFA;
+}
+main .container ul li[data-status="2"]{
+  background: #F6EFFF;
+}
 main .container ul li .top{
   display: flex;
   align-items: flex-start;

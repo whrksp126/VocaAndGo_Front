@@ -557,7 +557,7 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
   const updateMarkAndStatus = async (word_id, status) => {
     const _li = document.querySelector(`li[data-id="${word_id}"]`);
     _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.12.130150`;
-    
+    _li.dataset.status = status
     const result = await updateWord(word_id, {status: status});
     console.log(result, status)
     TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
