@@ -173,7 +173,6 @@ function getSqliteStatus() {
 // 네이티브 cofirm 세팅
 function setConfirm(data) {
   if(getDevicePlatform() == "app"){
-    alert("app");
     return new Promise((resolve, reject) => {
       // WebView로 메시지 전송
       window.ReactNativeWebView?.postMessage(JSON.stringify({
