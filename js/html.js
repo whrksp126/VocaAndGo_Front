@@ -333,7 +333,7 @@ const setShowAnswerHtml = async () => {
           </div>
         </div>
         <button class="right" onclick="clickMarker(event)">
-          <img src="/images/marker_${data.status}.png?v=2024.08.270203">
+          <img src="/images/marker_${data.status}.png?v=2024.12.121923">
         </button>
       </li>
 

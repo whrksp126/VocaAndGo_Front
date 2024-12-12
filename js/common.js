@@ -277,7 +277,7 @@ const clickMarker = async (event) => {
     word_id = Number(_li.dataset.id);
   }
   _li.dataset.status = status;
-  _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.08.270203`;
+  _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.12.121923`;
   const result = await updateWord(word_id, {status : status});
   if(isTestPage){
     if(TEST_WORD_LIST)TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
@@ -555,7 +555,7 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
   const isRegister = Number(event.target.dataset.register);
   const updateMarkAndStatus = async (word_id, status) => {
     const _li = document.querySelector(`li[data-id="${word_id}"]`);
-    _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.08.270203`;
+    _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.12.121923`;
     await updateWord(word_id, status)
     TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
     const recentStudy = await getRecentStudy();
