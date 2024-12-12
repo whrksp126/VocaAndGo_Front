@@ -69,6 +69,7 @@ function showRewardedAd (callback){
           document.removeEventListener('message', handleMessage);
         }
       } catch (error) {
+        callback("success")
         console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다. : ${error}`);
       }
     };
