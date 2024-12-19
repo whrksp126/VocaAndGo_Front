@@ -30,7 +30,7 @@ const setMcqHtml = (word, total, index) => {
         <span class="word hint">${show_hint}</span>
         <div class="bottom">
           <button class="marker" onclick="clickMarker(event)">
-            <img src="/images/marker_${word.status}.png?v=2024.12.200022">
+            <img src="/images/marker_${word.status}.png?v=2024.12.200027">
           </button>
           <!-- 
           <div class="page">
@@ -39,7 +39,7 @@ const setMcqHtml = (word, total, index) => {
             <span class="total">${total}</span>
           </div>
           -->
-          <button class="speaker" onclick="generateSpeech('${word.word}', 'en')">
+          <button class="speaker" onclick="generateSpeech('${show_text}','${show_type==0?'en':'ko'}' )">
             <i class="ph-fill ph-speaker-high"></i>
           </button>
         </div>
