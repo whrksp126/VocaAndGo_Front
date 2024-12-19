@@ -34,7 +34,7 @@ const setExampleFitbHtml = () => {
         <span class="word hint">${show_hint}</span>
         <div class="bottom">
           <button class="marker" onclick="clickMarker(event)">
-            <img src="/images/marker_${word.status}.png?v=2024.12.130219">
+            <img src="/images/marker_${word.status}.png?v=2024.12.192252">
           </button>
           <!-- 
           <div class="page">
