@@ -81,7 +81,9 @@ const clickAddStoreVocabulary = (event, id) => {
 
 const clickAddVocabulary = async (event, id) => {
   const callback = async (result) => {
+    alert(result)
     if(result == "success"){
+      
       const vocabulary = STORE_DATA.find((item)=>item.id == id);
       const createdAt = new Date().toISOString();
       const color = JSON.parse(vocabulary.color);

@@ -146,6 +146,7 @@ main .container ul li.empty_message .bottom button{
   padding: 0 20px;
   border-radius: 8px;
   background-color: #FF8DD4;
+  color: #fff;
   font-weight: 700;
   font-size: 14px;
 }
