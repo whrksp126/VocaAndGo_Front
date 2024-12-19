@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
         id="theme_toggle_btn" 
         type="checkbox" 
         class="custom_checkbox" 
-        onchange="changeExampleVisibleToggle(event)"
+        onchange="changePushNotificationToggle(event)"
         ${example_visible ? 'checked' : ''}
       >
       <label for="theme_toggle_btn" class="switch_box">
