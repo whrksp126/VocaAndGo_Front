@@ -59,7 +59,6 @@ function showRewardedAd (callback){
   if(getDevicePlatform() == "app"){
     window?.ReactNativeWebView?.postMessage('show_rewarded_ad')
     const handleMessage = function(event) {
-      alert("handleMessage")
       try {
         const message = JSON.parse(event.data); 
         if (message.type == "reward"){
@@ -75,7 +74,6 @@ function showRewardedAd (callback){
       }
     };
     document.addEventListener('message', handleMessage);
-    
   }else{
     callback("success")
   }

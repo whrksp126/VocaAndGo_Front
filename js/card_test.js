@@ -24,7 +24,7 @@ const setCardHtml = (word, total, index) => {
       <span class="word hint">${show_hint}</span>
       <div class="bottom">
         <button class="marker click_event" onclick="clickMarker(event)">
-          <img src="/images/marker_${word.status}.png?v=2024.12.192307">
+          <img src="/images/marker_${word.status}.png?v=2024.12.200014">
         </button>
         <!-- 
         <div class="page">
@@ -33,7 +33,7 @@ const setCardHtml = (word, total, index) => {
           <span class="total">${total}</span>
         </div>
         -->
-        <button class="speaker click_event" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
+        <button class="speaker click_event" onclick="generateSpeech('${show_text}', '${show_type == 0 ? 'en' : 'ko'}')"><i class="ph-fill ph-speaker-high"></i></button>
       </div>
     </div>
   `
@@ -60,7 +60,7 @@ const setCardTestPage = () => {
     if(show_type == 0){
       generateSpeech(TEST_WORD_LIST[index].word, 'en')
     }else{
-  
+
     }
   }
 }

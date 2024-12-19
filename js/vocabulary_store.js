@@ -111,7 +111,7 @@ const clickAddVocabulary = async (event, id) => {
       window.location.href=`/html/vocabulary_list.html`;
     }
     if(result == "failure"){
-      alert("리워드 획득 실패");
+      // alert("리워드 획득 실패");
     }
   }
   showRewardedAd(callback)
