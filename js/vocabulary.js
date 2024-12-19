@@ -375,6 +375,12 @@ const setVocabularyHtml = async (id) => {
       <div class="middle">
         <span>아직 추가된 단어가 없어요!</span><strong>단어</strong><span>를 추가해보세요 🤗</span>
       </div>
+      <div class="bottom">
+        <button onclick="clickAddWord(event)">
+          <i class="ph ph-plus"></i>
+          <span>단어 추가하기</span>
+        </button>
+      </div>
     </li>
     `
     const url = window.location.href; 

@@ -109,7 +109,7 @@ main .container ul li .progress_bar .cur_bar span.right {
 }
 main .container ul li.empty_message {
   align-items: center;
-  width: 210px;
+  width: 220px;
   padding: 0;
   padding-top: 30px;
   margin: 0 auto;
@@ -135,7 +135,23 @@ main .container ul li.empty_message .middle strong{
   white-space: normal; 
   word-break: keep-all; 
 }
-
+main .container ul li.empty_message .bottom {
+  margin-top: 5px;
+}
+main .container ul li.empty_message .bottom button{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background-color: #FF8DD4;
+  font-weight: 700;
+  font-size: 14px;
+}
+main .container ul li.empty_message .bottom button i{
+  font-size: 16px;
+}
 [data-page="vocabulary_list_edit"] main {
   height: calc(100vh - var(--header-height));
   overflow: auto;

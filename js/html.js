@@ -227,6 +227,12 @@ const setVocabularyListHtml = async () => {
       <div class="middle">
         <span>아직 추가된 단어장이 없어요!</span><strong>${user_data.name}의 단어장</strong><span>을 추가해보세요🤗</span>
       </div>
+      <div class="bottom">
+        <button onclick="clickAddVocabularyBook(event)">
+          <i class="ph ph-plus"></i>
+          <span>단어장 추가하기</span>
+        </button>
+      </div>
     </li>
     `
     const _addVocabularyBookBtn = document.querySelector('.add_vocabulary_book_btn');

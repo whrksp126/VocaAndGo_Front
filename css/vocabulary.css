@@ -149,6 +149,8 @@ main .container ul li.empty_message {
   position: fixed;
   top: 50%;
   left: 50%;
+  align-items: center;
+  gap: 15px;
   width: 210px;
   background: none;
   transform: translate(-50%, -50%);
@@ -173,6 +175,23 @@ main .container ul li.empty_message .middle strong{
   font-weight: 700;
   white-space: normal; 
   word-break: keep-all; 
+}
+main .container ul li.empty_message .bottom {
+  margin-top: 5px;
+}
+main .container ul li.empty_message .bottom button{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background-color: #FF8DD4;
+  font-weight: 700;
+  font-size: 14px;
+}
+main .container ul li.empty_message .bottom button i{
+  font-size: 16px;
 }
 [data-page="vocabulary_edit"] main .container ul li{
   padding-left: 45px;
