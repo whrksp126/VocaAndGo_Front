@@ -81,9 +81,7 @@ const clickAddStoreVocabulary = (event, id) => {
 
 const clickAddVocabulary = async (event, id) => {
   const callback = async (result) => {
-    alert(result)
     if(result == "success"){
-      
       const vocabulary = STORE_DATA.find((item)=>item.id == id);
       const createdAt = new Date().toISOString();
       const color = JSON.parse(vocabulary.color);
@@ -111,7 +109,7 @@ const clickAddVocabulary = async (event, id) => {
       window.location.href=`/html/vocabulary_list.html`;
     }
     if(result == "failure"){
-      // alert("리워드 획득 실패");
+      alert("리워드 획득 실패");
     }
   }
   showRewardedAd(callback)

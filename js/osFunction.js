@@ -65,7 +65,9 @@ function showRewardedAd (callback){
           callback("success")
           document.removeEventListener('message', handleMessage);
         }else if (message.type == 'reward_failed'){
-          callback("failure")
+          // TODO : adm 29 일간 정지 후 주석 failure 적용
+          // callback("failure")
+          callback("success")
           document.removeEventListener('message', handleMessage);
         }
       } catch (error) {
