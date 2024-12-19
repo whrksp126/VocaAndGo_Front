@@ -57,12 +57,11 @@ main .container .progressbar_box .progressbar .active_bar{
   background: #FFEFFA;
   transition: all .3s;
 }
-
-.card.correct{
-  
+.items .item.correct .card{
+  background: #E0FFE5;
 }
-.card.incorrect{
-  
+.items .item.incorrect .card{
+  background: #FFE1E2;
 }
 .card .granding{
   position: absolute;
@@ -82,15 +81,23 @@ main .container .progressbar_box .progressbar .active_bar{
   visibility: hidden;
   transform: translate(-50%, -50%);
 }
+.card .granding i.ph-circle{
+  
+}
+.card .granding i.ph-x{
+  
+}
 .item.correct .card .granding .ph-circle{
   visibility: visible;
 }
-.item.incorrect .card {
-  background: #F5F5F5;
+.item .card .granding .ph-circle{
+  color: #17e93780;
+}
+.item .card .granding .ph-x{
+  color: #FF585B80;
 }
 .item.incorrect .card .granding .ph-x{
   visibility: visible;
-  color: #cccccc80;
 }
 .item .card.end .granding{
   opacity: 1;

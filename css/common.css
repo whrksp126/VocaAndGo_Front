@@ -712,14 +712,14 @@ footer nav ul li span{
 }
 .answer_card[data-isCorrect="0"]{
   background: #F5F5F5;
-  color: #CCCCCC;
+  color: #FF585B;
 }
 .answer_card[data-isCorrect="0"] i.ph-circle{
   display: none;
 }
 .answer_card[data-isCorrect="1"]{
   background: #FFEFFA;
-  color: #FF8DD4;
+  color: #17E937;
 }
 .answer_card[data-isCorrect="1"] i.ph-x{
   display: none;

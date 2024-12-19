@@ -60,11 +60,26 @@ function setDarkTheme() {
   localStorage.setItem('theme', 'dark');
 }
 
-// 토글 버튼 변경 시
+// 예문 보기 토글 버튼 변경 시
 const changeExampleVisibleToggle = (event) => {
   const is_checked = event.target.checked;
   setExampleStyleAlwaysVisible(is_checked);
   console.log(getExmapleStyleAlwaysVisible());
+}
+
+// 푸시 알림 토글 버튼 변경 시
+const changePushNotificationToggle = async (event) => {
+  const is_checked = event.target.checked;
+
+  const url = `https://vocaandgo.ghmate.com/fcm/is_message_allowed`;
+  const method = 'POST';
+  const fetchData = {is_allowed: event.target.checked};
+  
+  const result = await fetchDataAsync(url, method, fetchData);
+  if(result.code == 200){
+    setPushNotificationOn(is_checked);
+    console.log(getPushNotificationOn());
+  }
 }
 
 // 단어장 업로드 클릭 시
@@ -195,6 +210,21 @@ document.addEventListener('DOMContentLoaded', function() {
     `
   }
   if(document.querySelector('body').dataset.page == 'example_settings'){
+    document.querySelector('main .toggle_box').innerHTML = `
+      <input 
+        id="theme_toggle_btn" 
+        type="checkbox" 
+        class="custom_checkbox" 
+        onchange="changeExampleVisibleToggle(event)"
+        ${example_visible ? 'checked' : ''}
+      >
+      <label for="theme_toggle_btn" class="switch_box">
+        <div class="btn_icon">
+        </div>
+      </label>
+    `
+  }
+  if(document.querySelector('body').dataset.page == 'push_notifications'){
     document.querySelector('main .toggle_box').innerHTML = `
       <input 
         id="theme_toggle_btn" 

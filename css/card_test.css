@@ -56,13 +56,13 @@ main .container .progressbar_box .progressbar .active_bar{
 }
 
 .cards .card.correct{
-  
+  background: #E0FFE5;
 }
 .cards .card.correct.end{
   left: 100%;
 }
 .cards .card.incorrect{
-
+  background: #FFE1E2;
 }
 .cards .card.incorrect.end{
   left: -100%;
@@ -78,6 +78,12 @@ main .container .progressbar_box .progressbar .active_bar{
 }
 .cards .card .granding i{
   display: none;
+}
+.cards .card .granding i.ph-circle{
+  color: #17e93780;
+}
+.cards .card .granding i.ph-x{
+  color: #FF585B80;
 }
 .cards .card.correct .granding .ph-circle{
   display: block;
@@ -146,7 +152,10 @@ main .container .progressbar_box .progressbar .active_bar{
   border-radius: 10px;
 }
 .btns button.o_btn{
-  background: #FF8DD4;
+  background: #17E937;
+}
+.btns button.x_btn{
+  background: #FF585B;
 }
 
 
