@@ -2,6 +2,14 @@
   "version" : 1,
   "table_models" : [
     {
+      "name": "SchemaMeta",
+      "columns": [
+        {"name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT"},
+        {"name": "version", "type": "INTEGER NOT NULL"},
+        {"name": "schema", "type": "TEXT NOT NULL"}
+      ]
+    },
+    {
       "name": "Wordbook",
       "columns": [
         { "name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT" },
@@ -16,7 +24,7 @@
       "name": "Word",
       "columns": [
         { "name": "id", "type": "INTEGER PRIMARY KEY AUTOINCREMENT" },
-        { "name": "wordbook_id", "type": "INTEGER NOT NULL" },
+        { "name": "wordbook_id", "type": "INTEGER NOT NULL REFERENCES Wordbook(id) ON DELETE CASCADE" },
         { "name": "origin", "type": "TEXT NOT NULL" },
         { "name": "meaning", "type": "TEXT" },
         { "name": "example", "type": "TEXT" },

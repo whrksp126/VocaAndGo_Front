@@ -232,20 +232,20 @@ const clickModalsetWordBtn = async (event) => {
     description : explanation,
   };
   
-  const result = await getWordByOrigin(vocabulary_id, word);
-  if(result) {
-    const confirm = await setConfirm({
-      text : "단어장에 같은 단어가 있어요. 그래도 추가할까요?",
-      btns : [{text : "취소"}, {text : "추가",}], 
-    })
-    if(!confirm) return
-  }
+
   if(word.length <= 0) return alert('단어는 필수 입력 사항입니다');
   if(meaning.length <= 0) return alert('의미는 필수 입력 사항입니다');
   if(_modal.dataset.id){
     const result = await updateWord(word_id, new_data);
   }else{
-    // const result = await addIndexedDbWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description, createdAt, createdAt, new_data.status);
+    const resultWordByOrigin = await getWordByOrigin(vocabulary_id, word);
+    if(resultWordByOrigin) {
+      const confirm = await setConfirm({
+        text : "단어장에 같은 단어가 있어요. 그래도 추가할까요?",
+        btns : [{text : "취소"}, {text : "추가",}], 
+      })
+      if(!confirm) return
+    }
     const result = await addWord(new_data.wordbook_id, new_data.origin, new_data.meaning, new_data.example, new_data.description, 0);
   }
   _modal.click();
@@ -336,7 +336,7 @@ const setVocabularyHtml = async (id) => {
             </div>
             <div class="right">
               <div class="btns">
-                <button class="marker marker_btn" onclick="clickMarker(event)"><img src="/images/marker_${word.status}.png?v=2024.12.200119"></button>
+                <button class="marker marker_btn" onclick="clickMarker(event)"><img src="/images/marker_${word.status}.png?v=2024.12.230114"></button>
                 <button class="sound_btn" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
                 <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
                 <button onclick="clickDeleteWordBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>

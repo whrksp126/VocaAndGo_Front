@@ -26,7 +26,7 @@ async function loadDB() {
   if(getDevicePlatform() == "app"){
 
   }else{
-    const response = await fetch('../json/sqlite_model.json?v=2024.12.200119');
+    const response = await fetch('../json/sqlite_model.json?v=2024.12.230114');
     
     if (!response.ok) {
       throw new Error(`Failed to load JSON: ${response.status}`);
@@ -109,26 +109,78 @@ async function syncDatabase() {
   if(getDevicePlatform() == "app"){
 
   }else{
-    const tableModels = getTableModels();
-    const existingTables = getExistingTables();
-  
-    // 테이블 삭제
-    const tablesToDelete = getTablesToDelete(existingTables, tableModels);
-    deleteTables(tablesToDelete);
-  
-    // 테이블 생성 및 동기화
-    for (const table of tableModels) {
-      const tableExists = existingTables.includes(table.name);
-      if (!tableExists) {
-        createTable(table);
-      } else {
-        await syncTableWithModel(table);
+    const requiresUpdate = await compareSchemaWithDB();
+
+    if (requiresUpdate) {
+      console.log("스키마 업데이트 시작...");
+      for (const table of TABLE_MODELS) {
+        const existingTables = getExistingTables();
+        const tableExists = existingTables.includes(table.name);
+        
+        if (!tableExists) {
+          createTable(table);
+        } else {
+          await recreateTableWithCorrectColumns(table);
+        }
       }
+      // 최신 스키마 저장
+      await saveSchemaToDB();
+    } else {
+      console.log("스키마 업데이트가 필요하지 않습니다.");
     }
   }
 }
 
+// SchemaMeta 테이블 데이터와 관련된 처리 로직
+async function loadSchemaMetaFromModel() {
+  const schemaTableModel = TABLE_MODELS.find((table) => table.name === "SchemaMeta");
+  if (!schemaTableModel) {
+    throw new Error("SchemaMeta 모델이 TABLE_MODELS에 존재하지 않습니다.");
+  }
 
+  const schemaTableQuery = `CREATE TABLE IF NOT EXISTS ${schemaTableModel.name} (
+    ${schemaTableModel.columns.map((col) => `${col.name} ${col.type}`).join(", \n    ")}
+  );`;
+  SQLITE_DB.exec(schemaTableQuery);
+}
+
+// SchemaMeta 테이블 생성 및 스키마 저장 함수
+async function saveSchemaToDB() {
+  await loadSchemaMetaFromModel(); // SchemaMeta 테이블 로드
+
+  const insertSchemaQuery = `
+    INSERT OR REPLACE INTO SchemaMeta (id, version, schema)
+    VALUES (1, ?, ?);
+  `;
+  const schemaJSON = JSON.stringify(TABLE_MODELS);
+  SQLITE_DB.run(insertSchemaQuery, [SQLITE_VERSION, schemaJSON]);
+  console.log("SchemaMeta 테이블에 모델 스키마가 저장되었습니다.");
+}
+
+// DB 스키마와 모델 비교
+async function compareSchemaWithDB() {
+  await loadSchemaMetaFromModel(); // SchemaMeta 테이블 로드
+
+  const selectSchemaQuery = `SELECT schema FROM SchemaMeta WHERE id = 1;`;
+  const result = SQLITE_DB.exec(selectSchemaQuery);
+
+  if (result.length === 0 || !result[0].values[0][0]) {
+    console.warn("DB에 저장된 스키마가 없습니다. 초기화가 필요합니다.");
+    return true; // 재구성이 필요
+  }
+
+  const savedSchema = JSON.parse(result[0].values[0][0]);
+  const currentSchema = TABLE_MODELS;
+
+  // JSON 비교
+  if (JSON.stringify(savedSchema) !== JSON.stringify(currentSchema)) {
+    console.log("DB 스키마와 현재 모델이 다릅니다. 재구성이 필요합니다.");
+    return true; // 재구성이 필요
+  }
+
+  console.log("DB 스키마가 최신 상태입니다.");
+  return false; // 재구성 불필요
+}
 
 // 최신 테이블 모델 반환
 function getTableModels() {
@@ -228,7 +280,7 @@ async function recreateTableWithCorrectColumns(table) {
     const tempTableName = `${table.name}_temp`;
     const modelColumnNames = table.columns.map((col) => col.name).join(", ");
   
-    // 임시 테이블 생성: 모델 순서대로 데이터 복사
+    // 임시 테이블 생성
     const createTempTableQuery = `
       CREATE TABLE ${tempTableName} AS SELECT ${modelColumnNames} FROM ${table.name};
     `;
@@ -241,7 +293,7 @@ async function recreateTableWithCorrectColumns(table) {
     // 새 테이블 생성
     createTable(table);
   
-    // 임시 테이블의 데이터 복사
+    // 데이터 복사
     const copyDataQuery = `
       INSERT INTO ${table.name} (${modelColumnNames}) 
       SELECT ${modelColumnNames} FROM ${tempTableName};

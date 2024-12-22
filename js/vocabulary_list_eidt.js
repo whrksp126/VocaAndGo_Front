@@ -20,7 +20,7 @@ const clickDeleteVocabularyBook = (event) => {
 const clickModalDeleteVocabularyBook = async (event) => {
   const _modal = findParentTarget(event.target, '.modal');
   const id = Number(_modal.dataset.id);
-  await deleteWordbook(id);
+  await deleteWordbookWithWords(id);
   _modal.click();
   setInitHtml()
 }

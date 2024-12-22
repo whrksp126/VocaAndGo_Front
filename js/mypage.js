@@ -149,7 +149,7 @@ const clickDownload = async (event) => {
     // }
     const existing_wordbooks = await getWordbook();
     for (const wordbook of existing_wordbooks) {
-      await deleteWordbook(wordbook.id);
+      await deleteWordbookWithWords(wordbook.id);
     }
 
     // 서버에서 받은 단어장 데이터 추가
