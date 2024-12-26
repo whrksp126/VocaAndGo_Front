@@ -383,30 +383,31 @@ const setVocabularyHtml = async (id) => {
       </div>
     </li>
     `
-    const url = window.location.href; 
-    const parsedUrl = new URL(url); 
-    const pathname = parsedUrl.pathname; 
-    const htmlFileName = pathname.split('/').pop(); 
-    if(htmlFileName != "vocabulary_edit.html"){
-      const _addVocabularyBookBtn = document.querySelector('.add_vocabulary_btn');
-      _addVocabularyBookBtn.setAttribute("data-tippy-content", "눌러서 단어 추가");
-      const tooltipInstance = tippy('.add_vocabulary_btn', {
-        trigger: 'manual',
-        arrow: true,
-        animation: 'shift-away',
-        theme: 'ff8dd4',
-        onHide(instance) {
-          // 툴팁이 숨겨질 때 작업
-          console.log('툴팁이 숨겨졌습니다!');
-        },
-      });
-      // 초기 툴팁 보여주기
-      tooltipInstance[0].show();
-      // 버튼 클릭 시 툴팁 숨기기
-      _addVocabularyBookBtn.addEventListener('click', () => {
-        tooltipInstance[0].hide();
-      });
-    }
+    
+    // const url = window.location.href; 
+    // const parsedUrl = new URL(url); 
+    // const pathname = parsedUrl.pathname; 
+    // const htmlFileName = pathname.split('/').pop(); 
+    // if(htmlFileName != "vocabulary_edit.html"){
+    //   const _addVocabularyBookBtn = document.querySelector('.add_vocabulary_btn');
+    //   _addVocabularyBookBtn.setAttribute("data-tippy-content", "눌러서 단어 추가");
+    //   const tooltipInstance = tippy('.add_vocabulary_btn', {
+    //     trigger: 'manual',
+    //     arrow: true,
+    //     animation: 'shift-away',
+    //     theme: 'ff8dd4',
+    //     onHide(instance) {
+    //       // 툴팁이 숨겨질 때 작업
+    //       console.log('툴팁이 숨겨졌습니다!');
+    //     },
+    //   });
+    //   // 초기 툴팁 보여주기
+    //   tooltipInstance[0].show();
+    //   // 버튼 클릭 시 툴팁 숨기기
+    //   _addVocabularyBookBtn.addEventListener('click', () => {
+    //     tooltipInstance[0].hide();
+    //   });
+    // }
   }
   return html;
 }
