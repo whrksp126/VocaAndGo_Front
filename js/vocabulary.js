@@ -1,11 +1,20 @@
 // 검색 시 사용할 전역 리스트 변수
 let SEARCH_LIST = [];
+let TEMP_WORD = {
+  id: null, 
+  word_id: null,
+  origin : "",
+  meanings : "", 
+  examples : [], 
+  description : "",
+};
 // let OCR_DATA = {};
 // 단어장 추가 버튼 클릭 시
 const clickAddWord = async (event) => {
-  const ID = getValueFromURL("vocabulary_id");
-  const modal = openDefaultModal();
-  modal.container.classList.add('add_word')
+  const vocabulary_id = getValueFromURL("vocabulary_id");
+  let modal = getDefaultModal();
+  modal = modal.container ? modal : openDefaultModal();
+  modal.container.className = 'modal add_word';
   modal.top.innerHTML = modalTopHtml(`단어 추가`, `
     <div></div>
     <h1>단어 추가</h1>
@@ -13,23 +22,17 @@ const clickAddWord = async (event) => {
       <i class="ph ph-camera"></i>
     </button>
   `);
-  const DATA = {id: ID, origin : "",meanings : "", examples : [], description : "",};
-  modal.middle.innerHTML = await setWordModalHtml(DATA);
+  TEMP_WORD.id = vocabulary_id;
+  modal.middle.innerHTML = await setWordModalHtml(TEMP_WORD);
   const btns = [
-    {class:"close gray", text: "취소", fun: ""},
+    {class:"close gray", text: "취소", fun: `onclick="clickModalCancelWordBtn(event)"`},
     {class:"pink", text: "추가", fun: `onclick="clickModalsetWordBtn(event)"`}
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
   setTimeout(()=>modal.container.classList.add('active'),300);
-  const _exampleBox = modal.middle.querySelector(".example_box");
-  _exampleBox.addEventListener('input', function(event) {
-    const target = event.target;
-    if (target.matches('input.origin, input.meaning')) {
-      console.log(`${target.className} input changed:`, target.value);
-      _exampleBox.classList.toggle("writing", target.value.trim().length > 0);
-    }
-  });
 }
+
+
 
 // 예문 저장 버튼 클릭 시
 const clickSaveExampleBoxBtn = (event) => {
@@ -65,36 +68,136 @@ const clickSaveExampleBoxBtn = (event) => {
   _exampleBox.dataset.index = __newBox.length + 1;
 }
 
+// 예문 생성 버튼 클릭 시
+const clickAddExampleBoxBtn = (event) => {
+  let modal = getDefaultModal();
+  modal = modal.container ? modal : openDefaultModal();
+  modal.container.className = "modal add_example";
+  modal.top.innerHTML = modalTopHtml(`예문 추가`);
+  modal.middle.innerHTML = setExampleModalHtml(TEMP_WORD.examples.length);
+  const btns = [
+    {class:"gray", text: "취소", fun: `onclick="clickModalCancelExampleBtn(event)"`},
+    {class:"pink", text: "저장", fun: `onclick="clickModalsetExampleBtn(event)"`}
+  ]
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  setTimeout(()=>modal.container.classList.add('active'),300);
+}
 // 예문 수정 버튼 클릭 시
 const clickEditExampleBoxBtn = (event) => {
   const _box = findParentTarget(event.target, ".box");
   const boxIndex = Number(_box.dataset.index);
-  const originValue = _box.querySelector(".content").dataset.origin;
-  const meaningValue = _box.querySelector(".content").dataset.meaning;
-  const _exampleBox = document.querySelector(".example_box");
-  _exampleBox.dataset.index = boxIndex;
-  _exampleBox.querySelector(".top h3").innerHTML = `${boxIndex}`;
-  const _originInput = _exampleBox.querySelector("input.origin");
-  const _meaningInput = _exampleBox.querySelector("input.meaning");
-  _originInput.value = originValue;
-  _meaningInput.value = meaningValue;
+
+  let modal = getDefaultModal();
+  console.log(TEMP_WORD.examples[boxIndex])
+  modal = modal.container ? modal : openDefaultModal();
+  modal.container.className = "modal add_example";
+  modal.top.innerHTML = modalTopHtml(`예문 수정`);
+  const origin = TEMP_WORD.examples[boxIndex]?.origin;
+  const meaning = TEMP_WORD.examples[boxIndex]?.meaning;
+  modal.middle.innerHTML = setExampleModalHtml(boxIndex, origin, meaning);
+  const btns = [
+    {class:"gray", text: "취소", fun: `onclick="clickModalCancelExampleBtn(event)"`},
+    {class:"pink", text: "수정", fun: `onclick="clickModalsetExampleBtn(event, ${boxIndex})"`}
+  ]
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  setTimeout(()=>modal.container.classList.add('active'),300);
+  
+  console.log(TEMP_WORD.examples[boxIndex]);
+  // const originValue = _box.querySelector(".content").dataset.origin;
+  // const meaningValue = _box.querySelector(".content").dataset.meaning;
+
+  // const _exampleBox = document.querySelector(".example_box");
+  // _exampleBox.dataset.index = boxIndex;
+  // _exampleBox.querySelector(".top h3").innerHTML = `${boxIndex}`;
+  // const _originInput = _exampleBox.querySelector("input.origin");
+  // const _meaningInput = _exampleBox.querySelector("input.meaning");
+  // _originInput.value = originValue;
+  // _meaningInput.value = meaningValue;
 }
 // 예문 삭제 버튼 클릭 시
 const clickDeleteExampleBoxBtn = (event) => {
+  const _box = findParentTarget(event.target, ".box");
+  const boxIndex = Number(_box.dataset.index);
+  TEMP_WORD.examples.splice(boxIndex, 1);
+  console.log(TEMP_WORD.examples)
   findParentTarget(event.target, ".box").remove();
   const __box = document.querySelectorAll(".box");
   __box.forEach((_box, index)=>{
-    _box.dataset.index = index + 1;
+    _box.dataset.index = index;
     _box.querySelector("h3").innerHTML = index + 1;
   })
   if(__box.length == 0){
     const _previewContainer = document.querySelector(".preview_container");
     _previewContainer.classList.remove("active");
   }
-  const _exampleBox = document.querySelector(".example_box");
-  _exampleBox.querySelector(".top h3").innerHTML = `${__box.length+1}.`;
-  _exampleBox.dataset.index = __box.length+1;
+  // const _exampleBox = document.querySelector(".example_box");
+  // _exampleBox.querySelector(".top h3").innerHTML = `${__box.length+1}.`;
+  // _exampleBox.dataset.index = __box.length+1;
 
+}
+
+// 예문 추가 모달 취소 버튼 클릭 시
+const clickModalCancelExampleBtn = async (event) => {
+  const modal = getDefaultModal();
+  modal.container.className = 'modal add_word';
+  const btns = [{class:"close gray", text: "취소", fun: `onclick="clickModalCancelWordBtn(event)"`}]
+
+
+  if(TEMP_WORD.word_id){
+    modal.top.innerHTML = modalTopHtml(`단어 수정`);
+    modal.middle.innerHTML = await setWordModalHtml(TEMP_WORD);
+    btns.push({class:"pink", text: "수정", fun: `onclick="clickModalsetWordBtn(event)"`})
+  }else{
+    modal.top.innerHTML = modalTopHtml(`단어 추가`, `
+      <div></div>
+      <h1>단어 추가</h1>
+      <button onclick="clickOpenOcrCamera(event, clickOpenOcrCamera)">
+        <i class="ph ph-camera"></i>
+      </button>
+    `);
+    btns.push({class:"pink", text: "추가", fun: `onclick="clickModalsetWordBtn(event)"`})
+  }
+  modal.middle.innerHTML = await setWordModalHtml(TEMP_WORD);
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  setTimeout(()=>modal.container.classList.add('active'),300);
+}
+
+// 예문 추가 모달 저장 버튼 클릭 시
+const clickModalsetExampleBtn = async (event, index=null) => {
+  const modal = getDefaultModal();
+  const origin_example = modal.middle.querySelector(".origin_example").value.trim();
+  const meaning_example = modal.middle.querySelector(".meaning_example").value.trim();
+  if(origin_example == "") return alert("영어 예문을 입력해주세요.")
+  if(meaning_example == "") return alert("한글 해석을 입력해주세요.")
+  
+
+  modal.container.className = 'modal add_word';
+  const btns = [{class:"close gray", text: "취소", fun: `onclick="clickModalCancelWordBtn(event)"`}]
+
+  if(index == null){
+    TEMP_WORD.examples.push({origin : origin_example,meaning : meaning_example});
+  }else{
+    TEMP_WORD.examples[index].origin = origin_example;
+    TEMP_WORD.examples[index].meaning = meaning_example;
+  }
+  if(TEMP_WORD.word_id){
+    modal.top.innerHTML = modalTopHtml(`단어 수정`);
+    modal.middle.innerHTML = await setWordModalHtml(TEMP_WORD);
+    btns.push({class:"pink", text: "수정", fun: `onclick="clickModalsetWordBtn(event)"`})
+  }else{
+    
+    modal.top.innerHTML = modalTopHtml(`단어 추가`, `
+      <div></div>
+      <h1>단어 추가</h1>
+      <button onclick="clickOpenOcrCamera(event, clickOpenOcrCamera)">
+        <i class="ph ph-camera"></i>
+      </button>
+    `);
+    btns.push({class:"pink", text: "추가", fun: `onclick="clickModalsetWordBtn(event)"`})
+  }
+  modal.middle.innerHTML = await setWordModalHtml(TEMP_WORD);
+  modal.bottom.innerHTML = modalBottomHtml(btns);
+  setTimeout(()=>modal.container.classList.add('active'),300);
 }
 // const ocrCameraCallback = (original, view, crop) => {
 //   selectOcrWordFun(original, view, crop)
@@ -157,36 +260,36 @@ const clickDeleteExampleBoxBtn = (event) => {
 
 
 // 단어 수정 버튼 클릭 시
-const clickEditVocabularyBook = async (event) => {
+const clickEditWordBtn = async (event) => {
   const notebookId = Number(getValueFromURL("vocabulary_id"));
   const WORD_ID = Number(findParentTarget(event.target, 'li').dataset.id);
-  const modal = openDefaultModal();
+  let modal = getDefaultModal();
+  modal = modal.container ? modal : openDefaultModal();
   modal.container.dataset.id = WORD_ID;
   modal.container.classList.add('add_word');
   modal.top.innerHTML = modalTopHtml(`단어 수정`);
-  // const word = await getIndexedDbWordById(WORD_ID);
   const result = await getWord(WORD_ID);
-  const DATA = {id: notebookId, origin : result.origin, meanings : result.meaning, examples : result.example, description : result.description,};
-  modal.middle.innerHTML = await setWordModalHtml(DATA);
+  TEMP_WORD.id = notebookId;
+  TEMP_WORD.word_id = WORD_ID;
+  TEMP_WORD.origin = result.origin;
+  TEMP_WORD.meanings = result.meaning.join(", ");
+  TEMP_WORD.examples = result.example;
+  TEMP_WORD.description = result.description;
+  modal.middle.innerHTML = await setWordModalHtml(TEMP_WORD);
   const btns = [
-    {class:"close gray", text: "취소", fun: ""},
+    {class:"close gray", text: "취소", fun: `onclick="clickModalCancelWordBtn(event)"`},
     {class:"pink", text: "수정", fun: `onclick="clickModalsetWordBtn(event)"`}
   ]
   modal.bottom.innerHTML = modalBottomHtml(btns);
-  setTimeout(()=>modal.container.classList.add('active'),300)
-  const _exampleBox = modal.middle.querySelector(".example_box");
-  _exampleBox.addEventListener('input', function(event) {
-    const target = event.target;
-    if (target.matches('input.origin, input.meaning')) {
-      console.log(`${target.className} input changed:`, target.value);
-      _exampleBox.classList.toggle("writing", target.value.trim().length > 0);
-    }
-  });
+  setTimeout(()=>modal.container.classList.add('active'),300);
 }
+
+
 // 단어 삭제 버튼 클릭 시
-const clickDeleteWordBook = (event) => {
+const clickDeleteWordBtn = (event) => {
   const WORD_ID = findParentTarget(event.target, 'li').dataset.id;
-  const modal = openDefaultModal();
+  let modal = getDefaultModal();
+  modal = modal.container ? modal : openDefaultModal();
   modal.container.classList.add('confirm');
   modal.container.dataset.id = WORD_ID;
   modal.middle.innerHTML = `
@@ -212,7 +315,16 @@ const clickGoBackVocabularyPage = (event) => {
   const id = getValueFromURL("vocabulary_id");
   window.location.href = `/html/vocabulary.html?vocabulary_id=${id}`;
 }
-
+// 단어 설정 모달에서 취소 클릭 시
+const clickModalCancelWordBtn = (event) => {
+  TEMP_WORD = {  
+    id: null, 
+    origin : "",
+    meanings : "", 
+    examples : [], 
+    description : "",
+  }
+}
 // 단어 설정 모달에서 저장 클릭 시
 const clickModalsetWordBtn = async (event) => {
   const prev_vocabulary_id = Number(getValueFromURL("vocabulary_id"));
@@ -231,7 +343,6 @@ const clickModalsetWordBtn = async (event) => {
     example : example,
     description : explanation,
   };
-  
 
   if(word.length <= 0) return alert('단어는 필수 입력 사항입니다');
   if(meaning.length <= 0) return alert('의미는 필수 입력 사항입니다');
@@ -251,6 +362,7 @@ const clickModalsetWordBtn = async (event) => {
   _modal.click();
   const _ul = document.querySelector('main .container ul');
   _ul.innerHTML = await setVocabularyHtml(prev_vocabulary_id);
+  clickModalCancelWordBtn();
 }
 
 // 단어 삭제 모달에서 삭제 클릭 시
@@ -267,7 +379,8 @@ const clickModalDeleteWordBook = async (event) => {
 
 // 선택 삭제 버튼 클릭 시
 const clickDeleteSelectBtn = (event) => {
-  const modal = openDefaultModal();
+  let modal = getDefaultModal();
+  modal = modal.container ? modal : openDefaultModal();
   modal.container.classList.add('confirm');
   modal.middle.innerHTML = `
     <h3>선택한 단어를 정말 삭제하시겠어요?</h3>
@@ -304,18 +417,13 @@ const setVocabularyNameHtml = async (id) => {
 // 단어 리스트 세팅
 const setVocabularyHtml = async (id) => {
   let html = '';
-  // const words = await getIndexedDbWordsByNotebookId(Number(id));
   const words = await getWordsByWordbook(Number(id));
-  // const noteBook = await getIndexedDbNotebookById(Number(id));
   const bodyStyle = document.querySelector('body').style;
-  // bodyStyle.setProperty('--card-color', `#${noteBook.color.main}`);
-  // bodyStyle.setProperty('--card-background', `#${noteBook.color.background}`);
-  // bodyStyle.setProperty('--progress-color', `#${noteBook.color.main}4d`); // 색상 코드에 투명도 추가
   bodyStyle.setProperty('--card-color', `#FF8DD4`);
   bodyStyle.setProperty('--card-background', `#FFEFFA`);
   bodyStyle.setProperty('--progress-color', `#FF8DD44d`); // 색상 코드에 투명도 추가
-  console.log("words,",words)
   if(words.length > 0){
+    document.querySelector('.delete_select_btn')?.classList.add('active');
     for(let word of words){
        html += `
         <li 
@@ -338,8 +446,8 @@ const setVocabularyHtml = async (id) => {
               <div class="btns">
                 <button class="marker marker_btn" onclick="clickMarker(event)"><img src="/images/marker_${word.status}.png?v=2024.12.230114"></button>
                 <button class="sound_btn" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
-                <button onclick="clickEditVocabularyBook(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
-                <button onclick="clickDeleteWordBook(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
+                <button onclick="clickEditWordBtn(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
+                <button onclick="clickDeleteWordBtn(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
               </div>
             </div>
           </div>
@@ -418,6 +526,7 @@ const onInputWord = async (event) => {
   if (/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(word)) {
     return event.target.value = word.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g, '')
   }
+  TEMP_WORD.origin = word;
   const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
   if (word.length < 2) {
     _searchList.classList.remove('active');
@@ -448,6 +557,7 @@ const setSearchListEl = (_el, search_list, word) => {
 // 의미 입력 시
 const onInputMeaning = async (event) => {
   const word = event.target.value.trim();
+  TEMP_WORD.meanings = word;
   const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
   if(word.length < 2) {
     _searchList.classList.remove('active'); 
@@ -464,6 +574,13 @@ const onInputMeaning = async (event) => {
       </li>
     `);
   });
+}
+
+// 설명 입력 시
+const onInputExplanation = (event) => {
+  const description = event.target.value.trim();
+  event.target.value = description;
+  TEMP_WORD.description = description;
 }
 
 // 단어 검색 요청 
@@ -494,14 +611,20 @@ const clickSelectSearchedWord = (event) => {
   const _wordInput = document.querySelector('.input_text .word');
   const _meaningInput = document.querySelector('.input_text .meaning');
   const _examplePreviewContainer = document.querySelector('.preview_container');
-  const _exampleBox = document.querySelector('.example_box');
+  
   _wordInput.value = data.word;
   _meaningInput.value = data.meanings ? data.meanings.join(', ') : data.meaning;
   _examplePreviewContainer.innerHTML = data.examples.map(({exam_en, exam_ko}, index)=>setExampleBoxHtml(index + 1, data.word, exam_en, exam_ko)).join('');
+
+  TEMP_WORD.origin = _wordInput.value;
+  TEMP_WORD.meanings = _meaningInput.value;
+  TEMP_WORD.examples = data.examples.map(({exam_en, exam_ko}) => ({origin : exam_en, meaning: exam_ko}));
+
   if(data.examples.length > 0) _examplePreviewContainer.classList.add('active');
-  _exampleBox.querySelector('h3').innerHTML = `${data.examples.length + 1}.`;
-  _exampleBox.querySelector('.origin').value = '';
-  _exampleBox.querySelector('.meaning').value = '';
+  // const _exampleBox = document.querySelector('.example_box');
+  // _exampleBox.querySelector('h3').innerHTML = `${data.examples.length + 1}.`;
+  // _exampleBox.querySelector('.origin').value = '';
+  // _exampleBox.querySelector('.meaning').value = '';
   SEARCH_LIST = [];
   const _searchList = findParentTarget(event.target, '.input_text').querySelector('.search_list');
   _searchList.classList.remove('active'); 
@@ -656,6 +779,8 @@ const setInitHtml = async () => {
           tooltipInstance[0].hide();
         });
       }
+    }else{
+
     }
   }
   if(index_status == "err"){

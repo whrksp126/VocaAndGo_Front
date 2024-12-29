@@ -748,10 +748,14 @@ footer nav ul li span{
   font-weight: 400;
 }
 .answer_card .right{
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
 }
 .answer_card .right img{
-  width: 18px;
+  width: 21px;
 }
 
 

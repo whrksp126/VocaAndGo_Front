@@ -99,7 +99,6 @@ const setVocabularyBookHtml = ({name, color}) =>{
 
 // 단어 설정 모달 html
 const setWordModalHtml = async ({id, origin, meanings, examples, description}) => {
-  console.log()
   // const noteBooks = await getIndexedDbNotebooks();
   const noteBooks = await getWordbook();
   return `
@@ -134,10 +133,12 @@ const setWordModalHtml = async ({id, origin, meanings, examples, description}) =
         <div class="input_text">
           <div class="title_box">
             <label>예문</label>
+            <button onclick="clickAddExampleBoxBtn(event)"><i class="ph ph-plus"></i></button>
           </div>
           <div class="preview_container ${examples.length > 0 ? 'active' : ""}">
             ${examples?.map((example,index) => setExampleBoxHtml(index+1, origin, example.origin, example.meaning)).join('')}
           </div>
+          <!-- 
           <div class="example_box" data-index="${examples.length+1}">
             <div class="top">
               <h3>${examples.length+1}.</h3>
@@ -150,13 +151,14 @@ const setWordModalHtml = async ({id, origin, meanings, examples, description}) =
               <input class="meaning" placeholder="한글 해석을 입력해주세요." value="">
             </div>
           </div>
+          -->
           <span class="message"></span>
         </div>
       </li>
       <li>
         <div class="input_text">
           <label>설명</label>
-          <input class="explanation" value="${description}">
+          <input oninput="onInputExplanation(event)" class="explanation" value="${description}">
           <span class="message"></span>
         </div>
       </li>
@@ -166,7 +168,7 @@ const setWordModalHtml = async ({id, origin, meanings, examples, description}) =
 const setExampleBoxHtml = (num, word, origin, meaning) => {
 
   return `
-    <div class="box" data-index="${num}">
+    <div class="box" data-index="${num-1}">
       <div class="top">
         <h3>${num}</h3>
         <div class="btns">
@@ -184,6 +186,16 @@ const setExampleBoxHtml = (num, word, origin, meaning) => {
       </div>
     </div>
   `
+}
+
+// 예문 설정 모달 HTML
+const setExampleModalHtml = (index, origin_example="", meaning_example="") => {
+  return `
+    <h3>${index+1}</h3>
+    <input placeholder="영어 예문을 입력해주세요." class="origin_example" value="${origin_example.replace(/"/g, '&quot;')}" />
+    <input placeholder="한글 해석을 입력해주세요." class="meaning_example" value="${meaning_example.replace(/"/g, '&quot;')}"/>
+  `
+
 }
 
 // 단어장 리스트 html

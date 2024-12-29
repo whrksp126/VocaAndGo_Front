@@ -1,4 +1,5 @@
 header .container .btns .delete_select_btn {
+  display: none;
   height: 30px;
   padding: 0 12px;
   border: 1px solid var(--card-color);
@@ -6,6 +7,9 @@ header .container .btns .delete_select_btn {
   color: var(--card-color);
   font-size: 13px;
   font-weight: 700;
+}
+header .container .btns .delete_select_btn.active {
+  display: block;
 }
 main {
   height: calc(100vh - var(--header-height));
@@ -78,13 +82,18 @@ main .container ul li .top .right .btns{
   gap: 10px;
 }
 main .container ul li .top .right .btns button{
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
 }
 main .container ul li .top .right .btns button.marker_btn{
-  width: 18px;
+  
+  
 }
 main .container ul li .top .right .btns button.marker_btn img{
-  width: 14px;
+  width: 15px;
 }
 main .container ul li .top .right .btns button.delete_btn{
   color: red;
@@ -239,4 +248,17 @@ main .container ul li.empty_message .bottom button i{
   display: flex;
   flex-flow: column;
   gap: 15px;
+}
+.modal.add_example .modal_content .modal_middle {
+  display: flex;
+  flex-flow: column;
+  gap: 5px;
+}
+.modal.add_example .modal_content .modal_middle input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #CCCCCC;
+  border-radius: 8px;
+  background: var(--fff-color);
+  transition: all .3s;
 }
