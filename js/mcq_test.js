@@ -30,7 +30,7 @@ const setMcqHtml = (word, total, index) => {
         <span class="word hint">${show_hint}</span>
         <div class="bottom">
           <button class="marker" onclick="clickMarker(event)">
-            <img src="/images/marker_${word.status}.png?v=2024.12.230114">
+            <img src="/images/marker_${word.status}.png?v=2024.12.310015">
           </button>
           <!-- 
           <div class="page">

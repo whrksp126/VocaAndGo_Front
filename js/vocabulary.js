@@ -444,7 +444,7 @@ const setVocabularyHtml = async (id) => {
             </div>
             <div class="right">
               <div class="btns">
-                <button class="marker marker_btn" onclick="clickMarker(event)"><img src="/images/marker_${word.status}.png?v=2024.12.230114"></button>
+                <button class="marker marker_btn" onclick="clickMarker(event)"><img src="/images/marker_${word.status}.png?v=2024.12.310015"></button>
                 <button class="sound_btn" onclick="generateSpeech('${word.word}', 'en')"><i class="ph-fill ph-speaker-high"></i></button>
                 <button onclick="clickEditWordBtn(event)" class="edit_btn"><i class="ph ph-pencil-simple"></i></button>
                 <button onclick="clickDeleteWordBtn(event)" class="delete_btn"><i class="ph ph-trash"></i></button>
