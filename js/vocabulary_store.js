@@ -74,10 +74,10 @@ const clickAddStoreVocabulary = (event, id) => {
   const btns = [
     {class:"close gray", text: "취소", fun: ""},
     {class:"pink", text: "추가", fun: `onclick="clickAddVocabulary(event, ${id})"`}
-  ]
+  ];
   modal.bottom.innerHTML = modalBottomHtml(btns);
-  setTimeout(()=>modal.container.classList.add('active'),300)
-}
+  setTimeout(()=>modal.container.classList.add('active'),300);
+};
 
 const clickAddVocabulary = async (event, id) => {
   const callback = async (result) => {
@@ -86,25 +86,22 @@ const clickAddVocabulary = async (event, id) => {
       const createdAt = new Date().toISOString();
       const color = JSON.parse(vocabulary.color);
       const wordbook = await addWordbook(vocabulary.name, {main : color.main,background : color.background});
-      for(const data of vocabulary.words){
-        const new_data = {
-          notebookId : Number(wordbook.id),
-          word : data.word,
-          meaning : data.meaning,
-          example : data.examples,
-          description : data.description,
-          status : 0,
-          updatedAt : createdAt
-        }
-        const result = await addWord(new_data.notebookId, new_data.word, new_data.meaning, new_data.example, new_data.description)
-      }
+      const wordsData = vocabulary.words.map(data => ({
+        wordbookId: Number(wordbook.id),
+        word: data.word,
+        meaning: data.meaning,
+        example: data.examples,
+        description: data.description,
+        status: 0
+      }));
+      const words = await addWords(wordsData);
 
       // 단어장 다운로드 수 증가
       const url = 'https://vocaandgo.ghmate.com/search/bookstore/download';
       const method = 'POST';
       const fetchData = {id : id};
       const result = await fetchDataAsync(url, method, fetchData);
-
+      
 
       window.location.href=`/html/vocabulary_list.html`;
     }

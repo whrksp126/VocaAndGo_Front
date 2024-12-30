@@ -117,11 +117,10 @@ function getNativeTTS(text, language) {
 }
 
 // 웹에서 쿼리와 데이터를 JSON으로 구성하여 앱으로 전달
-function setSqliteQuery(query, params = []) {
+function setSqliteTransaction(queries) {
   const queryData = {
-    type: "set_sqlite_query",
-    query: query,
-    params: params,
+    type: "set_sqlite_transaction",
+    queries: queries, // 여러 쿼리 전달
   };
   return new Promise((resolve, reject) => {
     // WebView로 메시지 전송
@@ -129,22 +128,52 @@ function setSqliteQuery(query, params = []) {
     const handleMessage = function (event) {
       try {
         const message = JSON.parse(event.data);
-        if (message.type === 'sqlite_query_return') {
-          if(message.success){
-            resolve(message.result); 
-          }else{
-            reject(message.error); 
+        if (message.type === "sqlite_transaction_return") {
+          if (message.success) {
+            resolve(message.result);
+          } else {
+            reject(message.error);
           }
-          document.removeEventListener('message', handleMessage);
+          document.removeEventListener("message", handleMessage);
         }
       } catch (error) {
         console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다: ${error}`);
-        reject(error); // 오류 발생 시 reject
+        reject(error);
       }
     };
-    document.addEventListener('message', handleMessage);
-  })
+    document.addEventListener("message", handleMessage);
+  });
 }
+
+// // 웹에서 쿼리와 데이터를 JSON으로 구성하여 앱으로 전달
+// function setSqliteQuery(query, params = []) {
+//   const queryData = {
+//     type: "set_sqlite_query",
+//     query: query,
+//     params: params,
+//   };
+//   return new Promise((resolve, reject) => {
+//     // WebView로 메시지 전송
+//     window.ReactNativeWebView?.postMessage(JSON.stringify(queryData));
+//     const handleMessage = function (event) {
+//       try {
+//         const message = JSON.parse(event.data);
+//         if (message.type === 'sqlite_query_return') {
+//           if(message.success){
+//             resolve(message.result); 
+//           }else{
+//             reject(message.error); 
+//           }
+//           document.removeEventListener('message', handleMessage);
+//         }
+//       } catch (error) {
+//         console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다: ${error}`);
+//         reject(error); // 오류 발생 시 reject
+//       }
+//     };
+//     document.addEventListener('message', handleMessage);
+//   })
+// }
 
 
 // SQLite 상태 조회 - Promise로 변환

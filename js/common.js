@@ -551,37 +551,57 @@ const clickShowAnswer = async (event) => {
   setTimeout(()=>modal.container.classList.add('active'),300)
 }
 
-// 마크 일괄 조작 버튼 클릭 시
 const clickBatchSetMarkBtn = async (event, isCorrect) => {
   const isRegister = Number(event.target.dataset.register);
-  const updateMarkAndStatus = async (word_id, status) => {
-    const _li = document.querySelector(`li[data-id="${word_id}"]`);
-    _li.querySelector('img').src = `/images/marker_${status}.png?v=2024.12.230114`;
-    _li.dataset.status = status
-    const result = await updateWord(word_id, {status: status});
-    console.log(result, status)
-    TEST_WORD_LIST.find((data)=>data.id == word_id).status = status;
-    const recentStudy = await getRecentStudy();
-    await updateRecentStudy(recentStudy.id, {test_list : TEST_WORD_LIST});
-  };
-  for (let i = 0; i < TEST_WORD_LIST.length; i++) {
-    const data = TEST_WORD_LIST[i];
+  const wordUpdates = [];
+
+  TEST_WORD_LIST.forEach(data => {
     const word_id = data.id;
+    let status;
+
     if (data.isCorrect && isCorrect && isRegister) {
-      await updateMarkAndStatus(word_id, 1); // 맞은 단어 마크 등록
+      status = 1; // 맞은 단어 마크 등록
     } else if (data.isCorrect && isCorrect && !isRegister) {
-      await updateMarkAndStatus(word_id, 0); // 맞은 단어 마크 해제
+      status = 0; // 맞은 단어 마크 해제
     } else if (!data.isCorrect && !isCorrect && isRegister) {
-      await updateMarkAndStatus(word_id, 2); // 틀린 단어 마크 등록
+      status = 2; // 틀린 단어 마크 등록
     } else if (!data.isCorrect && !isCorrect && !isRegister) {
-      await updateMarkAndStatus(word_id, 0); // 틀린 단어 마크 해제
+      status = 0; // 틀린 단어 마크 해제
     }
+
+    if (typeof status !== "undefined") {
+      const _li = document.querySelector(`li[data-id="${word_id}"]`);
+      _li.querySelector("img").src = `/images/marker_${status}.png?v=2024.12.230114`;
+      _li.dataset.status = status;
+
+      wordUpdates.push({
+        id: word_id,
+        updates: {
+          wordbookId: data.wordbookId || null,
+          origin: data.origin || null,
+          meaning: data.meaning || [],
+          example: data.example || [],
+          description: data.description || "",
+          status: status
+        }
+      });
+    }
+  });
+
+  if (wordUpdates.length > 0) {
+    await updateWords(wordUpdates);
+    TEST_WORD_LIST.forEach(word => {
+      const updatedWord = wordUpdates.find(wu => wu.id === word.id);
+      if (updatedWord) word.status = updatedWord.updates.status;
+    });
+    const recentStudy = await getRecentStudy();
+    await updateRecentStudy(recentStudy.id, { test_list: TEST_WORD_LIST });
   }
-  const nextBtnText = `${isCorrect ? '맞은' : '틀린'} 단어 마크 ${isRegister ? '해제' : '등록'}`;
+
+  const nextBtnText = `${isCorrect ? "맞은" : "틀린"} 단어 마크 ${isRegister ? "해제" : "등록"}`;
   event.target.innerHTML = nextBtnText;
   event.target.dataset.register = isRegister == 0 ? 1 : 0;
 };
-
 // 다시 풀기 클릭 시
 const clickRetest = async (event) => {
   const recentStudy = await getRecentStudy();

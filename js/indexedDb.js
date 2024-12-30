@@ -337,13 +337,16 @@ async function addWordbook(name, color, status = 0) {
   const insertQuery = `INSERT INTO Wordbook (name, color, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`;
   const currentTime = new Date().toISOString();
   const colorJson = JSON.stringify(color);
-  const paramse  = [name, colorJson, status, currentTime, currentTime]
+  const params  = [name, colorJson, status, currentTime, currentTime]
   if(getDevicePlatform() == "app"){
-    const result = await setSqliteQuery(insertQuery, paramse);
+    const queries = generateQueriesWithParams(insertQuery, [params]);
+    const result = await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // const result = await setSqliteQuery(insertQuery, params);
     return await getWordbook(result.insertId);
   }else{
     try {
-      SQLITE_DB.run(insertQuery, paramse);
+      SQLITE_DB.run(insertQuery, params);
       const result = SQLITE_DB.exec("SELECT last_insert_rowid() AS id");
       const id = result[0].values[0][0];
       await saveDB();
@@ -365,13 +368,16 @@ async function updateWordbook(id, name, color, status) {
     SET name = ?, color = ?, status = ?, updatedAt = ?
     WHERE id = ?
   `;
-  const paramse = [name, colorJson, status, currentTime, id]
+  const params = [name, colorJson, status, currentTime, id]
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(updateQuery, paramse);
+    const queries = generateQueriesWithParams(updateQuery, [params]);
+    await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // await setSqliteQuery(updateQuery, params);
     return await getWordbook(id);
   }else{
     try {
-      SQLITE_DB.run(updateQuery, paramse);
+      SQLITE_DB.run(updateQuery, params);
       await saveDB();
       return await getWordbook(id);
     } catch (error) {
@@ -385,8 +391,12 @@ async function updateWordbook(id, name, color, status) {
 // Wordbook 데이터 삭제
 async function deleteWordbook(id) {
   const deleteQuery = "DELETE FROM Wordbook WHERE id = ?";
+  const params = [id];
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(deleteQuery, [id])
+    const queries = generateQueriesWithParams(deleteQuery, [params]);
+    await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // await setSqliteQuery(deleteQuery, [id])
   }else{
     SQLITE_DB.run(deleteQuery, [id]);
     await saveDB();
@@ -406,7 +416,10 @@ async function getWordbook(id = null) {
     selectQuery = "SELECT * FROM Wordbook";
   }
   if(getDevicePlatform() == "app"){
-    const result = await setSqliteQuery(selectQuery, params)
+    const queries = generateQueriesWithParams(selectQuery, [params]);
+    const result = await setSqliteTransaction(queries)
+    // TODO : setSqliteQuery 제거
+    // const result = await setSqliteQuery(selectQuery, params)
     if (result?.rowsLength > 0) {
       const data = result.rows.map(({ id, name, color, status, createdAt, updatedAt }) => ({
         id,
@@ -442,13 +455,16 @@ async function addWord(wordbookId, origin, meaning = [], example = [], descripti
   const insertQuery = `
     INSERT INTO Word (wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    const currentTime = new Date().toISOString();
-    const meaningJson = JSON.stringify(meaning);
-    const exampleJson = JSON.stringify(example);
-    const params = [wordbookId, origin, meaningJson, exampleJson, description, status, currentTime, currentTime]
+  `;
+  const currentTime = new Date().toISOString();
+  const meaningJson = JSON.stringify(meaning);
+  const exampleJson = JSON.stringify(example);
+  const params = [wordbookId, origin, meaningJson, exampleJson, description, status, currentTime, currentTime]
   if(getDevicePlatform() == "app"){
-    const result = await setSqliteQuery(insertQuery, params)
+    const queries = generateQueriesWithParams(insertQuery, [params]);
+    const result = await setSqliteTransaction(queries)
+    // TODO : setSqliteQuery 제거
+    // const result = await setSqliteQuery(insertQuery, params)
     return await getWord(result.insertId);
   }else{
     try {
@@ -463,6 +479,58 @@ async function addWord(wordbookId, origin, meaning = [], example = [], descripti
     }
   }
 }
+
+// Word 데이터 일괄 추가
+async function addWords(wordsData) {
+  const insertQuery = `
+    INSERT INTO Word (wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt)
+    VALUES ${wordsData.map(() => "(?, ?, ?, ?, ?, ?, ?, ?)").join(", ")}
+  `;
+  
+  const currentTime = new Date().toISOString();
+  const params = [];
+  
+  // wordsData를 순회하면서 파라미터 구성
+  for (const data of wordsData) {
+    const meaningJson = JSON.stringify(data.meaning || []);
+    const exampleJson = JSON.stringify(data.example || []);
+    params.push(
+      data.wordbookId,
+      data.word,
+      meaningJson,
+      exampleJson,
+      data.description || "",
+      data.status || 0,
+      currentTime,
+      currentTime
+    );
+  }
+  
+  if (getDevicePlatform() === "app") {
+    try {
+      const queries = generateQueriesWithParams(insertQuery, [params]);
+      await setSqliteTransaction(queries);
+      // TODO : setSqliteQuery 제거
+      // await setSqliteQuery(insertQuery, params);
+      // 삽입 후 특정 wordbookId로 모든 단어 가져오기
+      return await getWordsByWordbook(wordsData[0].wordbookId);
+    } catch (error) {
+      console.error("단어 일괄 추가 실패:", error.message);
+      throw new Error("단어를 추가하는 데 실패했습니다.");
+    }
+  } else {
+    try {
+      SQLITE_DB.run(insertQuery, params);
+      await saveDB();
+      // 삽입 후 특정 wordbookId로 모든 단어 가져오기
+      return await getWordsByWordbook(wordsData[0].wordbookId);
+    } catch (error) {
+      console.error("단어 일괄 추가 실패:", error.message);
+      throw new Error("단어를 추가하는 데 실패했습니다.");
+    }
+  }
+}
+
 // Word 데이터 수정
 async function updateWord(id, updates = {}) {
   const currentTime = new Date().toISOString();
@@ -484,7 +552,10 @@ async function updateWord(id, updates = {}) {
   `;
   const params = [ updatedWord.wordbookId, updatedWord.origin, meaningJson, exampleJson, updatedWord.description, updatedWord.status, updatedWord.updatedAt, id,]
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(updateQuery, params)
+    const queries = generateQueriesWithParams(updateQuery, [params]);
+    await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // await setSqliteQuery(updateQuery, params)
     return await getWord(id);
   }else{
     try {
@@ -498,12 +569,69 @@ async function updateWord(id, updates = {}) {
   }
 }
 
+// Word 데이터 일괄 수정
+async function updateWords(wordUpdates) {
+  const currentTime = new Date().toISOString();
+  const params = [];
+  const updateQuery = `
+  UPDATE Word
+  SET wordbook_id = ?, origin = ?, meaning = ?, example = ?, description = ?, status = ?, updatedAt = ?
+  WHERE id = ?
+` 
+  wordUpdates.forEach(({ id, updates }) => {
+    const meaningJson = JSON.stringify(updates.meaning || []);
+    const exampleJson = JSON.stringify(updates.example || []);
+    const originValue = updates.origin || "default_origin"; // 기본값 설정
+    params.push(
+      updates.wordbookId || null,
+      originValue, // 기본값이 설정된 origin 사용
+      meaningJson,
+      exampleJson,
+      updates.description || "",
+      updates.status || 0,
+      currentTime,
+      id
+    );
+  });
+
+  if (getDevicePlatform() === "app") {
+    try {
+      const queries = generateQueriesWithParams(updateQuery, [params]);
+      await setSqliteTransaction(queries);
+      // TODO : setSqliteQuery 제거
+      // await setSqliteQuery(updateQueries.join("; "), params);
+      return await Promise.all(wordUpdates.map(({ id }) => getWord(id)));
+    } catch (error) {
+      console.error("단어 일괄 수정 실패:", error.message);
+      throw new Error("단어를 수정하는 데 실패했습니다.");
+    }
+  } else {
+    try {
+      SQLITE_DB.run("BEGIN TRANSACTION");
+      for (let i = 0; i < params.length; i++) {
+        SQLITE_DB.run(updateQuery, params.slice(i * 8, (i + 1) * 8)); // 각 쿼리에 해당하는 매개변수 전달
+      }
+      SQLITE_DB.run("COMMIT");
+      await saveDB();
+      return await Promise.all(wordUpdates.map(({ id }) => getWord(id)));
+    } catch (error) {
+      SQLITE_DB.run("ROLLBACK");
+      console.error("단어 일괄 수정 실패:", error.message);
+      throw new Error("단어를 수정하는 데 실패했습니다.");
+    }
+  }
+}
+
+
 // Word 데이터 삭제
 async function deleteWord(id) {
   const deleteQuery = "DELETE FROM Word WHERE id = ?";
   const params = [id]
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(deleteQuery, params)
+    const queries = generateQueriesWithParams(deleteQuery, [params]);
+    await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // await setSqliteQuery(deleteQuery, params)
   }else{
     SQLITE_DB.run(deleteQuery, params);
     await saveDB();
@@ -523,7 +651,10 @@ async function getWordsByWordbook(wordbookId = null) {
     selectQuery = "SELECT * FROM Word";
   }
   if(getDevicePlatform() == "app"){
-    const result = await setSqliteQuery(selectQuery, params);
+    const queries = generateQueriesWithParams(selectQuery, [params]);
+    const result = await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // const result = await setSqliteQuery(selectQuery, params);
     if (result?.rowsLength > 0) {
       return result.rows.map(({ id, wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt }) => ({
         id,
@@ -567,7 +698,10 @@ async function getWordByOrigin(wordbookId, origin) {
   const params = [wordbookId, origin];
 
   if (getDevicePlatform() === "app") {
-    const result = await setSqliteQuery(selectQuery, params);
+    const queries = generateQueriesWithParams(selectQuery, [params]);
+    const result = await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // const result = await setSqliteQuery(selectQuery, params);
     if (result?.rowsLength > 0) {
       // 첫 번째 결과 반환
       const word = result.rows[0];
@@ -631,7 +765,10 @@ async function getWord(id) {
   };
 
   if (getDevicePlatform() === "app") {
-    const result = await setSqliteQuery(selectQuery, params);
+    const queries = generateQueriesWithParams(selectQuery, [params]);
+    const result = await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // const result = await setSqliteQuery(selectQuery, params);
     
     if (result?.rowsLength > 0) {
       return formatResult(result.rows[0]);
@@ -672,8 +809,13 @@ async function deleteWordbookWithWords(id) {
   const deleteWordsQuery = "DELETE FROM Word WHERE wordbook_id = ?";
   const params = [id];
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(deleteWordbookQuery, params);
-    setSqliteQuery(deleteWordsQuery, params)
+    await setSqliteTransaction(generateQueriesWithParams(deleteWordbookQuery, [params]));
+    // TODO : setSqliteQuery 제거
+    // await setSqliteQuery(deleteWordbookQuery, params);
+
+    await setSqliteTransaction(generateQueriesWithParams(deleteWordsQuery, [params]));
+    // TODO : setSqliteQuery 제거
+    // await setSqliteQuery(deleteWordsQuery, params)
   }else{
     SQLITE_DB.run(deleteWordbookQuery, params);
     SQLITE_DB.run(deleteWordsQuery,params);
@@ -690,7 +832,10 @@ async function createRecentStudy(type, state, urlParams, testList) {
   `;
   const params = [ type, state, urlParams, JSON.stringify(testList), currentTime, currentTime ]
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(insertQuery, params);
+    const queries = generateQueriesWithParams(insertQuery, [params]);
+    await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // await setSqliteQuery(insertQuery, params);
     return await getRecentStudy();
   }else{
     try {
@@ -730,7 +875,10 @@ async function updateRecentStudy(id, updates) {
   `;
   const params = [updatedData.type,updatedData.state,updatedData.url_params,JSON.stringify(updatedData.test_list), updatedData.updatedAt,id,]
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(updateQuery, params)
+    const queries = generateQueriesWithParams(updateQuery, [params]);
+    await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // await setSqliteQuery(updateQuery, params)
   }else{
     try {
       SQLITE_DB.run(updateQuery, params);
@@ -774,7 +922,10 @@ async function getRecentStudy(id = null) {
   };
 
   if (getDevicePlatform() === "app") {
-    const result = await setSqliteQuery(selectQuery, params);
+    const queries = generateQueriesWithParams(selectQuery, [params]);
+    const result = await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // const result = await setSqliteQuery(selectQuery, params);
     if (result?.rowsLength > 0) {
       return formatResult(result.rows[0]);
     } else {
@@ -811,10 +962,13 @@ async function getAllRecentStudies() {
   const selectQuery = `
     SELECT * FROM RecentStudy;
   `;
-
+  let params = []
   if (getDevicePlatform() === "app") {
     // 앱에서 데이터 조회
-    const result = await setSqliteQuery(selectQuery);
+    const queries = generateQueriesWithParams(selectQuery, [params]);
+    const result = await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // const result = await setSqliteQuery(selectQuery);
     if (result?.rowsLength > 0) {
       return result.rows.map(({ id, type, state, url_params, test_list, createdAt, updatedAt }) => ({
         id,
@@ -857,7 +1011,10 @@ async function deleteRecentStudy(id) {
   `;
   const params = [id];
   if(getDevicePlatform() == "app"){
-    await setSqliteQuery(deleteQuery, params);
+    const queries = generateQueriesWithParams(deleteQuery, [params]);
+    await setSqliteTransaction(queries);
+    // TODO : setSqliteQuery 제거
+    // await setSqliteQuery(deleteQuery, params);
   }else{
     try {
       SQLITE_DB.run(deleteQuery, params);
@@ -868,6 +1025,14 @@ async function deleteRecentStudy(id) {
       throw new Error("RecentStudy 데이터를 삭제하는 데 실패했습니다.");
     }
   }
+}
+
+// 여러 쿼리와 매개변수 세트를 생성하는 함수
+function generateQueriesWithParams(query, paramsList) {
+  return paramsList.map((params) => ({
+    query: query,
+    params: params,
+  }));
 }
 
 // 초기 실행
