@@ -340,6 +340,7 @@ async function addWordbook(name, color, status = 0) {
   const params  = [name, colorJson, status, currentTime, currentTime]
   if(getDevicePlatform() == "app"){
     const queries = generateQueriesWithParams(insertQuery, [params]);
+    alert(JSON.stringify(queries))
     const result = await setSqliteTransaction(queries);
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(insertQuery, params);
