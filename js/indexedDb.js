@@ -342,9 +342,9 @@ async function addWordbook(name, color, status = 0) {
     const queries = generateQueriesWithParams(insertQuery, [params]);
     
     const result = await setSqliteTransaction(queries);
-    alert(JSON.stringify(result))
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(insertQuery, params);
+    alert(JSON.stringify(await getWordbook(result[0].insertId)));
     return await getWordbook(result[0].insertId);
   }else{
     try {
