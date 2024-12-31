@@ -703,9 +703,9 @@ async function getWordByOrigin(wordbookId, origin) {
     const result = await setSqliteTransaction(queries);
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(selectQuery, params);
-    if (result?.rowsLength > 0) {
+    if (result[0]?.rowsLength > 0) {
       // 첫 번째 결과 반환
-      const word = result.rows[0];
+      const word = result[0].rows[0];
       return {
         id: word.id,
         wordbookId: word.wordbook_id,
@@ -927,8 +927,8 @@ async function getRecentStudy(id = null) {
     const result = await setSqliteTransaction(queries);
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(selectQuery, params);
-    if (result?.rowsLength > 0) {
-      return formatResult(result.rows[0]);
+    if (result[0]?.rowsLength > 0) {
+      return formatResult(result[0].rows[0]);
     } else {
       console.warn(`데이터를 찾을 수 없습니다.`);
       return null;
