@@ -656,8 +656,8 @@ async function getWordsByWordbook(wordbookId = null) {
     const result = await setSqliteTransaction(queries);
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(selectQuery, params);
-    if (result?.rowsLength > 0) {
-      return result.rows.map(({ id, wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt }) => ({
+    if (result[0]?.rowsLength > 0) {
+      return result[0].rows.map(({ id, wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt }) => ({
         id,
         wordbookId: wordbook_id,
         word: origin,
