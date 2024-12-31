@@ -421,7 +421,6 @@ async function getWordbook(id = null) {
     const result = await setSqliteTransaction(queries)
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(selectQuery, params)
-    alert(JSON.stringify(result))
     if (result[0]?.rowsLength > 0) {
       const data = result[0].rows.map(({ id, name, color, status, createdAt, updatedAt }) => ({
         id,
@@ -467,7 +466,7 @@ async function addWord(wordbookId, origin, meaning = [], example = [], descripti
     const result = await setSqliteTransaction(queries)
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(insertQuery, params)
-    return await getWord(result.insertId);
+    return await getWord(result[0].insertId);
   }else{
     try {
       SQLITE_DB.run(insertQuery, params);
@@ -772,8 +771,8 @@ async function getWord(id) {
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(selectQuery, params);
     
-    if (result?.rowsLength > 0) {
-      return formatResult(result.rows[0]);
+    if (result[0]?.rowsLength > 0) {
+      return formatResult(result[0].rows[0]);
     } else {
       console.warn(`ID가 ${id}인 단어를 찾을 수 없습니다.`);
       return null;
