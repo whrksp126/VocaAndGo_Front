@@ -422,8 +422,8 @@ async function getWordbook(id = null) {
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(selectQuery, params)
     alert(JSON.stringify(result))
-    if (result?.rowsLength > 0) {
-      const data = result.rows.map(({ id, name, color, status, createdAt, updatedAt }) => ({
+    if (result[0]?.rowsLength > 0) {
+      const data = result[0].rows.map(({ id, name, color, status, createdAt, updatedAt }) => ({
         id,
         name,
         color: color ? JSON.parse(color) : {},
