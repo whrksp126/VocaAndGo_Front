@@ -344,7 +344,6 @@ async function addWordbook(name, color, status = 0) {
     const result = await setSqliteTransaction(queries);
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(insertQuery, params);
-    alert(JSON.stringify(await getWordbook(result[0].insertId)));
     return await getWordbook(result[0].insertId);
   }else{
     try {
@@ -422,6 +421,7 @@ async function getWordbook(id = null) {
     const result = await setSqliteTransaction(queries)
     // TODO : setSqliteQuery 제거
     // const result = await setSqliteQuery(selectQuery, params)
+    alert(JSON.stringify(result))
     if (result?.rowsLength > 0) {
       const data = result.rows.map(({ id, name, color, status, createdAt, updatedAt }) => ({
         id,
