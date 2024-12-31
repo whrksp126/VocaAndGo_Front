@@ -124,7 +124,6 @@ function setSqliteTransaction(queries) {
   };
   return new Promise((resolve, reject) => {
     // WebView로 메시지 전송
-    alert(JSON.stringify(queryData))
     window.ReactNativeWebView?.postMessage(JSON.stringify(queryData));
     const handleMessage = function (event) {
       try {
@@ -138,6 +137,8 @@ function setSqliteTransaction(queries) {
           document.removeEventListener("message", handleMessage);
         }
       } catch (error) {
+        alert(`error ${error}`)
+
         console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다: ${error}`);
         reject(error);
       }
