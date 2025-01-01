@@ -511,15 +511,14 @@ async function addWords(wordsData) {
     const INSERT_LIMIT = 90;
     try {
       const queries = generateQueriesWithParams(insertQuery, [params]);
+      alert(JSON.stringify(queries, null, 2));
       const chunkedQueries = [];
       for (let i = 0; i < queries.length; i += INSERT_LIMIT) {
         chunkedQueries.push(queries.slice(i, i + INSERT_LIMIT));
       }
-      alert(`chunkedQueries ${chunkedQueries.length}`)
       for (const chunk of chunkedQueries) {
         await setSqliteTransaction(chunk);
       }
-      alert("chunkedQueries 완료")
       return await getWordsByWordbook(wordsData[0].wordbookId);
     } catch (error) {
       console.error("단어 추가 실패:", error.message);
