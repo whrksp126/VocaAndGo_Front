@@ -510,8 +510,9 @@ async function addWords(wordsData) {
   if (getDevicePlatform() === "app") {
     const INSERT_LIMIT = 90;
     try {
+      alert([params].length)
       const queries = generateQueriesWithParams(insertQuery, [params]);
-      alert(JSON.stringify(queries, null, 2));
+      // alert(JSON.stringify(queries, null, 2));
       const chunkedQueries = [];
       for (let i = 0; i < queries.length; i += INSERT_LIMIT) {
         chunkedQueries.push(queries.slice(i, i + INSERT_LIMIT));
