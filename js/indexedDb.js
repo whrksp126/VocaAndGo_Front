@@ -483,114 +483,53 @@ async function addWord(wordbookId, origin, meaning = [], example = [], descripti
 
 // Word 데이터 일괄 추가
 async function addWords(wordsData) {
-  const INSERT_LIMIT = 80;
-  const chunkedWrodsData = [];
+  const INSERT_LIMIT = 100;
+  const currentTime = new Date().toISOString();
+
+  // 데이터 청크로 나누기
+  const chunkedWordsData = [];
   for (let i = 0; i < wordsData.length; i += INSERT_LIMIT) {
-    chunkedWrodsData.push(wordsData.slice(i, i + INSERT_LIMIT));
+    chunkedWordsData.push(wordsData.slice(i, i + INSERT_LIMIT));
   }
-  for(const chunkWords of chunkedWrodsData){
-    const insertQuery = `
-      INSERT INTO Word (wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt)
-      VALUES ${chunkWords.map(() => "(?, ?, ?, ?, ?, ?, ?, ?)").join(", ")}
-    `;
-    const currentTime = new Date().toISOString();
-    const params = [];
-    for (const data of chunkWords) {
-      const meaningJson = JSON.stringify(data.meaning || []);
-      const exampleJson = JSON.stringify(data.example || []);
-      params.push(
-        data.wordbookId,
-        data.word,
-        meaningJson,
-        exampleJson,
-        data.description || "",
-        data.status || 0,
-        currentTime,
-        currentTime
-      );
-    }
-    if (getDevicePlatform() === "app") {
-      try {
+
+  try {
+    // 각 청크 처리
+    for (const chunkWords of chunkedWordsData) {
+      const insertQuery = `
+        INSERT INTO Word (wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt)
+        VALUES ${chunkWords.map(() => "(?, ?, ?, ?, ?, ?, ?, ?)").join(", ")}
+      `;
+
+      const params = [];
+      for (const data of chunkWords) {
+        const meaningJson = JSON.stringify(data.meaning || []);
+        const exampleJson = JSON.stringify(data.example || []);
+        params.push(
+          data.wordbookId,
+          data.word,
+          meaningJson,
+          exampleJson,
+          data.description || "",
+          data.status || 0,
+          currentTime,
+          currentTime
+        );
+      }
+
+      if (getDevicePlatform() === "app") {
         const queries = generateQueriesWithParams(insertQuery, [params]);
         await setSqliteTransaction(queries);
-      } catch (error) {
-        console.error("단어 일괄 추가 실패:", error.message);
-        throw new Error("단어를 추가하는 데 실패했습니다.");
-      }
-    }else{
-      try {
+      } else {
         SQLITE_DB.run(insertQuery, params);
         await saveDB();
-        // 삽입 후 특정 wordbookId로 모든 단어 가져오기
-      } catch (error) {
-        console.error("단어 일괄 추가 실패:", error.message);
-        throw new Error("단어를 추가하는 데 실패했습니다.");
       }
     }
-    
-  }
-  // 삽입 후 특정 wordbookId로 모든 단어 가져오기
-  return await getWordsByWordbook(wordsData[0].wordbookId);
 
-  const insertQuery = `
-    INSERT INTO Word (wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt)
-    VALUES ${wordsData.map(() => "(?, ?, ?, ?, ?, ?, ?, ?)").join(", ")}
-  `;
-  
-  const currentTime = new Date().toISOString();
-  const params = [];
-  
-  // wordsData를 순회하면서 파라미터 구성
-  for (const data of wordsData) {
-    const meaningJson = JSON.stringify(data.meaning || []);
-    const exampleJson = JSON.stringify(data.example || []);
-    params.push(
-      data.wordbookId,
-      data.word,
-      meaningJson,
-      exampleJson,
-      data.description || "",
-      data.status || 0,
-      currentTime,
-      currentTime
-    );
-  }
-  writeTestAppLog(`<div>${params.length}</div>`)
-  if (getDevicePlatform() === "app") {
-
-    
-    try {
-      
-      // for (let i = 0; i < params.length; i += INSERT_LIMIT) {
-      //   chunkedParams.push(params.slice(i, i + INSERT_LIMIT));
-      // }
-      
-      // for(const newParams of chunkedParams){  
-      //   const queries = generateQueriesWithParams(insertQuery, [newParams]);
-      //   await setSqliteTransaction(queries);
-      // }
-
-      const queries = generateQueriesWithParams(insertQuery, [params]);
-      await setSqliteTransaction(queries);
-
-      // TODO : setSqliteQuery 제거
-      // await setSqliteQuery(insertQuery, params);
-      // 삽입 후 특정 wordbookId로 모든 단어 가져오기
-      return await getWordsByWordbook(wordsData[0].wordbookId);
-    } catch (error) {
-      console.error("단어 일괄 추가 실패:", error.message);
-      throw new Error("단어를 추가하는 데 실패했습니다.");
-    }
-  } else {
-    try {
-      SQLITE_DB.run(insertQuery, params);
-      await saveDB();
-      // 삽입 후 특정 wordbookId로 모든 단어 가져오기
-      return await getWordsByWordbook(wordsData[0].wordbookId);
-    } catch (error) {
-      console.error("단어 일괄 추가 실패:", error.message);
-      throw new Error("단어를 추가하는 데 실패했습니다.");
-    }
+    // 모든 삽입이 완료되면 특정 wordbookId로 단어 가져오기
+    return await getWordsByWordbook(wordsData[0].wordbookId);
+  } catch (error) {
+    console.error("단어 추가 실패:", error.message);
+    throw new Error("단어를 추가하는 데 실패했습니다.");
   }
 }
 
