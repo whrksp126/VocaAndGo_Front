@@ -103,7 +103,7 @@ const clickUpload = async (event) => {
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
           const accessToken = await getAccessToken();
-          await uploadNotebooks(url, {notebooks: data.wordbooks, access_token: accessToken});
+          await uploadNotebooks(url, {notebooks: data.notebooks, access_token: accessToken});
         }
       }else {
         alert(`업로드 실패: ${result.msg || '알 수 없는 오류가 발생했습니다.'}`);
