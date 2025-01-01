@@ -483,6 +483,55 @@ async function addWord(wordbookId, origin, meaning = [], example = [], descripti
 
 // Word 데이터 일괄 추가
 async function addWords(wordsData) {
+  const INSERT_LIMIT = 80;
+  const chunkedWrodsData = [];
+  for (let i = 0; i < wordsData.length; i += INSERT_LIMIT) {
+    chunkedWrodsData.push(wordsData.slice(i, i + INSERT_LIMIT));
+  }
+  for(const chunkWords of chunkedWrodsData){
+    const insertQuery = `
+      INSERT INTO Word (wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt)
+      VALUES ${chunkWords.map(() => "(?, ?, ?, ?, ?, ?, ?, ?)").join(", ")}
+    `;
+    const currentTime = new Date().toISOString();
+    const params = [];
+    for (const data of chunkWords) {
+      const meaningJson = JSON.stringify(data.meaning || []);
+      const exampleJson = JSON.stringify(data.example || []);
+      params.push(
+        data.wordbookId,
+        data.word,
+        meaningJson,
+        exampleJson,
+        data.description || "",
+        data.status || 0,
+        currentTime,
+        currentTime
+      );
+    }
+    if (getDevicePlatform() === "app") {
+      try {
+        const queries = generateQueriesWithParams(insertQuery, [params]);
+        await setSqliteTransaction(queries);
+      } catch (error) {
+        console.error("단어 일괄 추가 실패:", error.message);
+        throw new Error("단어를 추가하는 데 실패했습니다.");
+      }
+    }else{
+      try {
+        SQLITE_DB.run(insertQuery, params);
+        await saveDB();
+        // 삽입 후 특정 wordbookId로 모든 단어 가져오기
+      } catch (error) {
+        console.error("단어 일괄 추가 실패:", error.message);
+        throw new Error("단어를 추가하는 데 실패했습니다.");
+      }
+    }
+    
+  }
+  // 삽입 후 특정 wordbookId로 모든 단어 가져오기
+  return await getWordsByWordbook(wordsData[0].wordbookId);
+
   const insertQuery = `
     INSERT INTO Word (wordbook_id, origin, meaning, example, description, status, createdAt, updatedAt)
     VALUES ${wordsData.map(() => "(?, ?, ?, ?, ?, ?, ?, ?)").join(", ")}
@@ -508,8 +557,7 @@ async function addWords(wordsData) {
   }
   writeTestAppLog(`<div>${params.length}</div>`)
   if (getDevicePlatform() === "app") {
-    const INSERT_LIMIT = 80;
-    const chunkedParams = [];
+
     
     try {
       
