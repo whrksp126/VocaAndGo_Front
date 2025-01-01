@@ -511,14 +511,15 @@ async function addWords(wordsData) {
     const INSERT_LIMIT = 80;
     const chunkedParams = [];
     try {
+      alert(params.length)
       for (let i = 0; i < params.length; i += INSERT_LIMIT) {
         chunkedParams.push(params.slice(i, i + INSERT_LIMIT));
       }
-      alert(chunkedParams.length)
-      for(const newParams of chunkedParams){  
-        const queries = generateQueriesWithParams(insertQuery, [newParams]);
-        await setSqliteTransaction(queries);
-      }
+      
+      // for(const newParams of chunkedParams){  
+      //   const queries = generateQueriesWithParams(insertQuery, [newParams]);
+      //   await setSqliteTransaction(queries);
+      // }
 
       // const queries = generateQueriesWithParams(insertQuery, [params]);
       // await setSqliteTransaction(queries);
