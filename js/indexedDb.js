@@ -508,29 +508,28 @@ async function addWords(wordsData) {
   }
   
   if (getDevicePlatform() === "app") {
-    const INSERT_LIMIT = 90;
+    const INSERT_LIMIT = 80;
+    const chunkedParams = [];
     try {
-      const copyParams = [...params];
-      const chunkedParams = [];
-      for (let i = 0; i < copyParams.length; i += INSERT_LIMIT) {
-        chunkedParams.push(copyParams.slice(i, i + INSERT_LIMIT));
+      for (let i = 0; i < params.length; i += INSERT_LIMIT) {
+        chunkedParams.push(params.slice(i, i + INSERT_LIMIT));
       }
-      for(const chunk of chunkedParams){
-        const queries = generateQueriesWithParams(insertQuery, chunk);
+      for(const newParams of chunkedParams){  
+        const queries = generateQueriesWithParams(insertQuery, [newParams]);
         await setSqliteTransaction(queries);
       }
-      return await getWordsByWordbook(wordsData[0].wordbookId);
+
       // const queries = generateQueriesWithParams(insertQuery, [params]);
-      // const chunkedQueries = [];
-      // for (let i = 0; i < queries.length; i += INSERT_LIMIT) {
-      //   chunkedQueries.push(queries.slice(i, i + INSERT_LIMIT));
-      // }
-      // for (const chunk of chunkedQueries) {
-      //   await setSqliteTransaction(chunk);
-      // }
-      // return await getWordsByWordbook(wordsData[0].wordbookId);
+      // await setSqliteTransaction(queries);
+
+
+
+      // TODO : setSqliteQuery 제거
+      // await setSqliteQuery(insertQuery, params);
+      // 삽입 후 특정 wordbookId로 모든 단어 가져오기
+      return await getWordsByWordbook(wordsData[0].wordbookId);
     } catch (error) {
-      console.error("단어 추가 실패:", error.message);
+      console.error("단어 일괄 추가 실패:", error.message);
       throw new Error("단어를 추가하는 데 실패했습니다.");
     }
   } else {
