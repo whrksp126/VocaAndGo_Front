@@ -33,7 +33,9 @@ const setCardHtml = (word, total, index) => {
           <span class="total">${total}</span>
         </div>
         -->
-        <button class="speaker click_event" onclick="generateSpeech('${show_text}', '${show_type == 0 ? 'en' : 'ko'}')"><i class="ph-fill ph-speaker-high"></i></button>
+        <button class="sound_btn speaker click_event" onclick="generateSpeech('${show_text}', '${show_type == 0 ? 'en' : 'ko'}')">
+          <i class="ph-fill ph-speaker-high"></i>
+        </button>
       </div>
     </div>
   `
@@ -47,6 +49,9 @@ const setCardTestPage = () => {
       _cards.insertAdjacentHTML('afterbegin', setCardHtml(word, TEST_WORD_LIST.length, index))
     }
   })
+
+  setLottieSound();
+
   const _first_card = document.querySelector('.cards .card:last-child');;
   _first_card?.classList.add('active');
   const _progressbarBox = document.querySelector('.progressbar_box');

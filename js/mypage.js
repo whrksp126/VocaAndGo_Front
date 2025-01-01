@@ -85,6 +85,7 @@ const changePushNotificationToggle = async (event) => {
 // 단어장 업로드 클릭 시
 const clickUpload = async (event) => {
   // TODO : 업로드 경고 모달
+  
   const device_type = getDevicePlatform();
   const wordbooks = await getWordbook();
   for (const wordbook of wordbooks) {
@@ -113,9 +114,10 @@ const clickUpload = async (event) => {
   } else {
     try {
       const accessToken = await getAccessToken();
-      const url = `https://vocaandgo.ghmate.com/drive/backup/app`;
-      const data = { notebooks: wordbooks, access_token: accessToken };
-      await uploadNotebooks(url, data);
+      alert(accessToken);
+      // const url = `https://vocaandgo.ghmate.com/drive/backup/app`;
+      // const data = { notebooks: wordbooks, access_token: accessToken };
+      // await uploadNotebooks(url, data);
     } catch (error) {
       console.error("액세스 토큰을 가져오는 중 오류:", error);
     }

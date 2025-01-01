@@ -142,6 +142,8 @@ main .container .progressbar_box .progressbar .active_bar{
 }
 .card .bottom .speaker{
   color: #FF8DD4;
+  width: 20px;
+  height: 20px;
 }
 
 .btns{

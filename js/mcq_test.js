@@ -39,7 +39,7 @@ const setMcqHtml = (word, total, index) => {
             <span class="total">${total}</span>
           </div>
           -->
-          <button class="speaker" onclick="generateSpeech('${show_text}','${show_type==0?'en':'ko'}' )">
+          <button class="speaker sound_btn" onclick="generateSpeech('${show_text}','${show_type==0?'en':'ko'}' )">
             <i class="ph-fill ph-speaker-high"></i>
           </button>
         </div>
@@ -64,6 +64,8 @@ const setMcqTestPage = () => {
       currentPage += 1;
     }
   });
+  setLottieSound();
+
   const _first_item = document.querySelector('.items .item:last-child');
   _first_item?.classList.add('active');
   const _progressbarBox = document.querySelector('.progressbar_box');

@@ -124,6 +124,10 @@ main .container ul li .bottom button{
 .modal.voca_preview .modal_content .modal_middle > ul li .top .right .btns button{
   display: block;
 }
+.modal.voca_preview .modal_content .modal_middle > ul li .top .right .btns button.sound_btn{
+  width: 20px;
+  height: 20px;
+}
 .modal.voca_preview .modal_content .modal_middle > ul li .bottom .meaning{
   font-size: 12px;
   font-weight: 400;

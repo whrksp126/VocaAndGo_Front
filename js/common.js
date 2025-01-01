@@ -204,6 +204,20 @@ const onPopStateHandler = (event) => {
   }
 };
 
+// 모달 버튼 로딩 중 세팅
+const setModalLoadingBtn = (btn) => {
+  btn.innerHTML = `<i class="ph ph-circle-notch animation-rotation"></i>`;
+  btn.classList.add('loading');
+};
+// body tag no events 클래스 추가
+const setNoEvents = () => {
+  document.body.classList.add('no-events');
+}
+// body tag no events 클래스 제거
+const cleanNoEvents = () => {
+  document.body.classList.remove('no-events');
+}
+
 // 색상 선택 이벤트 등록
 const addEventClickColor = () => {
   const _vocabularyColor = document.querySelector('.vocabulary_color');
@@ -652,7 +666,36 @@ const getOcr = async (img, lngs) => {
   return ocr_data;
 };
 
+// 스피커 로티 애니메이션 세팅
+const setLottieSound = () => {
+  const __soundBtn = [...document.querySelectorAll('.sound_btn')];
+  __soundBtn.forEach((element, index) => {
+    element.innerHTML = '';
+    const animation = lottie.loadAnimation({
+      container: element,
+      renderer: 'svg',
+      loop: false,
+      autoplay: false, 
+      path: '/lottie/sound.json'
+    });
 
+    animation.addEventListener('DOMLoaded', () => {
+      animation.goToAndStop(animation.totalFrames - 1, true); 
+    });
+
+    animation.setSpeed(3);
+
+    element.addEventListener('click', async () => {
+      animation.stop(); 
+      for (let i = 0; i < 2; i++) {
+        await new Promise((resolve) => {
+          animation.addEventListener('complete', resolve, { once: true }); 
+          animation.playSegments([0, animation.totalFrames], true); 
+        });
+      }
+    });
+  });
+}
 
 // GTTS 함수
 const generateSpeech = async (text, language) => {

@@ -17,6 +17,10 @@ body {
   overflow: hidden; /* 스크롤을 제한하여 사용자가 페이지를 확대/축소할 수 없도록 함 */
 }
 
+.no-events {
+  pointer-events: none; /* 모든 이벤트 차단 */
+}
+
 
 [data-theme="light"] {
   --000-color : #000;
@@ -202,6 +206,11 @@ footer nav ul li span{
   flex: 1;
   height: 100%;
   border-radius: 8px;
+  transform: scale(1);
+  transition: transform 0.2s ease-in-out;
+}
+.modal .modal_content .modal_bottom .buttons button:active{
+  transform: scale(0.995);
 }
 .modal .modal_content .modal_bottom .buttons button.gray{
   background: #CCCCCC;
@@ -209,7 +218,10 @@ footer nav ul li span{
 .modal .modal_content .modal_bottom .buttons button.pink{
   background: #FF8DD4;
 }
-
+.modal .modal_content .modal_bottom .buttons button.loading{
+  color: #fff;
+  font-size: 22px;
+}
 .modal.confirm .modal_content .modal_top{
   display: none;
 }
@@ -840,3 +852,22 @@ footer nav ul li span{
   color: #111;
   overflow: scroll;
 }
+
+
+/* ************** */
+/* 애니메이션 세팅 */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animation-rotation {
+  display: inline-block;
+  animation: rotate 1s linear infinite; /* 1초 동안 선형으로 회전, 무한 반복 */
+}
+/* 애니메이션 세팅 */
+/* ************** */

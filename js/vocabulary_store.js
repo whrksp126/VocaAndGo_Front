@@ -55,6 +55,8 @@ const clickVocabularyPreview = (event) => {
   modal.container.classList.add('voca_preview')
   modal.top.innerHTML = modalTopHtml(`단어장 미리보기`);
   modal.middle.innerHTML = setVocabularyPreviewHtml(words);
+  setLottieSound();
+
   const btns = [
     {class:"gray close", text: "취소", fun: ``},
     {class:"pink", text: "추가", fun: `onclick="clickAddStoreVocabulary(event, ${id})"`}
@@ -80,6 +82,8 @@ const clickAddStoreVocabulary = (event, id) => {
 };
 
 const clickAddVocabulary = async (event, id) => {
+  setNoEvents();
+  setModalLoadingBtn(findParentTarget(event.target, 'button'));
   const callback = async (result) => {
     if(result == "success"){
       const vocabulary = STORE_DATA.find((item)=>item.id == id);
@@ -101,17 +105,15 @@ const clickAddVocabulary = async (event, id) => {
       const method = 'POST';
       const fetchData = {id : id};
       const result = await fetchDataAsync(url, method, fetchData);
-      
-
+      cleanNoEvents();
       window.location.href=`/html/vocabulary_list.html`;
     }
     if(result == "failure"){
+      cleanNoEvents();
       alert("리워드 획득 실패");
     }
   }
   showRewardedAd(callback)
-  
-
 }
 
 
