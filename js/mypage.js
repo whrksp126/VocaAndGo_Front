@@ -149,7 +149,7 @@ const clickDownload = async (event) => {
   const _li = findParentTarget(event.target, 'li');
   const _iconBox = _li.querySelector('.icon_box');
   setModalLoadingBtn(_iconBox);
-
+  setNoEvents();
   const device_type = getDevicePlatform();
   const method = `GET`;
   let fetchData = {};
@@ -177,7 +177,7 @@ const clickDownload = async (event) => {
         cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
         alert('단어장 다운로드 완료');
       }
-      else if (result.code === 401 || result.code === 403) {
+      else if (result.code === 400 || result.code === 401 || result.code === 403) {
         alert("구글 드라이브 권한이 필요합니다. 다시 로그인해주세요.")
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
