@@ -506,11 +506,11 @@ async function addWords(wordsData) {
       currentTime
     );
   }
-  
+  alert(JSON.stringify(params, null, 2));
   if (getDevicePlatform() === "app") {
     const INSERT_LIMIT = 80;
     const chunkedParams = [];
-    alert(params.length)
+    
     try {
       
       // alert(params.length)
