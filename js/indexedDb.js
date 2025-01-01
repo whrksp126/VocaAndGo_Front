@@ -513,10 +513,9 @@ async function addWords(wordsData) {
       const queries = generateQueriesWithParams(insertQuery, [params]);
       const chunkedQueries = [];
       for (let i = 0; i < queries.length; i += INSERT_LIMIT) {
-        
         chunkedQueries.push(queries.slice(i, i + INSERT_LIMIT));
       }
-      alert("chunkedQueries",chunkedQueries.length)
+      alert(`chunkedQueries ${chunkedQueries.length}`)
       for (const chunk of chunkedQueries) {
         await setSqliteTransaction(chunk);
       }
