@@ -94,9 +94,10 @@ const clickUpload = async (event) => {
   }
   // 업로드 요청 함수 정의
   const uploadNotebooks = async (url, data) => {
-    alert("?!@!@")
+    
     try {
       const result = await fetchDataAsync(url, 'POST', data);
+      
       if (result.code === 200) {
         alert('단어장 업로드 완료');
       } else if (result.code === 403) { // 구글 드라이브 읽기 쓰기 권한 없음
@@ -109,7 +110,7 @@ const clickUpload = async (event) => {
         alert(`업로드 실패: ${result.msg || '알 수 없는 오류가 발생했습니다.'}`);
       }
     } catch {
-      alert('단어장을 업로드하는 중에 오류가 발생했습니다.');
+      // alert('단어장을 업로드하는 중에 오류가 발생했습니다.');
     }
   };
 
