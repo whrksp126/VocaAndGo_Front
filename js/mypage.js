@@ -182,7 +182,7 @@ const clickDownload = async (event) => {
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
           await downloadNotebooks();
-          cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
+          cleanModalLoadingBtn(_iconBox, '<i class="ph ph-download"></i>')
           cleanNoEvents()
         }
       }else{
