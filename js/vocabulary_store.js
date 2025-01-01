@@ -113,3 +113,6 @@ const clickAddVocabulary = async (event, id) => {
   
 
 }
+
+
+createTestViewLog();

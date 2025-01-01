@@ -506,16 +506,17 @@ async function addWords(wordsData) {
       currentTime
     );
   }
+  writeTestAppLog(`<div>${params.length}</div>`)
   if (getDevicePlatform() === "app") {
     const INSERT_LIMIT = 80;
     const chunkedParams = [];
     
     try {
       
-      for (let i = 0; i < params.length; i += INSERT_LIMIT) {
-        chunkedParams.push(params.slice(i, i + INSERT_LIMIT));
-      }
-      alert(chunkedParams.length)
+      // for (let i = 0; i < params.length; i += INSERT_LIMIT) {
+      //   chunkedParams.push(params.slice(i, i + INSERT_LIMIT));
+      // }
+      
       // for(const newParams of chunkedParams){  
       //   const queries = generateQueriesWithParams(insertQuery, [newParams]);
       //   await setSqliteTransaction(queries);
