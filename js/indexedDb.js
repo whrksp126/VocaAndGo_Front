@@ -511,7 +511,7 @@ async function addWords(wordsData) {
     const INSERT_LIMIT = 80;
     const chunkedParams = [];
     try {
-      alert(params.length)
+      // alert(params.length)
       // for (let i = 0; i < params.length; i += INSERT_LIMIT) {
       //   chunkedParams.push(params.slice(i, i + INSERT_LIMIT));
       // }
@@ -523,8 +523,6 @@ async function addWords(wordsData) {
 
       const queries = generateQueriesWithParams(insertQuery, [params]);
       await setSqliteTransaction(queries);
-
-
 
       // TODO : setSqliteQuery 제거
       // await setSqliteQuery(insertQuery, params);
