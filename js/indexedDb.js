@@ -513,11 +513,14 @@ async function addWords(wordsData) {
       const queries = generateQueriesWithParams(insertQuery, [params]);
       const chunkedQueries = [];
       for (let i = 0; i < queries.length; i += INSERT_LIMIT) {
+        
         chunkedQueries.push(queries.slice(i, i + INSERT_LIMIT));
       }
+      alert("chunkedQueries",chunkedQueries.length)
       for (const chunk of chunkedQueries) {
         await setSqliteTransaction(chunk);
       }
+      alert("chunkedQueries 완료")
       return await getWordsByWordbook(wordsData[0].wordbookId);
     } catch (error) {
       console.error("단어 추가 실패:", error.message);
