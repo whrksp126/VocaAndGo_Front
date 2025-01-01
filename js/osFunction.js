@@ -106,6 +106,30 @@ function getAccessToken() {
   });
 }
 
+// 구글 드라이브 읽기 쓰기 권한 재요청 - Promise로 변환
+function requestGooglePermissions() {
+  return new Promise((resolve, reject) => {
+    window?.ReactNativeWebView?.postMessage('request_google_permissions');
+    const handleMessage = function(event) {
+      try {
+        const message = JSON.parse(event.data); 
+        if (message.type === 'return_google_permissions') {
+          if (message.success) { 
+            resolve(true); 
+          } else { // 인증 실패
+            reject(false);
+          }
+          document.removeEventListener('message', handleMessage);
+        }
+      } catch (error) {
+        console.error(`메시지를 구문 분석하는 중에 오류가 발생했습니다: ${error}`);
+        reject(error); // 오류 발생 시 reject
+      }
+    };
+    document.addEventListener('message', handleMessage);
+  });
+}
+
 // TTS 
 function getNativeTTS(text, language) {
   const message = JSON.stringify({

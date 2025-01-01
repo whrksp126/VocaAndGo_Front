@@ -98,7 +98,14 @@ const clickUpload = async (event) => {
       const result = await fetchDataAsync(url, 'POST', data);
       if (result.code === 200) {
         alert('단어장 업로드 완료');
-      } else {
+      } else if (result.code === 403) { // 구글 드라이브 읽기 쓰기 권한 없음
+        // TODO : 구글 드라이브 권한 재요청
+        const isSuccess = await requestGooglePermissions();
+        if(isSuccess){
+          // TODO : 업로드 요청 함수 재실행
+          uploadNotebooks(url, data)
+        }
+      }else {
         alert(`업로드 실패: ${result.msg || '알 수 없는 오류가 발생했습니다.'}`);
       }
     } catch {
@@ -114,10 +121,9 @@ const clickUpload = async (event) => {
   } else {
     try {
       const accessToken = await getAccessToken();
-      alert(accessToken);
-      // const url = `https://vocaandgo.ghmate.com/drive/backup/app`;
-      // const data = { notebooks: wordbooks, access_token: accessToken };
-      // await uploadNotebooks(url, data);
+      const url = `https://vocaandgo.ghmate.com/drive/backup/app`;
+      const data = { notebooks: wordbooks, access_token: accessToken };
+      await uploadNotebooks(url, data);
     } catch (error) {
       console.error("액세스 토큰을 가져오는 중 오류:", error);
     }
