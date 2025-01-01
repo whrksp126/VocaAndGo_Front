@@ -192,7 +192,7 @@ const clickDownload = async (event) => {
         return
       }
     }
-    
+    downloadNotebooks();
     
 
     // IndexedDB에서 기존 단어장 삭제
