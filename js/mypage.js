@@ -97,7 +97,7 @@ const clickUpload = async (event) => {
     
     try {
       const result = await fetchDataAsync(url, 'POST', data);
-      
+      alert(JSON.stringify(result))
       if (result.code === 200) {
         alert('단어장 업로드 완료');
       } else if (result.code === 403) { // 구글 드라이브 읽기 쓰기 권한 없음
