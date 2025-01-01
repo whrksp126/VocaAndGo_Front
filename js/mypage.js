@@ -99,10 +99,9 @@ const clickUpload = async (event) => {
       if (result.code === 200) {
         alert('단어장 업로드 완료');
       } else if (result.code === 403) { // 구글 드라이브 읽기 쓰기 권한 없음
-        // TODO : 구글 드라이브 권한 재요청
+        alert("구글 드라이브 권한이 필요합니다.")
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
-          // TODO : 업로드 요청 함수 재실행
           uploadNotebooks(url, data)
         }
       }else {
