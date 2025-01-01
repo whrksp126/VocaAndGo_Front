@@ -100,7 +100,7 @@ const clickUpload = async (event) => {
       alert(JSON.stringify(result))
       if (result.code === 200) {
         alert('단어장 업로드 완료');
-      } else if (result.code === 403) { // 구글 드라이브 읽기 쓰기 권한 없음
+      } else if (result.code === 403 || result.code === 401) { // 구글 드라이브 읽기 쓰기 권한 없음
         alert("구글 드라이브 권한이 필요합니다.")
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
