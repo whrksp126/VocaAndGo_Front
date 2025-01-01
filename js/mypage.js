@@ -85,7 +85,11 @@ const changePushNotificationToggle = async (event) => {
 // 단어장 업로드 클릭 시
 const clickUpload = async (event) => {
   // TODO : 업로드 경고 모달
+   
+  const _li = findParentTarget(event.target, 'li');
+  const _iconBox = _li.querySelector('.icon_box');
   
+  setModalLoadingBtn(_iconBox);
   const device_type = getDevicePlatform();
   const wordbooks = await getWordbook();
   for (const wordbook of wordbooks) {
@@ -94,22 +98,31 @@ const clickUpload = async (event) => {
   }
   // 업로드 요청 함수 정의
   const uploadNotebooks = async (url, data) => {
-    
+    setNoEvents();
     try {
       const result = await fetchDataAsync(url, 'POST', data);
       if (result.code === 200) {
+        cleanNoEvents()
+        cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
         alert('단어장 업로드 완료');
-      } else if (result.code === 403 || result.code === 401) { // 구글 드라이브 읽기 쓰기 권한 없음
+      } else if (result.code === 401 || result.code === 403) { // 구글 드라이브 읽기 쓰기 권한 없음
+        alert("구글 드라이브 권한이 필요합니다. 다시 로그인해주세요.")
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
           const accessToken = await getAccessToken();
           await uploadNotebooks(url, {notebooks: data.notebooks, access_token: accessToken});
+          cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
+          cleanNoEvents()
         }
       }else {
+        cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
+        cleanNoEvents()
         alert(`업로드 실패: ${result.msg || '알 수 없는 오류가 발생했습니다.'}`);
       }
     } catch {
-      // alert('단어장을 업로드하는 중에 오류가 발생했습니다.');
+      cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
+      cleanNoEvents()
+      alert('단어장을 업로드하는 중에 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 

@@ -209,6 +209,11 @@ const setModalLoadingBtn = (btn) => {
   btn.innerHTML = `<i class="ph ph-circle-notch animation-rotation"></i>`;
   btn.classList.add('loading');
 };
+// 모달 버튼 로딩 중 해제
+const cleanModalLoadingBtn = (btn, i_tag) => {
+  btn.innerHTML = i_tag;
+  btn.classList.remove('loading');
+}
 // body tag no events 클래스 추가
 const setNoEvents = () => {
   document.body.classList.add('no-events');

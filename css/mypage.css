@@ -235,7 +235,12 @@ main ul.logout_box li div{
   border-radius: 8px;
   color: #FF8DD4;
 }
-[data-page="vocabulary_backup"] main ul li i{
+[data-page="vocabulary_backup"] main ul li .icon_box{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+[data-page="vocabulary_backup"] main ul li .icon_box i{
   font-size: 20px;
 }
 [data-page="vocabulary_backup"] main ul li span{
