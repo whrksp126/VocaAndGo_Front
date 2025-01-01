@@ -94,6 +94,7 @@ const clickUpload = async (event) => {
   }
   // 업로드 요청 함수 정의
   const uploadNotebooks = async (url, data) => {
+    alert("?!@!@")
     try {
       const result = await fetchDataAsync(url, 'POST', data);
       if (result.code === 200) {
