@@ -102,7 +102,8 @@ const clickUpload = async (event) => {
       } else if (result.code === 403 || result.code === 401) { // 구글 드라이브 읽기 쓰기 권한 없음
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
-          await uploadNotebooks(url, data);
+          const accessToken = await getAccessToken();
+          await uploadNotebooks(url, {notebooks: data.wordbooks, access_token: accessToken});
         }
       }else {
         alert(`업로드 실패: ${result.msg || '알 수 없는 오류가 발생했습니다.'}`);
