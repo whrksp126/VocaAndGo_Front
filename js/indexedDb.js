@@ -510,13 +510,16 @@ async function addWords(wordsData) {
   if (getDevicePlatform() === "app") {
     try {
       const queries = generateQueriesWithParams(insertQuery, [params]);
-      await setSqliteTransaction(queries);
-      // TODO : setSqliteQuery 제거
-      // await setSqliteQuery(insertQuery, params);
-      // 삽입 후 특정 wordbookId로 모든 단어 가져오기
+      const chunkedQueries = [];
+      for (let i = 0; i < queries.length; i += INSERT_LIMIT) {
+        chunkedQueries.push(queries.slice(i, i + INSERT_LIMIT));
+      }
+      for (const chunk of chunkedQueries) {
+        await setSqliteTransaction(chunk);
+      }
       return await getWordsByWordbook(wordsData[0].wordbookId);
     } catch (error) {
-      console.error("단어 일괄 추가 실패:", error.message);
+      console.error("단어 추가 실패:", error.message);
       throw new Error("단어를 추가하는 데 실패했습니다.");
     }
   } else {
