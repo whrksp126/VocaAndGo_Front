@@ -174,7 +174,7 @@ const clickDownload = async (event) => {
           }
         }
         cleanNoEvents()
-        cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
+        cleanModalLoadingBtn(_iconBox, '<i class="ph ph-download"></i>')
         alert('단어장 다운로드 완료');
       }
       else if (result.code === 400 || result.code === 401 || result.code === 403) {
@@ -182,11 +182,9 @@ const clickDownload = async (event) => {
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
           await downloadNotebooks();
-          cleanModalLoadingBtn(_iconBox, '<i class="ph ph-download"></i>')
-          cleanNoEvents()
         }
       }else{
-        cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
+        cleanModalLoadingBtn(_iconBox, '<i class="ph ph-download"></i>')
         cleanNoEvents()
         alert(`다운로드 실패: ${result.msg || '알 수 없는 오류가 발생했습니다.'}`);
         return
