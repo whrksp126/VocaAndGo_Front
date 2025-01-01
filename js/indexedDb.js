@@ -506,7 +506,7 @@ async function addWords(wordsData) {
       currentTime
     );
   }
-  alert(JSON.stringify(params, null, 2));
+  alert(params.length);
   if (getDevicePlatform() === "app") {
     const INSERT_LIMIT = 80;
     const chunkedParams = [];
