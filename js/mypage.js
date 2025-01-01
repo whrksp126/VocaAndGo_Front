@@ -88,7 +88,6 @@ const clickUpload = async (event) => {
    
   const _li = findParentTarget(event.target, 'li');
   const _iconBox = _li.querySelector('.icon_box');
-  
   setModalLoadingBtn(_iconBox);
   const device_type = getDevicePlatform();
   const wordbooks = await getWordbook();
@@ -146,32 +145,62 @@ const clickUpload = async (event) => {
 // 단어장 다운로드 클릭 시
 const clickDownload = async (event) => {
   // TODO : 다운로드 경고 모달
+
+  const _li = findParentTarget(event.target, 'li');
+  const _iconBox = _li.querySelector('.icon_box');
+  setModalLoadingBtn(_iconBox);
+
   const device_type = getDevicePlatform();
   const method = `GET`;
-  let url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
   let fetchData = {};
-
   try {
-    // 모바일일 경우 액세스 토큰을 가져와 fetchData에 추가
-    if (device_type !== 'web') {
-      const accessToken = await getAccessToken();
-      fetchData['access_token'] = accessToken;
-      url += `/app`; // 모바일용 URL로 변경
+    const downloadNotebooks = async () => {
+      let url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
+      if (device_type !== 'web') {
+        const accessToken = await getAccessToken();
+        fetchData['access_token'] = accessToken;
+        url += `/app`; // 모바일용 URL로 변경
+      }
+      const result = await fetchDataAsync(url, method, fetchData);
+      if(result.code == 200){
+        const existing_wordbooks = await getWordbook();
+        for (const wordbook of existing_wordbooks) {
+          await deleteWordbookWithWords(wordbook.id);
+        }
+        for (const wordbook of result.data) {
+          const wordbook_data = await addWordbook(wordbook.name, wordbook.color, wordbook.status);
+          for (const data of wordbook.words) {
+            await addWord(wordbook_data.id, data.word, data.meaning, data.example, data.description, data.status);
+          }
+        }
+        cleanNoEvents()
+        cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
+        alert('단어장 다운로드 완료');
+      }
+      else if (result.code === 401 || result.code === 403) {
+        alert("구글 드라이브 권한이 필요합니다. 다시 로그인해주세요.")
+        const isSuccess = await requestGooglePermissions();
+        if(isSuccess){
+          await downloadNotebooks();
+          cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
+          cleanNoEvents()
+        }
+      }else{
+        cleanModalLoadingBtn(_iconBox, '<i class="ph ph-upload"></i>')
+        cleanNoEvents()
+        alert(`다운로드 실패: ${result.msg || '알 수 없는 오류가 발생했습니다.'}`);
+        return
+      }
     }
-
-    // 서버에서 데이터 요청
-    const result = await fetchDataAsync(url, method, fetchData);
-    if (result.code !== 200) return alert(`${result.msg}`);
+    
+    
 
     // IndexedDB에서 기존 단어장 삭제
     // const notebooks = await getIndexedDbNotebooks();
     // for (const notebook of notebooks) {
     //   await deleteIndexedDbNotebook(notebook.id);
     // }
-    const existing_wordbooks = await getWordbook();
-    for (const wordbook of existing_wordbooks) {
-      await deleteWordbookWithWords(wordbook.id);
-    }
+    
 
     // 서버에서 받은 단어장 데이터 추가
     // for (const notebook of result.data) {
@@ -180,14 +209,7 @@ const clickDownload = async (event) => {
     //     await addIndexedDbWord(notebook_id, data.word, data.meaning, data.example, data.description, data.createdAt, data.updatedAt, data.status);
     //   }
     // }
-    for (const wordbook of result.data) {
-      const wordbook_data = await addWordbook(wordbook.name, wordbook.color, wordbook.status);
-      for (const data of wordbook.words) {
-        await addWord(wordbook_data.id, data.word, data.meaning, data.example, data.description, data.status);
-      }
-    }
 
-    alert('단어장 다운로드 완료');
   } catch (error) {
     console.error("다운로드 중 오류 발생:", error);
     alert("다운로드 실패: 오류가 발생했습니다.");
