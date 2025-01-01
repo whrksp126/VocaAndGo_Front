@@ -104,7 +104,8 @@ const clickUpload = async (event) => {
         alert("구글 드라이브 권한이 필요합니다.")
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
-          uploadNotebooks(url, data)
+          alert("권한 요청 성공")
+          // uploadNotebooks(url, data)
         }
       }else {
         alert(`업로드 실패: ${result.msg || '알 수 없는 오류가 발생했습니다.'}`);
