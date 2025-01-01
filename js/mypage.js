@@ -150,10 +150,12 @@ const clickDownload = async (event) => {
   const _iconBox = _li.querySelector('.icon_box');
   setModalLoadingBtn(_iconBox);
   setNoEvents();
+  
   const device_type = getDevicePlatform();
   const method = `GET`;
   let fetchData = {};
   try {
+    
     const downloadNotebooks = async () => {
       let url = `https://vocaandgo.ghmate.com/drive/excel_to_json`;
       if (device_type !== 'web') {
@@ -182,6 +184,9 @@ const clickDownload = async (event) => {
         const isSuccess = await requestGooglePermissions();
         if(isSuccess){
           await downloadNotebooks();
+        }else{
+          cleanModalLoadingBtn(_iconBox, '<i class="ph ph-download"></i>')
+          cleanNoEvents()
         }
       }else{
         cleanModalLoadingBtn(_iconBox, '<i class="ph ph-download"></i>')
@@ -209,6 +214,8 @@ const clickDownload = async (event) => {
     // }
 
   } catch (error) {
+    cleanModalLoadingBtn(_iconBox, '<i class="ph ph-download"></i>')
+    cleanNoEvents()
     console.error("다운로드 중 오류 발생:", error);
     alert("다운로드 실패: 오류가 발생했습니다.");
   }
