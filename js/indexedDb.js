@@ -510,17 +510,25 @@ async function addWords(wordsData) {
   if (getDevicePlatform() === "app") {
     const INSERT_LIMIT = 90;
     try {
-      alert([params].length)
-      const queries = generateQueriesWithParams(insertQuery, [params]);
-      // alert(JSON.stringify(queries, null, 2));
-      const chunkedQueries = [];
-      for (let i = 0; i < queries.length; i += INSERT_LIMIT) {
-        chunkedQueries.push(queries.slice(i, i + INSERT_LIMIT));
+      const copyParams = [...params];
+      const chunkedParams = [];
+      for (let i = 0; i < copyParams.length; i += INSERT_LIMIT) {
+        chunkedParams.push(copyParams.slice(i, i + INSERT_LIMIT));
       }
-      for (const chunk of chunkedQueries) {
-        await setSqliteTransaction(chunk);
+      for(const chunk of chunkedParams){
+        const queries = generateQueriesWithParams(insertQuery, chunk);
+        await setSqliteTransaction(queries);
       }
       return await getWordsByWordbook(wordsData[0].wordbookId);
+      // const queries = generateQueriesWithParams(insertQuery, [params]);
+      // const chunkedQueries = [];
+      // for (let i = 0; i < queries.length; i += INSERT_LIMIT) {
+      //   chunkedQueries.push(queries.slice(i, i + INSERT_LIMIT));
+      // }
+      // for (const chunk of chunkedQueries) {
+      //   await setSqliteTransaction(chunk);
+      // }
+      // return await getWordsByWordbook(wordsData[0].wordbookId);
     } catch (error) {
       console.error("단어 추가 실패:", error.message);
       throw new Error("단어를 추가하는 데 실패했습니다.");
