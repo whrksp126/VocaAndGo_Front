@@ -26,7 +26,7 @@ async function loadDB() {
   if(getDevicePlatform() == "app"){
 
   }else{
-    const response = await fetch('../json/sqlite_model.json?v=2025.01.052347');
+    const response = await fetch('../json/sqlite_model.json?v=2025.01.052352');
     
     if (!response.ok) {
       throw new Error(`Failed to load JSON: ${response.status}`);
@@ -576,14 +576,14 @@ async function updateWords(wordUpdates) {
   const currentTime = new Date().toISOString();
   const params = [];
   const updateQuery = `
-  UPDATE Word
-  SET wordbook_id = ?, origin = ?, meaning = ?, example = ?, description = ?, status = ?, updatedAt = ?
-  WHERE id = ?
-` 
+    UPDATE Word
+    SET wordbook_id = ?, origin = ?, meaning = ?, example = ?, description = ?, status = ?, updatedAt = ?
+    WHERE id = ?
+  ` 
   wordUpdates.forEach(({ id, updates }) => {
     const meaningJson = JSON.stringify(updates.meaning || []);
     const exampleJson = JSON.stringify(updates.example || []);
-    const originValue = updates.word || updates.origin; // 기본값 설정
+    const originValue = updates.origin || updates.word; // 기본값 설정
     params.push(
       updates.wordbookId || null,
       originValue, // 기본값이 설정된 origin 사용
@@ -605,6 +605,7 @@ async function updateWords(wordUpdates) {
       return await Promise.all(wordUpdates.map(({ id }) => getWord(id)));
     } catch (error) {
       console.error("단어 일괄 수정 실패:", error.message);
+      alert(error.message)
       throw new Error("단어를 수정하는 데 실패했습니다.");
     }
   } else {
