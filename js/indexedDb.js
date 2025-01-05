@@ -599,6 +599,7 @@ async function updateWords(wordUpdates) {
   if (getDevicePlatform() === "app") {
     try {
       const queries = generateQueriesWithParams(updateQuery, [params]);
+      writeTestAppLog(`<div>${JSON.stringify(queries)}</div>`)
       await setSqliteTransaction(queries);
       // TODO : setSqliteQuery 제거
       // await setSqliteQuery(updateQueries.join("; "), params);
