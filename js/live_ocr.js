@@ -4,8 +4,8 @@ const clickOpenOcrCamera = async (event) => {
   let img_data;
   try{
     if (getDevicePlatform() === 'web') {
-      const ocr_list = await getWebOcrData('/images/orc_dummy_img_6.png?v=2025.01.052333');
-      img_data = { image: '/images/orc_dummy_img_6.png?v=2025.01.052333', ocr_list: ocr_list }
+      const ocr_list = await getWebOcrData('/images/orc_dummy_img_6.png?v=2025.01.052342');
+      img_data = { image: '/images/orc_dummy_img_6.png?v=2025.01.052342', ocr_list: ocr_list }
     } else if (getDevicePlatform() === 'app') {
       img_data = await openCamera('ocr');
     }

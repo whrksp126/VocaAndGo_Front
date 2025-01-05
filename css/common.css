@@ -844,6 +844,7 @@ footer nav ul li span{
   position: fixed;
   top: 50px;
   right: 50px;
+  z-index: 100;
   max-width: 80%;
   max-height: 50%;
   width: auto;
