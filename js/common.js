@@ -571,6 +571,7 @@ const clickShowAnswer = async (event) => {
 }
 
 const clickBatchSetMarkBtn = async (event, isCorrect) => {
+  writeTestAppLog(`<div>클릭</div>`)
   const isRegister = Number(event.target.dataset.register);
   const wordUpdates = [];
 
@@ -607,15 +608,20 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
   });
 
   if (wordUpdates.length > 0) {
+    writeTestAppLog(`<div>updateWords 전</div>`)
     await updateWords(wordUpdates);
+    writeTestAppLog(`<div>updateWords 후</div>`)
     TEST_WORD_LIST.forEach(word => {
       const updatedWord = wordUpdates.find(wu => wu.id === word.id);
       if (updatedWord) word.status = updatedWord.updates.status;
     });
+    writeTestAppLog(`<div>getRecentStudy 전</div>`)
     const recentStudy = await getRecentStudy();
+    writeTestAppLog(`<div>getRecentStudy 후</div>`)
     await updateRecentStudy(recentStudy.id, { test_list: TEST_WORD_LIST });
+    writeTestAppLog(`<div>updateRecentStudy 후</div>`)
   }
-
+  writeTestAppLog(`<div>nextBtnText</div>`)
   const nextBtnText = `${isCorrect ? "맞은" : "틀린"} 단어 마크 ${isRegister ? "해제" : "등록"}`;
   event.target.innerHTML = nextBtnText;
   event.target.dataset.register = isRegister == 0 ? 1 : 0;

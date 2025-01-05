@@ -248,7 +248,7 @@ const init = async () => {
 }
 init();
 
-
+createTestViewLog();
 
 
 
