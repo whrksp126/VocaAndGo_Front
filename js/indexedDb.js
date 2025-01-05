@@ -574,49 +574,56 @@ async function updateWord(id, updates = {}) {
 // Word 데이터 일괄 수정
 async function updateWords(wordUpdates) {
   const currentTime = new Date().toISOString();
-  const params = [];
+  const queries = [];
+
   const updateQuery = `
     UPDATE Word
     SET wordbook_id = ?, origin = ?, meaning = ?, example = ?, description = ?, status = ?, updatedAt = ?
     WHERE id = ?
-  ` 
+  `;
+
   wordUpdates.forEach(({ id, updates }) => {
     const meaningJson = JSON.stringify(updates.meaning || []);
     const exampleJson = JSON.stringify(updates.example || []);
-    const originValue = updates.origin || updates.word; // 기본값 설정
-    params.push(
+    const originValue = updates.origin || updates.word || null; // 기본값 설정
+
+    const params = [
       updates.wordbookId || null,
-      originValue, // 기본값이 설정된 origin 사용
+      originValue,
       meaningJson,
       exampleJson,
       updates.description || "",
       updates.status || 0,
       currentTime,
-      id
-    );
+      id,
+    ];
+
+    queries.push({ query: updateQuery, params });
   });
 
   if (getDevicePlatform() === "app") {
     try {
-      const queries = generateQueriesWithParams(updateQuery, [params]);
-      writeTestAppLog(`<div>${JSON.stringify(queries)}</div>`)
-      await setSqliteTransaction(queries);
-      // TODO : setSqliteQuery 제거
-      // await setSqliteQuery(updateQueries.join("; "), params);
+      const sqliteQueries = generateQueriesWithParams(updateQuery, queries);
+      writeTestAppLog(`<div>${JSON.stringify(sqliteQueries)}</div>`);
+
+      await setSqliteTransaction(sqliteQueries);
+
       return await Promise.all(wordUpdates.map(({ id }) => getWord(id)));
     } catch (error) {
       console.error("단어 일괄 수정 실패:", error.message);
-      alert(JSON.stringify(error))
+      alert(JSON.stringify(error));
       throw new Error("단어를 수정하는 데 실패했습니다.");
     }
   } else {
     try {
       SQLITE_DB.run("BEGIN TRANSACTION");
-      for (let i = 0; i < params.length; i++) {
-        SQLITE_DB.run(updateQuery, params.slice(i * 8, (i + 1) * 8)); // 각 쿼리에 해당하는 매개변수 전달
+      for (const { query, params } of queries) {
+        SQLITE_DB.run(query, params);
       }
       SQLITE_DB.run("COMMIT");
+
       await saveDB();
+
       return await Promise.all(wordUpdates.map(({ id }) => getWord(id)));
     } catch (error) {
       SQLITE_DB.run("ROLLBACK");
