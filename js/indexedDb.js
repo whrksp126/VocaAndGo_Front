@@ -605,7 +605,7 @@ async function updateWords(wordUpdates) {
       return await Promise.all(wordUpdates.map(({ id }) => getWord(id)));
     } catch (error) {
       console.error("단어 일괄 수정 실패:", error.message);
-      alert(JSON.stringify(error.message))
+      alert(JSON.stringify(error))
       throw new Error("단어를 수정하는 데 실패했습니다.");
     }
   } else {
