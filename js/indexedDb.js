@@ -600,9 +600,24 @@ async function updateWords(wordUpdates) {
     try {
       // const queries = generateQueriesWithParams(updateQuery, [params]);
       const queries = [];
-      params.forEach((data)=>{
-        queries.push({query : updateQuery, params : data})
-      })
+      wordUpdates.forEach(({ id, updates }) => {
+        const meaningJson = JSON.stringify(updates.meaning || []);
+        const exampleJson = JSON.stringify(updates.example || []);
+        const originValue = updates.origin || updates.word; // 기본값 설정
+        queries.push({
+          query: updateQuery, 
+          params: [          
+            updates.wordbookId || null,
+            originValue, 
+            meaningJson,
+            exampleJson,
+            updates.description || "",
+            updates.status || 0,
+            currentTime,
+            id
+          ]
+        })
+      });
       writeTestAppLog(`<div>${JSON.stringify(queries)}</div>`)
       await setSqliteTransaction(queries);
       // TODO : setSqliteQuery 제거
