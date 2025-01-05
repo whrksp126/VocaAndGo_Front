@@ -26,7 +26,7 @@ async function loadDB() {
   if(getDevicePlatform() == "app"){
 
   }else{
-    const response = await fetch('../json/sqlite_model.json?v=2025.01.052352');
+    const response = await fetch('../json/sqlite_model.json?v=2025.01.052353');
     
     if (!response.ok) {
       throw new Error(`Failed to load JSON: ${response.status}`);
@@ -605,7 +605,7 @@ async function updateWords(wordUpdates) {
       return await Promise.all(wordUpdates.map(({ id }) => getWord(id)));
     } catch (error) {
       console.error("단어 일괄 수정 실패:", error.message);
-      alert(error.message)
+      alert(JSON.stringify(error.message))
       throw new Error("단어를 수정하는 데 실패했습니다.");
     }
   } else {
