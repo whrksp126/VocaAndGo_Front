@@ -592,12 +592,11 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
       const _li = document.querySelector(`li[data-id="${word_id}"]`);
       _li.querySelector("img").src = `/images/marker_${status}.png?v=2024.12.310015`;
       _li.dataset.status = status;
-
       wordUpdates.push({
         id: word_id,
         updates: {
           wordbookId: data.wordbookId || null,
-          origin: data.origin || null,
+          origin: data.word || data.origin,
           meaning: data.meaning || [],
           example: data.example || [],
           description: data.description || "",
