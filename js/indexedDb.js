@@ -583,7 +583,7 @@ async function updateWords(wordUpdates) {
   wordUpdates.forEach(({ id, updates }) => {
     const meaningJson = JSON.stringify(updates.meaning || []);
     const exampleJson = JSON.stringify(updates.example || []);
-    const originValue = updates.origin || "default_origin"; // 기본값 설정
+    const originValue = updates.word || updates.origin; // 기본값 설정
     params.push(
       updates.wordbookId || null,
       originValue, // 기본값이 설정된 origin 사용
