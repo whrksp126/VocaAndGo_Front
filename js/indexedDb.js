@@ -599,7 +599,6 @@ async function updateWords(wordUpdates) {
         params: createParams({ id, updates }),
       }));
 
-      writeTestAppLog(`<div>${JSON.stringify(queries)}</div>`);
       await setSqliteTransaction(queries);
 
       // 모든 업데이트된 단어 정보 반환

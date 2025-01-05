@@ -116,5 +116,3 @@ const clickAddVocabulary = async (event, id) => {
   showRewardedAd(callback)
 }
 
-
-createTestViewLog();

@@ -571,7 +571,6 @@ const clickShowAnswer = async (event) => {
 }
 
 const clickBatchSetMarkBtn = async (event, isCorrect) => {
-  writeTestAppLog(`<div>클릭</div>`)
   const isRegister = Number(event.target.dataset.register);
   const wordUpdates = [];
 
@@ -609,7 +608,6 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
 
   if (wordUpdates.length > 0) {
     await updateWords(wordUpdates);
-    writeTestAppLog(`<div>updateWords 후</div>`)
     TEST_WORD_LIST.forEach(word => {
       const updatedWord = wordUpdates.find(wu => wu.id === word.id);
       if (updatedWord) word.status = updatedWord.updates.status;
