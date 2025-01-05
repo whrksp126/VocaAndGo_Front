@@ -3,49 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <link rel="icon" href="/favicon/favicon.ico?v=2024.12.310015" type="image/x-icon">
+  <link rel="icon" href="/favicon/favicon.ico?v=2025.01.052333" type="image/x-icon">
   <title>HeyVoca</title>
   <!-- OS 함수 -->
-  <script src="/js/osFunction.js?v=2024.12.310015"></script>
+  <script src="/js/osFunction.js?v=2025.01.052333"></script>
   <!-- sql.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js?v=2024.12.310015"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js?v=2025.01.052333"></script>
   <!-- Indexed_DB -->
-  <script src="/js/indexedDb.js?v=2024.12.310015"></script>
+  <script src="/js/indexedDb.js?v=2025.01.052333"></script>
   <!-- 로그인 확인 -->
-  <script src="/js/loginSession.js?v=2024.12.310015"></script>
-  <link rel="stylesheet" href="/css/reset.css?v=2024.12.310015">
-  <link rel="stylesheet" href="/css/common.css?v=2024.12.310015">
-  <script src="/js/initStyle.js?v=2024.12.310015"></script>
+  <script src="/js/loginSession.js?v=2025.01.052333"></script>
+  <link rel="stylesheet" href="/css/reset.css?v=2025.01.052333">
+  <link rel="stylesheet" href="/css/common.css?v=2025.01.052333">
+  <script src="/js/initStyle.js?v=2025.01.052333"></script>
 
-  <link rel="stylesheet" href="/css/login.css?v=2024.12.310015">
+  <link rel="stylesheet" href="/css/login.css?v=2025.01.052333">
   <!-- lottie -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js?v=2024.12.310015"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js?v=2025.01.052333"></script>
 
   
 </head> 
 <body data-page="login">
   <div id="app">
     <div class="background">
-      <!-- <img class="logo" src="/images/logo.png?v=2024.12.310015" alt=""> -->
+      <!-- <img class="logo" src="/images/logo.png?v=2025.01.052333" alt=""> -->
       <div id="lottie-container" class="logo"></div>
 
       <div class="buttons">
         <button class="google_btn" onclick="clickGoogleLogin(event)">
-          <img src="/images/google_logo.png?v=2024.12.310015" alt="">
+          <img src="/images/google_logo.png?v=2025.01.052333" alt="">
           <span>Google 로그인</span>
         </button>
         <a class="non_members" href="#" onclick="clickNonMembers(event)">비회원 이용하기</a>
       </div>
     </div>
   </div>
-  <script src="/js/common.js?v=2024.12.310015"></script>
+  <script src="/js/common.js?v=2025.01.052333"></script>
   <script>
     lottie.loadAnimation({
       container: document.getElementById('lottie-container'),
       renderer: 'svg',
       loop: false,
       autoplay: true,
-      path: '/lottie/heyvoca logo-01.json?v=2024.12.310015' // JSON 파일 경로를 입력하세요.
+      path: '/lottie/heyvoca logo-01.json?v=2025.01.052333' // JSON 파일 경로를 입력하세요.
     });
     document.addEventListener('DOMContentLoaded', async (event) => {
       const user_data = JSON.parse(localStorage.getItem('user'));

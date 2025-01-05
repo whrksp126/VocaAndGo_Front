@@ -26,7 +26,7 @@ async function loadDB() {
   if(getDevicePlatform() == "app"){
 
   }else{
-    const response = await fetch('../json/sqlite_model.json?v=2024.12.310015');
+    const response = await fetch('../json/sqlite_model.json?v=2025.01.052333');
     
     if (!response.ok) {
       throw new Error(`Failed to load JSON: ${response.status}`);
