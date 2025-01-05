@@ -29,6 +29,11 @@ main .container ul li{
   padding: 20px;
   border-radius: 12px;
   background: var(--background-color);
+
+  transform: scale(1);
+}
+main .container ul li:active{
+  transform: scale(0.98);
 }
 main .container ul li .top{
   width: 100%;

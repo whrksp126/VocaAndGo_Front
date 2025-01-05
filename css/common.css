@@ -70,10 +70,12 @@ header .container .btns{
   color: #FF8DD4;
   font-size: 20px;
 }
-header .container .btns button{
-
+header .container .btns button {
+  transform: scale(1);
 }
-
+header .container .btns button:active {
+  transform: scale(0.9);
+}
 
 .react header .container h2 {
   position: absolute;
@@ -119,6 +121,10 @@ footer nav ul li{
   align-items: center;
   flex: 1;
   margin: 0 auto;
+  transform: scale(1);
+}
+footer nav ul li:active{
+  transform: scale(0.9);
 }
 footer nav ul li.active{
   color: #FF8DD4;
@@ -207,10 +213,9 @@ footer nav ul li span{
   height: 100%;
   border-radius: 8px;
   transform: scale(1);
-  transition: transform 0.2s ease-in-out;
 }
 .modal .modal_content .modal_bottom .buttons button:active{
-  transform: scale(0.995);
+  transform: scale(0.97);
 }
 .modal .modal_content .modal_bottom .buttons button.gray{
   background: #CCCCCC;
@@ -768,6 +773,10 @@ footer nav ul li span{
 }
 .answer_card .right img{
   width: 21px;
+  transform: scale(1);
+}
+.answer_card .right img:active{
+  transform: scale(0.95);
 }
 
 

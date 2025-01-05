@@ -152,6 +152,10 @@ main .container .progressbar_box .progressbar .active_bar{
   color: #fff;
   background: #ccc;
   border-radius: 10px;
+  transform: scale(1);
+}
+.btns button:active{
+  transform: scale(0.95);
 }
 .btns button.o_btn{
   background: #17E937;

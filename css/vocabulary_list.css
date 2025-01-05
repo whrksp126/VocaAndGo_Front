@@ -65,6 +65,10 @@ main .container ul li {
   padding: 20px;
   background: var(--card-background);
   border-radius: 12px;
+  transform: scale(1);
+}
+main .container ul li:active {
+  transform: scale(0.98);
 }
 main .container ul li .top{
   display: flex;
@@ -161,6 +165,9 @@ main .container ul li.empty_message .bottom button i{
   flex-flow: initial;
   align-items: flex-start;
   justify-content: space-between;
+}
+[data-page="vocabulary_list_edit"] main .container ul li:active{
+  transform: scale(1);
 }
 [data-page="vocabulary_list_edit"] main .container ul li .top{
   flex-flow: column;

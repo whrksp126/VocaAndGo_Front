@@ -71,7 +71,11 @@ header .container h2 {
   background: #FF8DD4;
   font-size: 16px;
   font-weight: 700;
-
+  transform: scale(1);
+  transition: transform 0.1s;
+}
+.selete_vocabulary li button:active {
+  transform: scale(0.98);
 }
 
 .selete_vocabulary li.all{
