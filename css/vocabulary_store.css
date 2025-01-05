@@ -128,6 +128,10 @@ main .container ul li .bottom button{
 }
 .modal.voca_preview .modal_content .modal_middle > ul li .top .right .btns button{
   display: block;
+  transform: scale(1);
+}
+.modal.voca_preview .modal_content .modal_middle > ul li .top .right .btns button:active{
+  transform: scale(0.95);
 }
 .modal.voca_preview .modal_content .modal_middle > ul li .top .right .btns button.sound_btn{
   width: 20px;

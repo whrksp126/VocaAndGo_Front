@@ -181,7 +181,10 @@ main .container ul li.empty_message .bottom button i{
   gap: 8px;
 }
 [data-page="vocabulary_list_edit"] main .container ul li .btns button{
-  
+  transform: scale(1);
+}
+[data-page="vocabulary_list_edit"] main .container ul li .btns button:active{
+  transform: scale(0.95);
 }
 [data-page="vocabulary_list_edit"] main .container ul li .btns button.edit_btn{
   color: var(--card-color);

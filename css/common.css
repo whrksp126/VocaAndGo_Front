@@ -454,7 +454,12 @@ footer nav ul li span{
   height: 36px;
   border-radius: 50%;
   background: var(--main-color);
-  transition: all .3s;
+  transform: scale(1);
+  transition: background 0.3s, border-radius 0.3s, width 0.3s, height 0.3s; /* scale 제외 */
+
+}
+.input_color ul li:active{
+  transform: scale(0.95);
 }
 .input_color ul li i{
   display: none;
@@ -487,6 +492,10 @@ footer nav ul li span{
   color: #CCCCCC;
   font-weight: 700;
   font-size: 16px;
+  transform: scale(1);
+}
+.radio_btns button:active{
+  transform: scale(0.98);
 }
 .radio_btns button i{
   display: none;
@@ -517,6 +526,10 @@ footer nav ul li span{
   padding: 20px;
   background: var(--card-background);
   border-radius: 12px;
+  transform: scale(1);
+}
+.vocabularay_list li:active {
+  transform: scale(0.98);
 }
 .vocabularay_list li .top{
   display: flex;
@@ -618,6 +631,10 @@ footer nav ul li span{
   border-radius: 7.11px;
   border: 1px solid #CCCCCC;
   color: #CCCCCC;
+  transform: scale(1);
+}
+.modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns button:active{
+  transform: scale(0.95);
 }
 .modal.setup_test .modal_content .modal_middle ul li.problem_nums .btns input{
   width: 100px;
