@@ -172,6 +172,16 @@
       }))
       window.location.href = '/html/vocabulary_list.html';
     }
+    // 브라우저 알림 권한 상태 확인
+    if (Notification.permission === "denied") {
+        console.error("알림 권한이 차단되었습니다. 브라우저 설정에서 허용으로 변경하세요.");
+    } else if (Notification.permission === "default") {
+        console.log("알림 권한 요청 중입니다.");
+        // 권한 요청
+        requestNotificationPermission();
+    } else {
+        console.log("알림 권한이 허용되었습니다.");
+    }
   </script>
 </body>
 </html>
