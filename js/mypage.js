@@ -77,7 +77,7 @@ const changePushNotificationToggle = async (event) => {
     is_allowed: event.target.checked,
     fcm_token : fcm_token,
   };
-  
+  alert(JSON.stringify(fetchData));
   const result = await fetchDataAsync(url, method, fetchData);
   if(result.code == 200){
     setPushNotificationOn(is_checked);
