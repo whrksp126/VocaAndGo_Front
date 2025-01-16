@@ -104,45 +104,6 @@
         }
       }
       
-      const firebaseConfig = {
-        apiKey: "AIzaSyDNZwiU38MuCRuMc57b_QrhdSPINiw50fA",
-        authDomain: "vocaandgo.firebaseapp.com",
-        projectId: "vocaandgo",
-        storageBucket: "vocaandgo.firebasestorage.app",
-        messagingSenderId: "1029120969045",
-        appId: "1:1029120969045:web:ebbd89ce97284d630c07dc",
-        measurementId: "G-Z2ZYSGNFQK"
-      };
-      // Firebase 초기화
-      const app = firebase.initializeApp(firebaseConfig);
-      const analytics = firebase.analytics();
-
-      // Firebase Messaging 초기화
-      const messaging = firebase.messaging();
-
-      // FCM 토큰 가져오기
-      async function getFcmToken() {
-        try {
-          // VAPID 키와 함께 FCM 토큰 요청
-          const currentToken = await messaging.getToken({ vapidKey: 'YOUR_PUBLIC_VAPID_KEY' });
-          if (currentToken) {
-            return currentToken; // 토큰 반환
-          } else {
-            console.warn('사용 가능한 등록 토큰이 없습니다..');
-            return null; // 토큰이 없으면 null 반환
-          }
-        } catch (err) {
-          console.error('토큰을 검색하는 중 오류가 발생했습니다..', err);
-          return null; // 에러 발생 시 null 반환
-        }
-      }
-      const fcm_token = await getFcmToken();
-      const url = `https://vocaandgo.ghmate.com/fcm/save_token`;
-      const method = 'POST';
-      const fetchData = {
-        fcm_token : fcm_token,
-        google_id : google_id
-      }
       try{
         const result = await fetchDataAsync(url, method, fetchData);
         if(result.code !== 200){
@@ -172,16 +133,52 @@
       }))
       window.location.href = '/html/vocabulary_list.html';
     }
-    // 브라우저 알림 권한 상태 확인
-    if (Notification.permission === "denied") {
-        console.error("알림 권한이 차단되었습니다. 브라우저 설정에서 허용으로 변경하세요.");
-    } else if (Notification.permission === "default") {
-        console.log("알림 권한 요청 중입니다.");
-        // 권한 요청
-        requestNotificationPermission();
-    } else {
-        console.log("알림 권한이 허용되었습니다.");
-    }
+
+    
+      const initFcm = async () => {
+          
+        const firebaseConfig = {
+          apiKey: "AIzaSyDNZwiU38MuCRuMc57b_QrhdSPINiw50fA",
+          authDomain: "vocaandgo.firebaseapp.com",
+          projectId: "vocaandgo",
+          storageBucket: "vocaandgo.firebasestorage.app",
+          messagingSenderId: "1029120969045",
+          appId: "1:1029120969045:web:ebbd89ce97284d630c07dc",
+          measurementId: "G-Z2ZYSGNFQK"
+        };
+        // Firebase 초기화
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.getAnalytics(app);
+        // Firebase Messaging 초기화
+        const messaging = firebase.messaging();
+
+        // FCM 토큰 가져오기
+        async function getFcmToken() {
+          try {
+            // VAPID 키와 함께 FCM 토큰 요청
+            const currentToken = await messaging.getToken({ vapidKey: 'BLZU6AG9inR6Q_aNw4G-fNrH0eHfDn_YvpEMM0FzvkZ1hwNQfB0uoXy7EFq-AC749ZFRqKiWu91CyP_RCGBMQn8' });
+            if (currentToken) {
+              return currentToken; // 토큰 반환
+            } else {
+              console.warn('사용 가능한 등록 토큰이 없습니다..');
+              return null; // 토큰이 없으면 null 반환
+            }
+          } catch (err) {
+            console.error('토큰을 검색하는 중 오류가 발생했습니다..', err);
+            return null; // 에러 발생 시 null 반환
+          }
+        }
+        const fcm_token = await getFcmToken();
+        console.log(fcm_token)
+        // const url = `https://vocaandgo.ghmate.com/fcm/save_token`;
+        // const method = 'POST';
+        // const fetchData = {
+        //   fcm_token : fcm_token,
+        //   google_id : google_id
+        // }
+      }
+      initFcm();
   </script>
 </body>
 </html>
