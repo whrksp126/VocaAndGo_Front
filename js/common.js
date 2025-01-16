@@ -296,7 +296,7 @@ const clickMarker = async (event) => {
     word_id = Number(_li.dataset.id);
   }
   _li.dataset.status = status;
-  _li.querySelector('img').src = `/images/marker_${status}.png?v=2025.01.052353`;
+  _li.querySelector('img').src = `/images/marker_${status}.png?v=2025.01.170143`;
   const result = await updateWord(word_id, {status : status});
   console.log(result)
   if(isTestPage){
@@ -590,7 +590,7 @@ const clickBatchSetMarkBtn = async (event, isCorrect) => {
 
     if (typeof status !== "undefined") {
       const _li = document.querySelector(`li[data-id="${word_id}"]`);
-      _li.querySelector("img").src = `/images/marker_${status}.png?v=2025.01.052353`;
+      _li.querySelector("img").src = `/images/marker_${status}.png?v=2025.01.170143`;
       _li.dataset.status = status;
       wordUpdates.push({
         id: word_id,
@@ -679,7 +679,7 @@ const setLottieSound = () => {
       renderer: 'svg',
       loop: false,
       autoplay: false, 
-      path: '/lottie/sound.json?v=2025.01.052353'
+      path: '/lottie/sound.json?v=2025.01.170143'
     });
 
     animation.addEventListener('DOMLoaded', () => {

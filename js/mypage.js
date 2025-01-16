@@ -70,18 +70,14 @@ const changeExampleVisibleToggle = (event) => {
 // 푸시 알림 토글 버튼 변경 시
 const changePushNotificationToggle = async (event) => {
   const is_checked = event.target.checked;
-  alert(`토큰 조회 전`)
   const fcm_token = await getFcmToken()
-  alert(fcm_token)
   const url = `https://vocaandgo.ghmate.com/fcm/is_message_allowed`;
   const method = 'POST';
   const fetchData = {
     is_allowed: event.target.checked,
     fcm_token : fcm_token,
   };
-  alert(`전 : ${JSON.stringify(fetchData)}`);
   const result = await fetchDataAsync(url, method, fetchData);
-  alert(`후 : ${JSON.stringify(result)}`);
   if(result.code == 200){
     setPushNotificationOn(is_checked);
     console.log(getPushNotificationOn());
@@ -244,7 +240,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const _visible = document.querySelector('.visible span');
     _visible.innerHTML = example_visible ? '항상 보기' : '숨기기';
     const _fcmPush = document.querySelector('.fcm_state');
-    alert(_fcmPush)
     _fcmPush.innerHTML = getPushNotificationOn() ? 'on' : 'off';
     
   }
