@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
         type="checkbox" 
         class="custom_checkbox" 
         onchange="changePushNotificationToggle(event)"
-        ${example_visible ? 'checked' : ''}
+        ${getPushNotificationOn() ? 'checked' : ''}
       >
       <label for="theme_toggle_btn" class="switch_box">
         <div class="btn_icon">
