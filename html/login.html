@@ -21,6 +21,10 @@
   <!-- lottie -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js?v=2025.01.052353"></script>
 
+  <!-- FCM -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js"></script>
   
 </head> 
 <body data-page="login">
@@ -99,9 +103,58 @@
           return alert(JSON.stringify(error));          
         }
       }
+      
+      const firebaseConfig = {
+        apiKey: "AIzaSyDNZwiU38MuCRuMc57b_QrhdSPINiw50fA",
+        authDomain: "vocaandgo.firebaseapp.com",
+        projectId: "vocaandgo",
+        storageBucket: "vocaandgo.firebasestorage.app",
+        messagingSenderId: "1029120969045",
+        appId: "1:1029120969045:web:ebbd89ce97284d630c07dc",
+        measurementId: "G-Z2ZYSGNFQK"
+      };
+      // Firebase 초기화
+      const app = firebase.initializeApp(firebaseConfig);
+      const analytics = firebase.analytics();
+
+      // Firebase Messaging 초기화
+      const messaging = firebase.messaging();
+
+      // FCM 토큰 가져오기
+      async function getFcmToken() {
+        try {
+          // VAPID 키와 함께 FCM 토큰 요청
+          const currentToken = await messaging.getToken({ vapidKey: 'YOUR_PUBLIC_VAPID_KEY' });
+          if (currentToken) {
+            return currentToken; // 토큰 반환
+          } else {
+            console.warn('사용 가능한 등록 토큰이 없습니다..');
+            return null; // 토큰이 없으면 null 반환
+          }
+        } catch (err) {
+          console.error('토큰을 검색하는 중 오류가 발생했습니다..', err);
+          return null; // 에러 발생 시 null 반환
+        }
+      }
+      const fcm_token = await getFcmToken();
+      const url = `https://vocaandgo.ghmate.com/fcm/save_token`;
+      const method = 'POST';
+      const fetchData = {
+        fcm_token : fcm_token,
+        google_id : google_id
+      }
+      try{
+        const result = await fetchDataAsync(url, method, fetchData);
+        if(result.code !== 200){
+          return alert(result.msg);
+        }
+      }catch(error){
+
+      }
+      localStorage.setItem('fcm_token', JSON.stringify(fcm_token));
       localStorage.setItem('user', JSON.stringify(user));
       window.location.href = '/html/vocabulary_list.html';
-    })
+    });
     const clickGoogleLogin = () => {
       const device_type = getDevicePlatform();
       if(device_type == 'web'){

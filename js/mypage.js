@@ -70,11 +70,19 @@ const changeExampleVisibleToggle = (event) => {
 // 푸시 알림 토글 버튼 변경 시
 const changePushNotificationToggle = async (event) => {
   const is_checked = event.target.checked;
-
+  const device_type = getDevicePlatform();
+  let fcm_token;
+  if(device_type == 'web'){
+    fcm_token = localStorage.getItem('fcm_token')
+  }else{
+    fcm_token = await getFcmToken()
+  }
   const url = `https://vocaandgo.ghmate.com/fcm/is_message_allowed`;
   const method = 'POST';
-  const fetchData = {is_allowed: event.target.checked};
-  
+  const fetchData = {
+    is_allowed: event.target.checked,
+    fcm_token : fcm_token,
+  };
   const result = await fetchDataAsync(url, method, fetchData);
   if(result.code == 200){
     setPushNotificationOn(is_checked);
