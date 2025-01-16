@@ -244,6 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const _visible = document.querySelector('.visible span');
     _visible.innerHTML = example_visible ? '항상 보기' : '숨기기';
     const _fcmPush = document.querySelector('.fcm_push span');
+    alert(getPushNotificationOn())
     _fcmPush.innerHTML = getPushNotificationOn() ? 'on' : 'off';
     
   }
