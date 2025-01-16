@@ -79,6 +79,7 @@ const changePushNotificationToggle = async (event) => {
   };
   alert(JSON.stringify(fetchData));
   const result = await fetchDataAsync(url, method, fetchData);
+  alert(JSON.stringify(result));
   if(result.code == 200){
     setPushNotificationOn(is_checked);
     console.log(getPushNotificationOn());
