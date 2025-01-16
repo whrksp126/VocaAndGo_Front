@@ -243,6 +243,9 @@ document.addEventListener('DOMContentLoaded', function() {
     _theme.innerHTML = theme_data == 'dark' ? '다크' : '라이트';
     const _visible = document.querySelector('.visible span');
     _visible.innerHTML = example_visible ? '항상 보기' : '숨기기';
+    const _fcmPush = document.querySelector('.fcm_push span');
+    _fcmPush.innerHTML = getPushNotificationOn() ? 'on' : 'off';
+    
   }
 
   // 페이지 로드 시 저장된 테마 설정 적용
