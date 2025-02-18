@@ -69,8 +69,9 @@ const clickVocabularyPreview = (event) => {
 const clickAddStoreVocabulary = (event, id) => {
   const modal = getDefaultModal();
   modal.container.classList.add('confirm');
+  const vocabulary = STORE_DATA.find((item)=>item.id == id);
   modal.middle.innerHTML = `
-    <h3>‘토익 준비용 🔥’ 을<br>내 단어장에 추가하시겠어요?</h3>
+    <h3>${vocabulary.name}<br>내 단어장에 추가하시겠어요?</h3>
     <span>추가 후에는 내 단어장에서 수정 가능해요 😉</span>
   `;
   const btns = [
