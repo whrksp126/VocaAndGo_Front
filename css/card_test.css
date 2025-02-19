@@ -98,9 +98,12 @@ main .container .progressbar_box .progressbar .active_bar{
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 85%;
   color: #111111;
   font-size: 28px;
   font-weight: 700;
+  text-align: center;
+  word-break: keep-all;
   transform: translate(-50%, -50%);
 }
 .cards .card span.word.hint {

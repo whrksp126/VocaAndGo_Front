@@ -417,7 +417,8 @@ const setVocabularyNameHtml = async (id) => {
 // 단어 리스트 세팅
 const setVocabularyHtml = async (id) => {
   let html = '';
-  const words = await getWordsByWordbook(Number(id));
+  let words = await getWordsByWordbook(Number(id));
+  words.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   const bodyStyle = document.querySelector('body').style;
   bodyStyle.setProperty('--card-color', `#FF8DD4`);
   bodyStyle.setProperty('--card-background', `#FFEFFA`);

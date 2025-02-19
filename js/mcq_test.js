@@ -8,12 +8,11 @@ const setMcqHtml = (word, total, index) => {
   let show_type = 1; // 0 : 단어, 1 : 의미;
   if(view_type == 'word') show_type = 0;
   if(view_type == 'meaning') show_type = 1;
-  if(view_type == 'cross') show_type = mcqIndex+1 % 2 == 0 ? 1 : 0;
+  if(view_type == 'cross') show_type = mcqIndex % 2 == 0 ? 0 : 1;
   if(view_type == 'random') show_type = Math.random() < 0.5 ? 0 : 1;
   show_text = show_type == 0 ? word.word : word.meaning;
   show_hint = show_type == 0 ? word.meaning : word.word;
   show_option = word.options.map(option => show_type == 0 ? option.meaning : option.word);
-
   return `
     <div 
       class="item"
@@ -64,6 +63,13 @@ const setMcqTestPage = () => {
       currentPage += 1;
     }
   });
+  const item_length = _items.querySelectorAll('.item').length;
+  
+  const first_item = _items.querySelectorAll('.item')[item_length - 1];
+  const first_index = Number(first_item.dataset.index);
+  const first_data = TEST_WORD_LIST[first_index];
+  const show_type = Number(first_item.dataset.show);
+  generateSpeech(show_type == 0 ? first_data.word : first_data.meaning.join(', '), show_type == 0 ? 'en' : 'ko')
   setLottieSound();
 
   const _first_item = document.querySelector('.items .item:last-child');
@@ -86,6 +92,8 @@ const clickMcqOption = (event, index) => {
   _currentItem.classList.add(isCorrect ? 'correct' : 'incorrect');
   _currentItem.querySelector('.card').classList.add('end');
   word_data.isCorrect = isCorrect ? 1 : 0;
+  const _cprrectOptionBtn = _currentItem.querySelector(`.btns .option_btn[data-index="${word_data.result}"]`);
+  _cprrectOptionBtn.classList.add("o_btn");
   setTimeout(async ()=>{
     const _progressbarBox = document.querySelector('.progressbar_box');
     let currentPage = parseInt(getComputedStyle(_progressbarBox).getPropertyValue('--cur-page')) || 0;
@@ -99,21 +107,20 @@ const clickMcqOption = (event, index) => {
           test_list : TEST_WORD_LIST
         });
         setTestResultsHtml();
-      },500)
+      },2000)
     }else{
       _currentItem.classList.add('end');
       _currentItem.classList.remove('active');
       _nextItem.classList.add('active');
-      const viewTypes = getValueFromURL('view_types');
-      if(viewTypes == 'word'){
-        generateSpeech(TEST_WORD_LIST[Number(_nextItem.dataset.index)].word, 'en')
-      }
+      const next_show_type = Number(_nextItem.dataset.show);
+      const next_data = TEST_WORD_LIST[Number(_nextItem.dataset.index)];
+      generateSpeech(next_show_type == 0 ? next_data.word : next_data.meaning.join(', '), next_show_type == 0 ? 'en' : 'ko')
       await updateRecentStudy(recentStudy.id, {
         test_list : TEST_WORD_LIST
       });
       setTimeout(() => _currentItem.remove(), 300);
     }
-  },500)
+  },2000)
   _currentItem.dataset.isdone = true;
 }
 

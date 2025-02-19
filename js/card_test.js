@@ -13,7 +13,6 @@ const setCardHtml = (word, total, index) => {
   return `
     <div class="card" 
       data-show="${show_type}"
-      data-id="${word.id}"
       data-index="${index}"
     >
       <div class="granding">
@@ -33,7 +32,7 @@ const setCardHtml = (word, total, index) => {
           <span class="total">${total}</span>
         </div>
         -->
-        <button class="sound_btn speaker click_event" onclick="generateSpeech('${show_text}', '${show_type == 0 ? 'en' : 'ko'}')">
+        <button class="sound_btn speaker click_event" onclick="cardSpeakerBtn(event)">
           <i class="ph-fill ph-speaker-high"></i>
         </button>
       </div>
@@ -115,10 +114,8 @@ const clickGrading = async (event, outcome) => {
 
     const show_type = Number(_nextCard.dataset.show); // 0 : 단어, 1 : 의미
     const cur_data = TEST_WORD_LIST[Number(_nextCard.dataset.index)];
-
-    if (show_type == 0) {
-      generateSpeech(cur_data.word, 'en');
-    }
+    const word = show_type == 0 ? cur_data.word : cur_data.meaning.join(', ');
+    generateSpeech(word, show_type == 0 ? 'en' : 'ko');
 
     // 카드 제거 후 플래그 해제
     setTimeout(() => {
@@ -145,10 +142,11 @@ const setCardTouchEvent = () => {
   // 클릭 시
   const click = (event) => {
     event.preventDefault();
-    // const _clickEvent = findParentTarget(event.target, 'click_event');
-    // if(_clickEvent) return;
-    // const _card = findParentTarget(event.target, '.card');
-    // _card.classList.toggle('hint');
+    const _clickEvent = findParentTarget(event.target, '.click_event');
+    if(_clickEvent) return;
+    const _card = findParentTarget(event.target, '.card');
+    _card.dataset.hint
+    _card.classList.toggle('hint');
   }
   // 터치 시작 이벤트 핸들러
   const startTouch = (e) => {
@@ -215,7 +213,16 @@ const setCardTouchEvent = () => {
   _card.addEventListener('touchcancel', endTouch); 
 }
 
-
+// 카드 스피커 버튼 클릭 시
+const cardSpeakerBtn = (event) => {
+  const _card = findParentTarget(event.target, '.card');
+  const wordData = TEST_WORD_LIST[Number(_card.dataset.index)];
+  const show_type = Number(_card.dataset.show);
+  const lang = show_type == 0 ? 'en' : 'ko';
+  const word = show_type == 0 ? wordData.word : wordData.meaning.join(', ');
+  generateSpeech(word, lang);
+  _card.dataset.show = show_type == 0 ? 1 : 0;
+}
 
 
 
