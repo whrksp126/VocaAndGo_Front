@@ -54,7 +54,7 @@ const clickVocabularyPreview = (event) => {
   const modal = openDefaultModal();
   modal.container.classList.add('voca_preview')
   modal.top.innerHTML = modalTopHtml(`단어장 미리보기`);
-  modal.middle.innerHTML = setVocabularyPreviewHtml(words);
+  modal.middle.innerHTML = setVocabularyPreviewHtml(JSON.parse(words));
   setLottieSound();
 
   const btns = [
