@@ -92,7 +92,8 @@ const clickAddVocabulary = async (event, id) => {
       const createdAt = new Date().toISOString();
       const color = JSON.parse(vocabulary.color);
       const wordbook = await addWordbook(vocabulary.name, {main : color.main,background : color.background});
-      const wordsData = vocabulary.words.map(data => ({
+      // TODO : json 변경 후 수정
+      const wordsData = JSON.parse(vocabulary.words).map(data => ({
         wordbookId: Number(wordbook.id),
         word: data.word,
         meaning: data.meaning,
